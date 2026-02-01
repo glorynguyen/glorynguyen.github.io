@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Glory Nguyen - Front-End Technical Lead with 10+ years of experience in React, Next.js, Angular, and React Native. Specializing in high-performance web applications and technical leadership.">
+    <meta name="description" content="Vinh Nguyen (Vincent) - Front-End Technical Lead with 10+ years of experience in React, Next.js, Angular, and React Native. Specializing in high-performance web applications and technical leadership.">
     <meta name="keywords" content="Front-End Developer, Technical Lead, React, Next.js, Angular, React Native, JavaScript, TypeScript, Web Performance, SEO, Accessibility">
-    <meta name="author" content="Glory Nguyen">
+    <meta name="author" content="Vinh Nguyen (Vincent)">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Glory Nguyen - Front-End Technical Lead">
+    <meta property="og:title" content="Vinh Nguyen (Vincent) - Front-End Technical Lead">
     <meta property="og:description" content="Front-End Technical Lead with 10+ years of experience building high-performance web applications with React, Next.js, Angular, and React Native.">
     <meta property="og:url" content="https://glorynguyen.github.io">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Glory Nguyen - Front-End Technical Lead">
+    <meta name="twitter:title" content="Vinh Nguyen (Vincent) - Front-End Technical Lead">
     <meta name="twitter:description" content="Front-End Technical Lead with 10+ years of experience building high-performance web applications.">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://glorynguyen.github.io">
 
-    <title>Glory Nguyen - Front-End Technical Lead | React, Next.js, Angular Expert</title>
+    <title>Vinh Nguyen (Vincent) - Front-End Technical Lead | React, Next.js, Angular Expert</title>
 
     <!-- Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -531,6 +531,83 @@
             }
         }
 
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: var(--color-bg-alt);
+            padding: 28px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            transition: box-shadow 0.2s, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .project-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .project-card .project-type {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-primary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-card p {
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            flex-grow: 1;
+        }
+
+        .project-card .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .project-card .project-tech span {
+            background: var(--color-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .project-card .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .project-card .project-link:hover {
+            color: var(--color-primary-dark);
+        }
+
         /* Print styles */
         @media print {
             nav, .skip-link {
@@ -560,7 +637,7 @@
     {
         "@context": "https://schema.org",
         "@type": "Person",
-        "name": "Glory Nguyen",
+        "name": "Vinh Nguyen (Vincent)",
         "jobTitle": "Front-End Technical Lead",
         "description": "Front-End Technical Lead with over 10 years of experience designing and building high-performance web applications",
         "url": "https://glorynguyen.github.io",
@@ -578,9 +655,9 @@
     <header role="banner">
         <div class="container">
             <div class="header-content">
-                <img src="assets/profile.jpg" alt="Glory Nguyen - Front-End Technical Lead" class="profile-image">
+                <img src="assets/profile.jpg" alt="Vinh Nguyen (Vincent) - Front-End Technical Lead" class="profile-image">
                 <div class="header-text">
-                    <h1>Glory Nguyen</h1>
+                    <h1>Vinh Nguyen (Vincent)</h1>
                     <p class="role">Front-End Technical Lead</p>
                     <p class="summary">
                         Building high-performance web applications with 10+ years of expertise in React, Next.js, Angular, and React Native.
@@ -597,6 +674,7 @@
                 <li><a href="#highlights">Highlights</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -806,6 +884,82 @@
                 </div>
             </section>
 
+            <!-- Side Projects Section -->
+            <section id="projects" aria-labelledby="projects-title">
+                <h2 id="projects-title">Side Projects</h2>
+                <div class="projects-grid">
+
+                    <article class="project-card">
+                        <h3>Ollama Code Review</h3>
+                        <p class="project-type">Personal Project</p>
+                        <p>Visual Studio Code Extension: Get lightning-fast, expert code reviews and AI-generated commit messages directly in your editor using your local Ollama instance.</p>
+                        <div class="project-tech">
+                            <span>VS Code</span>
+                            <span>TypeScript</span>
+                            <span>Ollama</span>
+                            <span>AI</span>
+                        </div>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Cheryx.com</h3>
+                        <p class="project-type">Personal Project</p>
+                        <p>A personal website sharing unique knitting patterns designed by my wife. Built with Next.js and MongoDB for the frontend and Express.js for the backend. Features a custom CMS for efficient content management, with Google Drive for image storage and VPS for load balancing.</p>
+                        <div class="project-tech">
+                            <span>Next.js</span>
+                            <span>MongoDB</span>
+                            <span>Express.js</span>
+                            <span>Custom CMS</span>
+                        </div>
+                        <a href="https://cheryx.com" class="project-link" target="_blank" rel="noopener noreferrer">
+                            Visit Cheryx.com →
+                        </a>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Video Compressor</h3>
+                        <p class="project-type">Personal Project</p>
+                        <p>A fast and lightweight web tool that compresses video files directly in your browser using FFmpeg compiled to WebAssembly. No uploads, no server — just instant, high-quality video compression without installing any software.</p>
+                        <div class="project-tech">
+                            <span>FFmpeg</span>
+                            <span>WebAssembly</span>
+                            <span>JavaScript</span>
+                            <span>Browser API</span>
+                        </div>
+                        <a href="https://video-compressor.com" class="project-link" target="_blank" rel="noopener noreferrer">
+                            Visit video-compressor.com →
+                        </a>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Free Craft Patterns</h3>
+                        <p class="project-type">Personal Project</p>
+                        <p>A global hub for knitters and crocheters to discover, learn, and share free patterns. A community-driven platform helping crafters explore creative ideas, connect with fellow makers, and spread the joy of handmade creations — all for free.</p>
+                        <div class="project-tech">
+                            <span>Web Platform</span>
+                            <span>Community</span>
+                            <span>Crafting</span>
+                        </div>
+                        <a href="https://free-craftpatterns.com" class="project-link" target="_blank" rel="noopener noreferrer">
+                            Visit free-craftpatterns.com →
+                        </a>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Oil Reminder</h3>
+                        <p class="project-type">Personal Project</p>
+                        <p>A PWA that helps drivers automatically track oil changes, mileage, and maintenance schedules. Sends smart reminders before your next service is due, making car care effortless.</p>
+                        <div class="project-tech">
+                            <span>React</span>
+                            <span>Vite</span>
+                            <span>Firebase</span>
+                            <span>PWA</span>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
             <!-- About Section -->
             <section id="about" aria-labelledby="about-title">
                 <h2 id="about-title">About Me</h2>
@@ -857,7 +1011,7 @@
 
     <footer role="contentinfo">
         <div class="container">
-            <p>&copy; 2025 Glory Nguyen. Built with clean HTML, CSS, and a passion for web performance.</p>
+            <p>&copy; 2025 Vinh Nguyen (Vincent). Built with clean HTML, CSS, and a passion for web performance.</p>
         </div>
     </footer>
 </body>
