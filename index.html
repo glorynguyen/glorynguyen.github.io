@@ -1,75 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glory Nguyen - Front-End Technical Lead with 10+ years of experience in React, Next.js, Angular, and React Native. Specializing in high-performance web applications and technical leadership.">
+    <meta name="keywords" content="Front-End Developer, Technical Lead, React, Next.js, Angular, React Native, JavaScript, TypeScript, Web Performance, SEO, Accessibility">
+    <meta name="author" content="Glory Nguyen">
+    <meta name="robots" content="index, follow">
 
-<html><head>
-    <title>Parser QnA</title>
-  </head>
-  <body><script id="__bs_script__">//<![CDATA[
-      document.write("<script async src='/browser-sync/browser-sync-client.js?v=2.26.5'><\/script>".replace("HOST", location.hostname));
-  //]]></script><script async="" src="/browser-sync/browser-sync-client.js?v=2.26.5"></script>
-  
-    <h1>QnA</h1>
-    <div id="qna">
-      
-    <h1>Q:  What is changing?</h1><p>A: 2018 年 7 月以降、新しく作成されるすべての EC2 リソースは、より長い ID フォーマットを受け取るようになります。新しいフォーマットは、新しく作成されるリソースにのみ適用され、既存のリソースが影響を受けることはありません。インスタンスとボリュームは、既にこの ID フォーマットを使用しています。2018 年 6 月末までに、お客様はより長い ID の使用をオプトインできるようになります。この期間内は、どの ID フォーマットリソースを割り当てるかを選択できます。また管理ツールとスクリプトを更新してより長いフォーマットのサポートを追加できます。方法は&lt;a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/resource-ids.html"&gt;この&lt;/a&gt;ドキュメントをご覧ください。</p><h1>Q:  Why is this necessary?</h1><p>A: AWS の継続的な成長の速さを考えると、2018 年には特定のリソースの ID が枯渇し始めると考えられます。新しいリソースを中断なく長期的に作成するために、より長い ID フォーマットを導入する必要があります。Amazon EC2 のリソース ID はすべて、2018 年の 7 月により長い ID 形式に変わります。</p><h1>Q:  I already opted in for longer IDs last year. Why do I need to opt-in again?</h1><p>A: 2016 年に、Amazon EC2 インスタンス、予約、ボリューム、スナップショットのみを、より長い ID フォーマットに移行しました。今回のオプトインは、残りのすべての EC2 リソースタイプの ID フォーマットを変更します。</p><h1>Q:  What will the new identifier format look like?</h1><p>A: 新しい識別子のフォーマットは、現在の識別子のフォーマットのパターンに従っていますが、より長くなります。新しいフォーマットは – &amp;lt;17 characters&amp;gt; で、たとえば VPC については &amp;quot;vpc-1234567890abcdef0&amp;quot;、サブネットについては &amp;quot;subnet-1234567890abcdef0&amp;quot; のようになります。</p><h1>Q:  How does this impact me?</h1><p>A: これは新しい形式を取り扱うためにシステムに変更を加える必要は一切ない、という意味で絶好の機会です。AWS リソースの管理にコンソールのみを使用しているのであれば影響はほとんどありませんが、より長い ID フォーマットを使用するよう、できる限り早く設定を更新する必要があります。API、SDK、また AWS CLI を使って AWS リソースをやり取りしているのであれば、リソース ID を検証または持続させる場合に、ご利用のソフトウェアによって ID フォーマットが推定されるかどうかに応じて、影響が発生する可能性があります。この場合、新しいフォーマットに対応するためにシステムを更新する必要が生じる可能性があります。&lt;br /&gt; 以下のいくつかの障害モードが考えられます。</p><h1>Q:  Will this affect existing resources?</h1><p>A: いいえ。影響を受けるのは、より長いフォーマットをオプトインした後に作成したリソースのみです。リソースに長い ID または短い ID が割り当てられると、その後は変更できません。各 ID は一意で、再利用されることはありません。以前の ID フォーマットで作成したリソースでは、引き続き短い ID を使用します。新しい ID フォーマットで作成したリソースでは、オプトアウトした場合でも長い ID を使用します。</p><h1>Q:  When will this happen?</h1><p>A: 2018 年 6 月までに、API と EC2 コンソールでより長い ID の使用をオプトインできるようになります。すべてのアカウントで、必要に応じてより長い ID にオプトイン、オプトアウトを試すことができます。2018 年 7 月 1 日以降、フォーマットを切り替えるオプションは利用できなくなり、新しく作成される EC2 リソースではより長い ID を受け取るようになります。2018 年以降に利用開始にするリージョンではすべて、より長い ID のみをサポートします。</p><h1>Q:  Why is there an opt-in period?</h1><p>A: お客様には、新しいフォーマットをシステムでテストするための十分な時間をとっていただきたいと考えています。この移行期間により、システムを徐々にテストして更新する大きな柔軟性がもたらされ、また必要に応じて、新しいフォーマットのサポートを追加するための中断を最小限にとどめることができます。</p><h1>Q:  How do I opt in and out of receiving longer IDs?</h1><p>A: 移行期間 (2018 年 6 月末まで) を通じ、API または EC2 コンソールを使用して選択することでより長い ID またはより短い ID を受け取れます。方法は &lt;a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/resource-ids.html"&gt;この&lt;/a&gt;ドキュメントをご覧ください。</p><h1>Q:  What will happen if I take no action?</h1><p>A: 移行期間中に新しいフォーマットをオプトインしない場合、2018 年 7 月 1 日より後には自動的により長い ID を受け取るようになります。この方法はお勧めしません。制御されたテストを実行する機会が提供される移行期間中に、新しいフォーマットのサポートを追加することが推奨されます。</p><h1>Q:  What if I prefer to keep receiving the shorter ID format after the end of June 2018?</h1><p>A: ユーザー設定に関係なく、これは不可能です。</p><h1>Q:  When will the longer IDs’ final transition happen?</h1><p>A: 2018 年 7 月に、新たに作成されたリソースはより長い ID を受け取り始めます。AWS CLI の &lt;a href="https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-id-format.html"&gt;describe-id-format&lt;/a&gt; を使用して、各リージョンでの予定移行日付をチェックできます。</p><h1>Q:  If I opt in to longer IDs and then opt back out during the transition period, what will happen to resources that were created with longer IDs?</h1><p>A: 一旦リソースに ID が割り当てられるとそれは変更できません。それでより長い ID で作成されたリソースについては、その後実行したアクションにかかわらず、より長い ID が保持されます。より長いフォーマットをオプトインしてリソースを作成し、その後オプトアウトした場合、オプトアウトした後も、長いリソース ID と短いリソース ID が混在することになります。長い ID を削除するには、個別にリソースを削除または終了する必要があります。それで、利用しているツールとオートメーションのテストが完了するまでは常に注意を払い、重要なリソースは作成しないようにします。</p><h1>Q:  What should I do if my systems are not working as expected before the transition period ends?</h1><p>A: 移行期間中にシステムが正常に機能していない場合は、より長い形式の ID を一時的にオプトアウトしてシステムを修復できます。ただし、2018 年 6 月末より後には、アカウントはより長い形式の ID に自動的に移行されます。アカウント設定に関係なく、すべての新しいインスタンスはより長い形式の ID を受け付けます。そのため、移行期間終了前により長い形式の ID を使用してシステムをテストしておくことが重要です。早めにテストしてオプトインしておくことで、リソース ID が短いリソースに変更を施すための貴重な時間を確保して、システムに影響が発生するリスクを最小にできます。</p><h1>Q:  What will happen if I launch resources in multiple regions during the transition period?</h1><p>A: リソースの ID 長は、リソースの使用を開始するリージョンにより異なります。リージョンがすでに長い ID を使用するように移行されている場合、そのリージョンで使用開始されたリソースの ID は長い形式のものになります。そうでない場合、短いリソース ID になります。したがって、移行期間中は、より短いリソース ID とより長いものが混在します。</p><h1>Q:  If AWS adds new regions during the transition period, will new regions support longer IDs?</h1><p>A: はい。2018 年 7 月から後に加わる新しいリージョンではすべて、新規、既存のアカウントの両方にデフォルトでより長いフォーマットの ID が発行されます。</p><h1>Q:  What will be the default ID type for new accounts?</h1><p>A: 2018 年 3 月 15 日以降に作成されるアカウントは、AWS GovCloud (米国) 以外の全 AWS リージョンで、デフォルトでより長い ID 形式を受け取ることになります。このため、新しいお客様の場合、より長い ID への移行は非常に簡単になります。新しいアカウントでリソースにより短い ID フォーマットを割り当てたい場合、上記のように、アカウントにより短い ID を簡単に再設定できます。このワークフローは、アカウントでより長い ID を受け取る準備ができるまで必要となります。</p><h1>Q:  Will I need to upgrade to a new version of the AWS SDKs or CLI?</h1><p>A: 次の AWS CLI と SDK はより長い ID に完全に準拠しています: PHP v2.8.27+、PHP v3.15.0+、AWS CLI v1.10.2+、Boto3v1.2.1+、Botocorev1.3.24+、PHP v1, Boto v1、Boto v2、Ruby v1、Ruby v2、JavaScript、Java、.NET、AWS Tools for Windows PowerShell、Go。</p><h1>Q:  How can I test my systems with longer IDs?</h1><p>A: 長いフォーマットの ID を備えた Amazon Machine Image (AMI) がテスト目的で公開されています。これらの AMI へのアクセス方法は&lt;a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/resource-ids.html"&gt;こちら&lt;/a&gt;をご覧ください。</p><h1>Q:  What is Amazon Elastic Compute Cloud (Amazon EC2)?</h1><p>A: Amazon Elastic Compute Cloud (Amazon EC2) は、&lt;a href="/what-is-cloud-computing/"&gt;クラウド&lt;/a&gt;内で規模の変更が可能なコンピューティング性能を利用できるウェブサービスです。また、ウェブスケールのコンピューティングを開発者が簡単に利用できるよう設計されています。</p><h1>Q:  What can I do with Amazon EC2?</h1><p>A: Amazon Simple Storage Service (Amazon S3) がクラウド内のストレージを可能とするのとまったく同様に、Amazon EC2 は、クラウド内での「コンピューティング」を可能にします。Amazon EC2 のシンプルなウェブサービスインターフェイスによって、手間をかけず、必要な機能を取得および設定できます。お客様のコンピューティングリソースに対して、高機能なコントロールが提供され、Amazon の実績あるインフラストラクチャ上で実行できます。Amazon EC2 では、わずか数分間で新規サーバーインスタンスを取得して起動できるようになります。これにより、コンピューティング要件の変化に合わせて、すばやく容量をスケールアップおよびスケールダウンできます。実際に使用した分のみ料金が発生するため、Amazon EC2 はコンピューティングの経済性も変革します。</p><h1>Q:  How can I get started with Amazon EC2?</h1><p>A: Amazon EC2 にサインアップするには、Amazon EC2 詳細ページ上の [このウェブサービスにサインアップ] ボタンをクリックします。このサービスにアクセスするには、Amazon Web Services のアカウントを保有している必要があります。これをまだ持っていない場合は、Amazon EC2 サインアッププロセスの開始時に、プロンプト画面が表示されてこれを作成することができます。サインアップの後、&lt;a href="http://developer.amazonwebservices.com/connect/kbcategory.jspa?categoryID=87"&gt;Amazon EC2 ドキュメント&lt;/a&gt;をご参照ください。ここには当社の開始方法に関するガイドが含まれています。</p><h1>Q:  Why am I asked to verify my phone number when signing up for Amazon EC2?</h1><p>A: Amazon EC2 登録には、有効な電話番号と E メールを AWS に提出することが必要です。これはお客様に連絡する必要が生じた場合のためです。電話番号の検証に要するのは数分のみです。ここでは登録プロセス中に電話を受信し、電話のキーパッドを使用して PIN 番号を入力します。</p><h1>Q:  How quickly will systems be running?</h1><p>A: 一般的には、RunInstances 呼び出しの発行から、リクエストされた全インスタンスで起動シーケンスが開始されるまで、10 分かかりません。この時間は、AMI のサイズ、作成中のインスタンス数、AMI をどれくらい最近に起動したかなど、さまざまな要素に依存します。初めて起動するイメージでは、起動までに多少時間がかかる場合があります。</p><h1>Q:  How do I access my systems?</h1><p>A: アプリケーションスタックの実行を開始する RunInstances 呼び出しは、DNS 名のセットを返します。これは起動中の各システムのために 1 つずつあります。この名前は、これがお客様自身のデータセンターにある場合に、システムに正確にアクセスするために使用することができます。お客様のオペレーティングシステムスタックがこれを実行する間に、このマシンを所有します。</p><h1>Q:  Are there any limitations in sending email from Amazon EC2 instances?</h1><p>A: はい。E メール送信用の Amazon EC2 アドレスの品質を維持するため、当社は EC2 アカウントから送信できる E メールの量に既定値による制限を実施します。EC2 から大量の E メールを送信したい場合は、この&lt;a href="https://portal.aws.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request"&gt;フォームに記入&lt;/a&gt;することによって、アカウントからこれらの制限を削除するよう申請できます。</p><h1>Q:  How quickly can I scale my capacity both up and down?</h1><p>A: Amazon EC2 は真に柔軟なコンピューティング環境を提供します。Amazon EC2 を使用すれば、数分以内にキャパシティーの増減を行うことができます。数時間あるいは数日かかることはありません。一から数百、または数千のサーバーインスタンスさえ、同時に作動させることができます。インスタンスを増やす必要がある場合は、RunInstance を呼び出すだけです。その後 Amazon EC2 は、一般的には数分以内で、お客様の新しいインスタンスをセットアップします。もちろん、これはすべてウェブサービス API でコントロールされるため、お客様のアプリケーションではそのニーズに応じて、自動的なスケールアップやスケールダウンを行えます。</p><h1>Q:  What operating system environments are supported?</h1><p>A: Amazon EC2 では現在、Amazon Linux、Ubuntu、Windows Server、Red Hat Enterprise Linux、SUSE Linux Enterprise Server、Fedora、Debian、CentOS、Gentoo Linux、Oracle Linux、および FreeBSD といった、さまざまなオペレーティングシステムがサポートされています。その他のプラットフォームにもサポートを拡大するよう検討しています。</p><h1>Q:  Does Amazon EC2 use ECC memory?</h1><p>A: 新しい NVIDIA Tesla V100 アクセラレーターには、新しい強力な Volta GV100 GPU が統合されています。GV100 は先行モデル Pascal GP100 GPU の利点を基に構築されているだけでなく、パフォーマンスとスケーラビリティが大幅に向上しており、プログラマビリティを高める多数の新機能が追加されています。これらの利点により、HPC、データセンター、スーパーコンピュータ、深層学習のシステムやアプリケーションが強化されます。</p><h1>Q:  What are the benefits of NVIDIA Volta GV100 GPUs?</h1><p>A: 高度なコンピュータパフォーマンスを備えた P3 インスタンスのメリットを受けるのは、人工知能 (AI)、機械学習 (ML)、深層学習 (DL)、ハイパフォーマンスコンピューティング (HPC) のアプリケーションを使用するユーザーです。これらのユーザーには、データサイエンティスト、データアーキテクト、データアナリスト、科学研究者、ML エンジニア、IT マネージャー、ソフトウェア開発者が含まれます。主な業界は、運輸、エネルギー/石油およびガス、金融サービス (銀行、生保)、医療、製薬、科学、IT、小売、製造、ハイテク、行政機関、教育機関などです。</p><h1>Q:  Who will benefit from P3 instances?</h1><p>A: P3 インスタンスでは、GPU を使用して多数の深層学習のシステムやアプリケーションを高速化します。それには、自動運転車プラットフォーム、音声、画像、テキスト認識システム、インテリジェント動画分析、分子シミュレーション、創薬、病気診断、天気予報、ビッグデータ分析、財務モデリング、ロボット工学、ファクトリーオートメーション、リアルタイム言語翻訳、オンライン検索最適化、パーソナライズされたユーザー推薦などが含まれますが、これらはほんの一部にすぎません。</p><h1>Q:  What are some key use cases of P3 instances?</h1><p>A: GPU ベースのコンピューティングインスタンスは優れたスループットとパフォーマンスを提供します。それはこのインスタンスが GPU ごとに何千もの特殊コアを使用して超並列処理を行うように設計されているためです。それに対して、CPU では少数のコアで順次処理を行います。さらに、開発者によってすでに、量子化学、分子力学、気象学などの、GPU に最適化された科学関連 HPC アプリケーションが何百も構築されています。よく使用される大半の HPC アプリケーションの 70% 以上で GPU の組み込みサポートが提供されていることが、調査により明らかです。</p><h1>Q:  Why should customers use GPU-powered Amazon P3 instances for AI/ML and HPC?</h1><p>A: C5 で、インスタンスに使用するメモリの一部は、オペレーティングシステムでの使用のために予約されています。これには、ACPI テーブルや仮想 VRAM といったデバイスなど、仮想 BIOS で使用される領域も含まれます。&lt;br /&gt; </p><h1>Q:  Why does the total memory reported by&amp;nbsp;the operating system not match the advertised memory of the C5 instance type?</h1><p>A: Amazon EC2 A1 インスタンスは新しい汎用インスタンスで、AWS によって設計された AWS Graviton プロセッサを搭載しています。</p><h1>Q:  What are Amazon EC2 A1 instances?</h1><p>A: A1 インスタンスで使用するのは「arm64」AMI であることを確認してください。x86 AMI は A1 インスタンスと互換性がありません。</p><h1>Q:  What are the specifications of the new AWS Graviton Processors?</h1><p>A: A1 インスタンスはデフォルトで EBS に最適化されており、暗号化、非暗号化の両 EBS ボリュームに最大 3,500 Mbps の専用 EBS 帯域幅を提供します。A1 インスタンスは、EBS ストレージボリュームにアクセスするためのインターフェイスとして、Non-Volatile Memory Express (NVMe) インターフェイスのみをサポートします。A1 インスタンスは blkfront インターフェイスをサポートしません。</p><h1>Q:  Will customers have to modify applications and workloads to be able to run on the A1 instances?</h1><p>A: A1 インスタンスは ENA ベースの拡張ネットワーキングをサポートしています。ENA の使用により、A1 インスタンスはプレースメントグループ内での起動時に、インスタンス間に最大 10 Gbps のネットワーク帯域幅を提供できます。</p><h1>Q:  Which operating systems/AMIs are supported on A1 Instances?</h1><p>A: はい。A1 インスタンスには、専用ハードウェアと Nitro ハイパーバイザーが組み合わされた &lt;a href="https://aws.amazon.com/ec2/nitro/" target="_blank"&gt;AWS Nitro System&lt;/a&gt; を使用します。</p><h1>Q:  Are there specific AMI requirements to run on A1 instances?</h1><p>A: A1 インスタンスで、インスタンスに使用するメモリの一部は、オペレーティングシステムでの使用のために予約されています。これには、ACPI テーブルなど、仮想 UEFI で使用される領域も含まれます。</p><h1>Q:  What are the various storage options available to A1 customers?</h1><p>A: M5 インスタンスは、開発とテストの環境、ウェブアプリケーション、モバイルアプリケーション、ゲームアプリケーション、分析アプリケーション、および ERP、HR、CRM、コラボレーションアプリケーションといったビジネスクリティカルなアプリケーションを実行するために適しています。M5 は、データ量が多いワークロード (HPC、SOLR クラスターなど) をメモリフットプリントが大きいインスタンスで実行することを検討しているお客様にも適しています。動画処理ワークロードなど、単精度浮動小数点および倍精度浮動小数点の演算とベクター処理を大量に使用するワークロードや、大量のメモリが必要なワークロードは、M5 でサポートされる AVX-512 命令が非常に役立ちます。</p><h1>Q:  Which network interface is supported on A1 instances?</h1><p>A: 新しい EC2 M5 インスタンスは、EC2 M4 インスタンスと比較して、より優れたコンピューティングとストレージのパフォーマンス、より低いコストでのより大きなインスタンスサイズ、整合性、およびセキュリティをお客様に提供します。EC2 M5 インスタンスの最大のメリットは、M4 と比べて最大 20% の価格/パフォーマンス向上を実現する Intel Xeon スケーラブルプロセッサ (別名 Skylake) の最新世代の使用に基づいています。M5 での AVX-512 のサポートと、M4 での以前の AVX2 を比べると、お客様は浮動小数点演算を必要とするワークロードにおいて 2 倍優れたパフォーマンスを得ることができます。M5 インスタンスでは、最大 25 Gbps のネットワーク帯域幅と最大 10 Gbps の Amazon EBS 専用帯域幅を利用できます。M5 インスタンスでは、EBS バースト機能によって、より小さいサイズのインスタンスにおけるネットワーキングと Amazon EBS のパフォーマンスも大幅に高くなっています。</p><h1>Q:  Do A1 instances support the AWS Nitro System?</h1><p>A: インテルの Advanced Vector Extension 512 (AVX-512) は、最新のインテル Xeon スケーラブルプロセッサファミリーで利用できる新しい CPU 命令の一式で、科学的シミュレーション、財務分析、人工知能、機械学習/深層学習、3D モデリングと分析、画像とビデオの処理、暗号化、およびデータ圧縮などのワークロードと用途のためにパフォーマンスを向上させることができます。インテルの AVX-512 は非常に優れた暗号化アルゴリズムの処理を実現し、暗号化のパフォーマンスオーバーヘッドの削減に役立ちます。これは、EC2 M5 と M5d のお客様が、パフォーマンスを犠牲にすることなく、よりセキュアなデータとサービスを分散環境にデプロイできることを意味します。</p><h1>Q:  Why does the total memory reported by Linux not match the advertised memory of the A1 instance type?</h1><p>A: &lt;b&gt;&lt;/b&gt;M5 と M5d のインスタンスタイプは、3.1 GHz インテル Xeon Platinum 8000 シリーズプロセッサを使用します。M5a と M5ad のインスタンスタイプは 2.5 GHz AMD EPYC 7000 シリーズプロセッサを使用します。</p><h1>Q:  What are the key use cases for Amazon EC2 M5 Instances?</h1><p>A: &lt;b&gt;&lt;/b&gt;選択したインスタンスのコンピューティングリソースをフルに活用せず、実際には不要な性能に対しても料金を支払うことになるワークロードの場合は、コストを抑えるために、M5a と M5ad のインスタンスタイプの使用をお勧めします。AVX-512 命令を使ったベクトル化コンピューティングを含む、最高のプロセッサパフォーマンス機能、または優れた浮動小数点パフォーマンス機能が必要なワークロードについては、M5 または M5d のインスタンスタイプの使用をお勧めします。</p><h1>Q:  Why should customers choose EC2 M5 Instances over EC2 M4 Instances?</h1><p>A: T2 インスタンスは、さまざまな汎用の本番ワークロードにとってコスト効果の高いプラットフォームとなります。T2 Unlimited インスタンスでは、必要な CPU パフォーマンスを無制限で維持できます。ベースラインよりも大幅に高い CPU 使用率がワークロードで常に必要な場合は、M や C といった専用の CPU インスタンスファミリーを検討してください。</p><h1>Q:  How does support for Intel AVX-512 benefit EC2 M5 and M5d Instance customers?</h1><p>A: 各 T2 インスタンスの CPU クレジット残高は、Amazon CloudWatch の EC2 インスタンス別メトリクスで確認できます。T2 インスタンスには、CPUCreditUsage、CPUCreditBalance、CPUSurplusCreditBalance、CPUSurplusCreditsCharged の 4 つのメトリクスがあります。CPUCreditUsage は、使用された CPU クレジットの量を示します。CPUCreditBalance は、CPU クレジットの残高を示します。CPUSurplusCreditBalance は、獲得したクレジットがない場合にバーストに使用されるクレジットを示します。CPUSurplusCreditsCharged は、平均使用率がベースラインを上回った場合に課金されるクレジットを示します。</p><h1>Q:  What are the various processor options available to M5 customers?</h1><p>A: T2 インスタンスの CPU クレジット残高が 0 になった場合でも、パフォーマンスはベースライン CPU パフォーマンスで維持されます。たとえば、t2.micro のベースライン CPU パフォーマンスは物理的 CPU コアの 10% です。インスタンスの CPU クレジット残高が 0 に近づいている場合は、CPU パフォーマンスがベースラインパフォーマンスまで下げられ、その状態が 15 分間続きます。</p><h1>Q:  What are the various storage options available to M5 customers?</h1><p>A: いいえ。インスタンスを停止すると、それまでに獲得したクレジット残高は失われます。</p><h1>Q:  When should I use the different M5 instance types?</h1><p>A: これらのインスタンスは&lt;a href="/ec2/previous-generation/"&gt;旧世代のインスタンス&lt;/a&gt;ページに移動されました。</p><h1>Q:  When should I choose a Burstable Performance Instance, such as T2?</h1><p>A: はい。旧世代のインスタンスもまだ完全にサポートされています。</p><h1>Q:  How can I see the CPU Credit balance for each T2 instance?</h1><p>A: はい。旧世代のインスタンスは、API、CLI、EC2 マネジメントコンソールインターフェイスから、オンデマンド、リザーブドインスタンス、スポットインスタンスとして使用できます。</p><h1>Q:  What happens to CPU performance if my T2 instance is running low on credits (CPU Credit balance is near zero)?</h1><p>A: いいえ。C1、C3、CC2、CR1、G2、HS1、M1、M2、M3、R3、T1 の各インスタンスは今後も完全に機能し、この変更のために削除されることはありません。</p><h1>Q:  Does my T2 instance credit balance persist at stop / start?</h1><p>A: 現在、旧世代のインスタンスを削除する計画はありません。ただし、急速に進化するテクノロジーに関して言えば、通常、最新の世代は料金に見合った最高のコストパフォーマンスを提供するため、お客様においてはテクノロジーの進化を活用することが推奨されます。</p><h1>Q:  Why don’t I see M1, C1, CC2 and HS1 instances on the pricing pages any more?</h1><p>A: ローカルインスタンスストアに格納されるデータは、インスタンスが存続する間のみ保持されます。しかし Amazon EBS ボリュームに保存されるデータは、インスタンスの寿命とは無関係に存続します。したがって、ローカルインスタンスストアは一時的なデータに使用し、高い耐久性を必要とするデータについては、Amazon EBS ボリュームを使用するかデータを Amazon S3 にバックアップすることをお勧めします。Amazon EBS ボリュームをルートパーティションとして使用する場合に、インスタンスの存続期間が終了した後もこのボリュームを保持するには、「Delete On Terminate (終了時に削除)」フラグを「いいえ」に設定する必要があります。</p><h1>Q:  Are these Previous Generation instances still being supported?</h1><p>A: Amazon EBS には、現行世代として 4 つのボリュームタイプがあり、大きくトランザクションワークロード向けの SSD タイプストレージと、高いスループットを必要とするワークロード向けの HDD タイプストレージの 2 つに分類されます。これらのボリュームタイプはそれぞれ、パフォーマンス特性と料金が異なるため、アプリケーションのニーズに合わせてストレージのパフォーマンスとコストを調整できます。詳細については &lt;a href="/ebs/details/"&gt;EBS 製品詳細ページ&lt;/a&gt;を参照してください。パフォーマンスの詳細については、&lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSPerformance.html"&gt;Amazon EC2 ユーザーガイドの EBS パフォーマンスのセクション&lt;/a&gt;を参照してください。</p><h1>Q:  Can I still use/add more Previous Generation instances?</h1><p>A: Amazon EBS には、ストレージの 2 つの主要なカテゴリがあります。トランザクションワークロード向けの SSD タイプのストレージ (パフォーマンスは主に IOPS に応じて異なる) とスループットワークロード向けの HDD タイプのストレージ (パフォーマンスは MB/秒単位で測定されたスループットに応じて異なる) です。SSD タイプのボリュームは、トランザクションの IOPS 負荷の高いデータベースワークロード、ブートボリューム、および高い IOPS を必要とするワークロード向けに設計されています。SSD タイプのボリュームには、プロビジョンド IOPS SSD (io1) と汎用 SSD (gp2) があります。HDD タイプのボリュームは、高いスループットを必要とするワークロードやビッグデータワークロード、大規模 I/O サイズ、シーケンシャル I/O パターン向けに設計されています。HDD タイプのボリュームには、スループット最適化 HDD (st1) や Cold HDD (sc1) があります。Amazon EBS の詳細については、&lt;a href="/ebs/details/"&gt;EBS 製品詳細ページ&lt;/a&gt;を参照してください。</p><h1>Q:  Are my Previous Generation instances going to be deleted?</h1><p>A: 複数のボリュームを単一のインスタンスに追加することはできますが、複数のインスタンスを単一のボリュームにアタッチすることは、現在サポートされていません。</p><h1>Q:  Are Previous Generation instances being discontinued soon?</h1><p>A: いいえ、EBS スナップショットは Amazon EC2 API 経由でのみ利用可能です。</p><h1>Q:  What happens to my data when a system terminates?</h1><p>A: いいえ。スナップショットはボリュームがアタッチされ使用中の状態でもリアルタイムで実行できます。ただし、スナップショットは、お客様の Amazon EBS ボリュームに対して記述されたデータのみを捕捉します。つまりお客様のアプリケーションまたは OS によってローカルにキャッシュされたデータは除外される可能性があります。インスタンスにアタッチされるボリューム上で安定してスナップショットを取得するために、ボリュームを一旦明確に取り外し、スナップショットコマンドを発行して、ボリュームを再度アタッチすることをお勧めしています。ルートデバイスとしてサービスを提供する Amazon EBS ボリュームについては、明確なスナップショットを取得するためにマシンをシャットダウンすることをお勧めしています。</p><h1>Q:  What kind of performance can I expect from Amazon EBS volumes?</h1><p>A: スナップショットにはそれぞれ一意の識別子が付与され、どのスナップショットからでもボリュームを作成することができます。</p><h1>Q:  Which volume type should I choose?</h1><p>A: スナップショットを共有している場合、他のユーザーがお客様のスナップショットをコピーする際に課金されることはありません。別のユーザーの共有ボリュームのコピーを作成する場合、通常の EBS 料金が課金されます。</p><h1>Q:  Do you support multiple instances accessing a single volume?</h1><p>A: お客様の共有スナップショットを基にしてボリュームを作成する権限を有しているユーザーは、彼らのアカウントに対して最初にスナップショットのコピーを作成します。ユーザーはデータのコピーに変更を加えることができます。しかしお客様のオリジナルのスナップショット上のデータ、およびお客様のオリジナルのスナップショットから他のユーザーによって作成された他のボリュームは変更されません。</p><h1>Q:  Will I be able to access my EBS snapshots using the regular Amazon S3 APIs?</h1><p>A: AWS マネジメントコンソールの [スナップショット] セクションにあるドロップダウンを閲覧し、[プライベートスナップショット] を選択することで、お客様が共有しているスナップショットを見つけることができます。このセクションには、お客様が所有するスナップショットおよび共有しているスナップショットの両方がリストアップされます。</p><h1>Q:  Are snapshots versioned? Can I read an older snapshot to do a point-in-time recovery?</h1><p>A: グローバルに共有されているスナップショットを探すには、AWS マネジメントコンソールの [Snapshots] セクションにあるドロップダウンメニューから [Public Snapshots] を選択します。</p><h1>Q:  What charges apply when using Amazon EBS shared snapshots?</h1><p>A: はい。EBS は、データボリュームとスナップショットのシームレスな暗号化を提供します。EBS 暗号化により、セキュリティまたは暗号化に関するコンプライアンス要件をより適切に満たすことができます。</p><h1>Q:  Can users of my Amazon EBS shared snapshots change any of my data?</h1><p>A: パブリックデータセットに関するすべての情報は、&lt;a href="http://developer.amazonwebservices.com/connect/kbcategory.jspa?categoryID=243"&gt;パブリックデータセットリソースセンター&lt;/a&gt;で公開しています。[スナップショット] セクションでドロップダウンを閲覧して、[Amazon スナップショット] を選択することにより、AWS マネジメントコンソール内でパブリックなデータセットのリストを取得することもできます。</p><h1>Q:  How can I discover Amazon EBS snapshots that have been shared with me?</h1><p>A: &lt;a href="/efs/faq/"&gt;Amazon EFS のよくある質問のページ&lt;/a&gt;をご覧ください。&lt;br /&gt; </p><h1>Q:  How can I find what Amazon EBS snapshots are shared globally?</h1><p>A: 現在、I3en、I3、C5d、M5d、M5ad、R5d、R5ad、z1d および F1 インスタンスで NVMe インスタンスストレージを利用できます。</p><h1>Q:  Do you offer encryption on Amazon EBS volumes and snapshots?</h1><p>A: はい。すべてのデータは AWS &lt;a href="https://aws.amazon.com/ec2/nitro/" target="_blank"&gt;Nitro&lt;/a&gt; ハードウェアモジュールで暗号化された後、NVMe インスタンスストレージで提供されるローカルにアタッチされた SSD に書き込まれます。</p><h1>Q:  How can I find a list of Amazon Public Data Sets?</h1><p>A: Amazon EC2 の NVMe インスタンスストレージの暗号化には、XTS-AES-256 のブロック暗号が使用されています。</p><h1>Q:  Where can I learn more about EFS?</h1><p>A: 暗号化キーは &lt;a href="https://aws.amazon.com/ec2/nitro/" target="_blank"&gt;Nitro&lt;/a&gt; ハードウェアモジュール内でセキュアに生成され、EC2 インスタンスで提供される各 NVMe インスタンスストレージデバイスに対して一意のキーです。</p><h1>Q:  Which instance types offer NVMe instance storage?</h1><p>A: ストレージの割り当てが解除されると (インスタンスの停止や終了といったアクションを含む)、すべてのキーは永久的に破棄されます。</p><h1>Q:  Is data stored on Amazon EC2 NVMe instance storage encrypted?</h1><p>A: いいえ。NVMe インスタンスストレージの暗号化は常に有効になっており、無効にすることはできません。</p><h1>Q:  What encryption algorithm is used to encrypt Amazon EC2 NVMe instance storage?</h1><p>A: はい。記載されている I3 および I3en NVMe インスタンスストレージの IOPS 数値には暗号化が含まれています。</p><h1>Q:  Are encryption keys unique to an instance or a particular device for NVMe instance storage?</h1><p>A: EFA は、密結合な HPC アプリケーションに、クラウドのスケーラビリティ、柔軟性、伸縮性をもたらします。EFA を使用すると、密結合な HPC アプリケーションは、従来の TCP チャネルと比較して、一貫した低レイテンシー、高スループットを実現し、スケーリングを改善できます。ECFA サポートは、事前に予約せずにサポートされている EC2 インスタンスで動的にオンデマンドで有効にすることができ、変化するビジネス/ワークロードの優先順位に柔軟に対応できます。</p><h1>Q:  What is the lifetime of encryption keys on NVMe instance storage?</h1><p>A: ハイパフォーマンスコンピューティング (HPC) アプリケーションは、計算ワークロードをインスタンスのクラスタ全体に分散して並列処理します。HPC アプリケーションの例には、計算流体力学 (CFD)、衝突シミュレーション、気象シミュレーションなどがあります。HPC アプリケーションは、一般に Message Passing Interface (MPI) を使用して作成され、レイテンシーと帯域幅の両方に関してインスタンス間通信に厳しい要件を課します。MPI や、libfabric 通信スタックをサポートするその他の HPC ミドルウェアを使用するアプリケーションは、EFA のメリットを得られます。</p><h1>Q:  Can I disable NVMe instance storage encryption?</h1><p>A: EFA は現在、C5n.18xlarge、P3dn.24xl、I3en.24xl の各インスタンスサイズで利用できます。今後数か月でさらに多くのインスタンスタイプとサイズがサポートされます。</p><h1>Q:  Do the published IOPS performance numbers on I3 and I3en include data encryption?</h1><p>A: ENA ENI は、VPC ネットワーキングをサポートするために必要な従来の IP ネットワーキング機能を提供します。EFA ENI は、ENA ENI のすべての機能に加え、拡張プログラミングインターフェイスを使用したインスタンスカーネル (OS バイパス通信) を伴わずにアプリケーションが EFA ENI と直接通信するためのハードウェアサポートを提供します。EFA ENI の高度な機能により、EFA ENI は、起動時または停止したインスタンスにのみ接続できます。</p><h1>Q:  Why should I use EFA?</h1><p>A: Elastic IP アドレスを効率的に使用していただくために、実行中のインスタンスに関連付けられていないアドレスについては少額の時間料金を請求しています。</p><h1>Q:  What types of applications can benefit from using EFA?</h1><p>A: いいえ。すべてのインスタンスに Elastic IP アドレスが必要なわけではありません。デフォルトでは、各インスタンスにはプライベート IP アドレスとインターネット経由可能なパブリック IP アドレスが割り当てられています。プライベート IP アドレスは、インスタンスが停止されてから再開始されるときはネットワークインターフェイスに関連付けられたままとなり、インスタンスが終了されると解放されます。パブリックアドレスはそのインスタンスのみに関連付けられ、この関連付けはそのインスタンスが停止または終了するか、Elastic IP アドレスで置き換えられるまで続きます。これらの IP アドレスは、インターネット上で長期的にルーティング可能なエンドポイントをお客様が必要としない限り、多くのアプリケーションにとって適切なはずです。計算処理クラスター、ウェブクローリング、バックエンドサービスなどはすべて、一般的には Elastic IP アドレスを必要としないアプリケーションの例です。</p><h1>Q:  How does EFA communication work?</h1><p>A: 再マッププロセスに要する時間は、お客様が Elastic IP の再マップ指示を出してから、それが AWS システム全体に伝播し終わるまでであり、現状では数分ほどです。</p><h1>Q:  Which instance types support EFA?</h1><p>A: すべての Elastic IP アドレスには、逆引き DNS が ec2-1-2-3-4.region.compute.amazonaws.com 形式の標準テンプレートで付属しています。IP ベースの相互認証 (EC2 インスタンスからの E メール送信など) を使用するインターネット対応アプリケーションのカスタム逆引き DNS 設定を必要とするお客様の場合、&lt;a href="https://portal.aws.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request"&gt;このフォーム&lt;/a&gt;に記入することで Elastic IP アドレスの逆引き DNS レコードを設定できます。別の方法として、Elastic IP の逆引き DNS の管理を権限のある DNS ネームサーバー (Amazon Route 53 など) に委任することによって、これらのユースケースのサポート向けの独自の逆引き DNS PTR レコードを管理できるようになります。ご希望の場合は、AWS カスタマーサポートにお問い合わせください。ただし、その Elastic IP アドレスをポイントする正引き DNS が存在しないと、逆引き DNS レコードは作成できませんのでご注意ください。&lt;br /&gt; </p><h1>Q:  What are the differences between an EFA ENI and an ENA ENI?</h1><p>A: Elastic Load Balancing では、高可用性、自動スケーリング、および強固なセキュリティを特徴とした 2 つのタイプのロードバランサーが提供されます。これには、アプリケーションまたはネットワークレベルの情報に基づいてトラフィックをルーティングする &lt;a href="/elasticloadbalancing/classicloadbalancer/"&gt;Classic Load Balancer&lt;/a&gt;&amp;nbsp;と、リクエストのコンテンツを含む拡張アプリケーションレベル情報に基づいてトラフィックをルーティングする&amp;nbsp;&lt;a href="/elasticloadbalancing/applicationloadbalancer/"&gt;Application Load Balancer&lt;/a&gt;&amp;nbsp;が含まれます。</p><h1>Q:  Why am I charged when my Elastic IP address is not associated with a running instance?</h1><p>A: Classic Load Balancer は、複数の EC2 インスタンス間でのシンプルなトラフィックの負荷分散に最適です。一方、Application Load Balancer は、高度なルーティング機能、マイクロサービス、およびコンテナベースのアーキテクチャが必要なアプリケーションに最適です。詳細については、&lt;a href="/elasticloadbalancing/"&gt;Elastic Load Balancing&lt;/a&gt; ページを参照してください。</p><h1>Q:  Do I need one Elastic IP address for every instance that I have running?</h1><p>A: 現在のところ、SR-IOV (シングルルート I/O 仮想化) を利用した拡張ネットワーキング機能のみをサポートしています。SR-IOV は、従来の実装と比較し、I/O パフォーマンスが高く、CPU 利用率が低いデバイス仮想化の手法です。サポートされる Amazon EC2 インスタンスに対してこの機能を利用すると、パケット毎秒 (PPS) のパフォーマンスが高くなり、インスタンスレイテンシーは軽減され、ネットワークのストレスが少なくなります。</p><h1>Q:  How long does it take to remap an Elastic IP address?</h1><p>A: 秒あたりのパケット数での高いパフォーマンスや低いネットワークレイテンシーからメリットを得られるアプリケーションを使用している場合は、拡張ネットワーキングを利用することで、性能が大幅に上がり、一貫性と拡張性を得ることができます。</p><h1>Q:  Can I configure the reverse DNS record for my Elastic IP address?</h1><p>A: この機能を有効にするには、適切なドライバーで HVM AMI を起動する必要があります。C5、C5d、F1、G3、H1、I3、I3en、m4.16xlarge、M5、M5d、P2、P3、R4、R5、R5d、T3、X1、X1e、z1d インスタンスでは、拡張ネットワーキングに Elastic Network Adapter (「ena」 Linux ドライバーを使用) が使用されます。C3、C4、D2、I2、M4 (m4.16xlarge を除く)、R3 インスタンスでは、インテル&amp;reg; 82599g Virtual Function Interface (「ixgbevf」 Linux ドライバーを使用) が使用されます。Amazon Linux AMI には、デフォルトでこれら 2 つのドライバが含まれています。これらのドライバが含まれていない AMI については、使用を予定しているインスタンスタイプに応じて適切なドライバーをダウンロードしてインストールする必要があります。デフォルトで SR-IOV ドライバーを含まない AMI で拡張ネットワーキングを有効化するには、Linux または Windows の手順を使用できます。拡張ネットワーキングは Amazon VPC でのみサポートされます。</p><h1>Q:  What load balancing options does the Elastic Load Balancing service offer?</h1><p>A: いいえ。拡張ネットワーキングに追加料金はありません。拡張ネットワーキングを最大限に利用するには、VPC のサポートされるインスタンスタイプで適切な AMI を起動する必要があります。</p><h1>Q:  When should I use the Classic Load Balancer and when should I use the Application Load Balancer?</h1><p>A: Amazon VPC を利用すると、EC2-Classic では不可能なあらゆる高度なネットワーキング機能を利用できます。拡張ネットワーキングは、Amazon VPC により実現される機能の一例です。</p><h1>Q:  What networking capabilities are included in this feature?</h1><p>A: お客様はシステムの公開レベルを完全にコントロールすることができます。Amazon EC2 セキュリティシステムによって、実行中のインスタンスを、お客様が選択する任意のグループに配置することができます。ウェブサービスインターフェイスを使用して、どのグループが別のどのグループとデータをやりとりできるのか、またインターネット上のどの IP サブネットが、どのグループと通信できるのか指定することができます。これによって、当社の非常に動的な環境上でのアクセスのコントロールが可能となります。もちろん、他のサーバーに対して行うのと同様に、インスタンスのセキュリティを保護してください。</p><h1>Q:  Why should I use Enhanced Networking?</h1><p>A: はい。アカウントで実行したすべての EC2 API コール (VPC および EBS を含む) の履歴を取得するには、&lt;a href="https://console.aws.amazon.com/cloudtrail/home"&gt;AWS マネジメントコンソール&lt;/a&gt;で CloudTrail を有効にします。詳細については、&lt;a href="/cloudtrail/"&gt;CloudTrail&lt;/a&gt; のホームページを参照してください。</p><h1>Q:  How can I enable Enhanced Networking on supported instances?</h1><p>A: メトリクスは 1 分間隔で取得および集計されます。</p><h1>Q:  Do I need to pay an additional fee to use Enhanced Networking?</h1><p>A: 同じ時間範囲で表示したグラフを 5 分と 1 分の間隔で見ると、データポイントがグラフの異なる位置にあるのが分かります。Amazon CloudWatch は、グラフで指定した期間に対して利用可能なすべてのデータポイントを見つけて、その期間を代表する 1 つの集合点を計算します。5 分間の場合は、1 つのデータポイントが 5 分の期間の最初に配置されます。1 分の場合は、1 つのデータポイントが 1 分の箇所に配置されます。トラブルシューティングの場合、および正確な時間間隔のグラフを表示したい場合は 1 分の期間を使ってください。&lt;br /&gt; </p><h1>Q:  Why is Enhanced Networking only supported in Amazon VPC?</h1><p>A: はい。&lt;a href="/ec2/autoscaling/"&gt;Amazon EC2 Auto Scaling&lt;/a&gt; は、Amazon EC2 のインスタンスを自動的に作成または終了するように設計された、完全マネージド型サービスであり、アプリケーションの負荷を処理するために適切な数の EC2 インスタンスを利用できるように準備することができます。EC2 Auto Scaling では、EC2 インスタンスのフリート管理によって異常なインスタンスを検出して置き換えることや、お客様が定義する条件に応じて Amazon EC2 のキャパシティーを自動的に縮小したり拡張したりすることによって、アプリケーションの可用性を維持できます。EC2 Auto Scaling を使用することで、需要が急激に上昇したときには Amazon EC2 インスタンスの数を自動的に増やしてパフォーマンスを維持し、需要が落ち着いた状態にあるときには能力を縮小してコストを削減できます。詳細については、&lt;a href="/ec2/autoscaling/faqs/"&gt;Amazon EC2 Auto Scaling のよくある質問&lt;/a&gt;を参照してください。&lt;br /&gt; </p><h1>Q:  How do I prevent other people from viewing my systems?</h1><p>A: ブートストラップに時間がかかる場合 (メモリキャッシュのロードなど)、インスタンスを休止してインスタンスとアプリケーションをすばやく稼働状態にできます。インスタンスを起動し、目的の状態にして休止させることができます。その後に、これらの「事前ウォーミング済み 」インスタンスを再開して、インスタンスがサービス復帰するまでの時間を短縮可能です。ハイバネーションは停止/開始サイクル間でメモリ状態を保持します。</p><h1>Q:  Can I get a history of all EC2 API calls made on my account for security analysis and operational troubleshooting purposes?</h1><p>A: インスタンスを休止した場合、EBS ルートボリュームとアタッチされたすべての EBS データボリュームに保存されたデータは維持されます。さらに、インスタンスのメモリ (RAM) の内容が EBS ルートボリュームに維持されます。インスタンスが再起動されると、以前の状態に戻り、RAM の内容が再ロードされます。</p><h1>Q:  What is the minimum time interval granularity for the data that Amazon CloudWatch receives and aggregates?</h1><p>A: インスタンスの休止は、ストレージ向けの標準 EBS 料金で課金されます。停止したインスタンスと同様に、インスタンスが休止状態の間インスタンス使用料は発生しません。</p><h1>Q:  Which operating systems does Amazon CloudWatch support?</h1><p>A: いいえ。既存のインスタンス (実行中または停止状態) ではハイバネーションを有効にすることはできません。インスタンスの起動時に有効にする必要があります。</p><h1>Q:  Will I lose the metrics data if I disable monitoring for an Amazon EC2 instance?</h1><p>A: 状態の理由を調べることで、インスタンスが休止状態になっていることがわかります。「Client.UserInitiatedHibernate」になっていると考えられます。これは、コンソールの [インスタンス - 詳細] ビューまたは DescribeInstances API レスポンスの [理由] フィールドに表示されます。</p><h1>Q:  Can I access the metrics data for a terminated Amazon EC2 instance or a deleted Elastic Load Balancer?</h1><p>A: 休止しているインスタンスの状態は「停止」です。</p></div>
-    <script>
-      const pusher = new Pusher('6c21c920bc0da4970638', {
-        cluster: 'ap1',
-        forceTLS: true
-      });
-      function makeRequest() {
-          const { value = ''} = document.getElementById('english');
-          let arrSplitQ = [], questions = [], answers=[]; 
-          if (value !== '') {
-              arrSplitQ = value.split("Q:");
-              if (arrSplitQ.length > 0) {
-                  arrSplitQ.forEach(item => {
-                      let arrSplitQuestionCharactor = item.split("?</b>");
-                      if (arrSplitQuestionCharactor.length === 2 ) {
-                          try {
-                              
-                              if (arrSplitQuestionCharactor[1].split("<p>").length === 3 && questions.length < 100) {
-                                  questions.push(arrSplitQuestionCharactor[0] + "?");
-                                  // answers.push(arrSplitQuestionCharactor[1].split("<p>")[1].split("</p>")[0]);
-                              }
-                          } catch (err) {
-                              console.log(err);
-                          }
-                      }
-                  })
-              }
-          }
-          const { value : value2 = ''} = document.getElementById('japanese');
-          if (value2 !== '') {
-              arrSplitQ = [];
-              arrSplitQ = value2.split("Q:");
-              if (arrSplitQ.length > 0) {
-                  arrSplitQ.forEach(item => {
-                      let arrSplitQuestionCharactor = item.split("?</b>");
-                      if (arrSplitQuestionCharactor.length === 2 ) {
-                          try {
-                              
-                              if (arrSplitQuestionCharactor[1].split("<p>").length === 3 && answers.length < 100) {
-                                  answers.push(arrSplitQuestionCharactor[1].split("<p>")[1].split("</p>")[0]);
-                              }
-                          } catch (err) {
-                              console.log(err);
-                          }
-                      }
-                  })
-              }
-          }
-          const qna = document.getElementById("qna");
-          if (questions.length == answers.length) {
-              for (let i = 0; i < questions.length; i++) {
-                  let q = document.createElement("h1");
-                  let a = document.createElement("p");
-                  q.innerText = `Q: ${questions[i]}`;
-                  a.innerText = `A: ${answers[i]}`;
-                  qna.appendChild(q);
-                  qna.appendChild(a);
-              }
-          }
-          
-      }
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Glory Nguyen - Front-End Technical Lead">
+    <meta property="og:description" content="Front-End Technical Lead with 10+ years of experience building high-performance web applications with React, Next.js, Angular, and React Native.">
+    <meta property="og:url" content="https://glorynguyen.github.io">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Glory Nguyen - Front-End Technical Lead">
+    <meta name="twitter:description" content="Front-End Technical Lead with 10+ years of experience building high-performance web applications.">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://glorynguyen.github.io">
+
+    <title>Glory Nguyen - Front-End Technical Lead | React, Next.js, Angular Expert</title>
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-dark: #1d4ed8;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f9fafb;
+            --color-border: #e5e7eb;
+            --color-accent: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --max-width: 1100px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            text-decoration: none;
+            border-radius: 0 0 var(--radius) 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: 80px 0 60px;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .header-content h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-content .role {
+            font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .header-content .summary {
+            font-size: 1.05rem;
+            opacity: 0.9;
+            max-width: 700px;
+            line-height: 1.7;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            background-color: var(--color-bg-alt);
+            color: var(--color-primary);
+        }
+
+        nav a:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Main content */
+        main {
+            padding: 60px 0;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        section:last-child {
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--color-text);
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 2px;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .skill-category {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+        }
+
+        .skill-category h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--color-primary);
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            background: var(--color-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--color-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timeline-item.current::before {
+            background: var(--color-accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+
+        .timeline-date {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-company {
+            font-size: 1rem;
+            color: var(--color-text-light);
+            margin-bottom: 12px;
+        }
+
+        .timeline-description {
+            color: var(--color-text);
+            line-height: 1.7;
+        }
+
+        .timeline-description ul {
+            margin-top: 12px;
+            padding-left: 20px;
+        }
+
+        .timeline-description li {
+            margin-bottom: 8px;
+        }
+
+        .timeline-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .timeline-tech span {
+            background: var(--color-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Highlights Section */
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .highlight-card {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .highlight-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .highlight-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .highlight-card p {
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
+        .about-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--color-text);
+        }
+
+        .about-text p {
+            margin-bottom: 16px;
+        }
+
+        .about-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Contact Section */
+        .contact-content {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: 48px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .contact-content h2 {
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .contact-content h2::after {
+            background: white;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .contact-content p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 24px;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--color-primary);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contact-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .contact-link:focus {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            padding: 32px 0;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 60px 0 40px;
+            }
+
+            main {
+                padding: 40px 0;
+            }
+
+            section {
+                margin-bottom: 48px;
+            }
+
+            .contact-content {
+                padding: 32px 24px;
+            }
+
+            .timeline {
+                padding-left: 24px;
+            }
+
+            .timeline-item::before {
+                left: -24px;
+                width: 12px;
+                height: 12px;
+            }
+
+            .timeline::before {
+                left: 5px;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .timeline-item.current::before {
+                animation: none;
+            }
+
+            .skill-tag:hover,
+            .highlight-card:hover,
+            .contact-link:hover {
+                transform: none;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav, .skip-link {
+                display: none;
+            }
+
+            header {
+                background: none;
+                color: var(--color-text);
+                padding: 20px 0;
+            }
+
+            .contact-content {
+                background: none;
+                color: var(--color-text);
+                border: 1px solid var(--color-border);
+            }
+
+            .contact-content h2 {
+                color: var(--color-text);
+            }
+        }
+    </style>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Glory Nguyen",
+        "jobTitle": "Front-End Technical Lead",
+        "description": "Front-End Technical Lead with over 10 years of experience designing and building high-performance web applications",
+        "url": "https://glorynguyen.github.io",
+        "knowsAbout": ["React", "Next.js", "Angular", "React Native", "TypeScript", "JavaScript", "Web Performance", "SEO", "Accessibility"],
+        "worksFor": {
+            "@type": "Organization",
+            "name": "Huge"
+        }
+    }
     </script>
-  
-  </body></html>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="container">
+            <div class="header-content">
+                <h1>Glory Nguyen</h1>
+                <p class="role">Front-End Technical Lead</p>
+                <p class="summary">
+                    Building high-performance web applications with 10+ years of expertise in React, Next.js, Angular, and React Native.
+                    Passionate about clean architecture, smooth user experiences, and continuous learning.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <ul>
+                <li><a href="#highlights">Highlights</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main">
+        <div class="container">
+
+            <!-- Highlights Section -->
+            <section id="highlights" aria-labelledby="highlights-title">
+                <h2 id="highlights-title">Career Highlights</h2>
+                <div class="highlights-grid">
+                    <div class="highlight-card">
+                        <h3>10+</h3>
+                        <p>Years of front-end development experience</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h3>Global</h3>
+                        <p>Scale projects at PepsiCo Global Platform</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h3>Next.js 15</h3>
+                        <p>Led migration to latest frameworks</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h3>WCAG</h3>
+                        <p>Accessibility compliance enforcement</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" aria-labelledby="skills-title">
+                <h2 id="skills-title">Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>Frontend Frameworks</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">Next.js</span>
+                            <span class="skill-tag">Angular</span>
+                            <span class="skill-tag">React Native</span>
+                            <span class="skill-tag">Vue.js</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Languages</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">TypeScript</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">HTML5</span>
+                            <span class="skill-tag">CSS3</span>
+                            <span class="skill-tag">GraphQL</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Performance & SEO</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Core Web Vitals</span>
+                            <span class="skill-tag">ISR</span>
+                            <span class="skill-tag">SSG</span>
+                            <span class="skill-tag">SSR</span>
+                            <span class="skill-tag">Image Optimization</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>CMS & Enterprise</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Sitecore XP</span>
+                            <span class="skill-tag">Sitecore JSS</span>
+                            <span class="skill-tag">Headless CMS</span>
+                            <span class="skill-tag">Bynder DAM</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Search & Integration</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">OpenSearch</span>
+                            <span class="skill-tag">Elasticsearch</span>
+                            <span class="skill-tag">REST APIs</span>
+                            <span class="skill-tag">Brightcove</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>DevOps & Tools</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">CI/CD</span>
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">Azure</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">Testing</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>AI & Machine Learning</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Azure QnA</span>
+                            <span class="skill-tag">TensorFlow</span>
+                            <span class="skill-tag">AI Integration</span>
+                            <span class="skill-tag">Chatbots</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Leadership</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Technical Architecture</span>
+                            <span class="skill-tag">Team Mentoring</span>
+                            <span class="skill-tag">Sprint Planning</span>
+                            <span class="skill-tag">Code Reviews</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experience Timeline -->
+            <section id="experience" aria-labelledby="experience-title">
+                <h2 id="experience-title">Professional Experience</h2>
+                <div class="timeline" role="list">
+
+                    <article class="timeline-item current" role="listitem">
+                        <p class="timeline-date">August 2025 - Present</p>
+                        <h3 class="timeline-title">Frontend Technical Lead</h3>
+                        <p class="timeline-company">Huge - PepsiCo Global Platform</p>
+                        <div class="timeline-description">
+                            <p>Leading the technical frontend architecture for a global redesign website project using a headless Next.js and Sitecore JSS framework.</p>
+                            <ul>
+                                <li>Architected and developed core front-end systems including Global Search (OpenSearch) and build-time redirect framework for scalability across markets</li>
+                                <li>Orchestrated complex data fetching using GraphQL and Sitecore Layout Services for high-performance, dynamic content delivery</li>
+                                <li>Optimized web performance and SEO through ISR (Incremental Static Regeneration) and SSG strategies for global scalability</li>
+                                <li>Integrated enterprise-grade third-party services: Bynder (DAM), OpenSearch, and Brightcove into a unified component-based UI</li>
+                                <li>Led migration to Next.js v15 and React v19, implementing Core Web Vitals optimization strategies</li>
+                                <li>Established engineering standards for TypeScript, component modularity, and CI/CD workflows across Dev, Staging, and Production environments</li>
+                                <li>Enforced WCAG accessibility standards and implemented automated quality gates with PR templates</li>
+                            </ul>
+                        </div>
+                        <div class="timeline-tech">
+                            <span>Next.js 15</span>
+                            <span>React 19</span>
+                            <span>Sitecore JSS</span>
+                            <span>GraphQL</span>
+                            <span>TypeScript</span>
+                            <span>OpenSearch</span>
+                        </div>
+                    </article>
+
+                    <article class="timeline-item" role="listitem">
+                        <p class="timeline-date">Previous Role</p>
+                        <h3 class="timeline-title">Front-End Team Lead</h3>
+                        <p class="timeline-company">Astek Vietnam</p>
+                        <div class="timeline-description">
+                            <p>Led front-end development teams, driving technical excellence and establishing best practices for web application development.</p>
+                            <ul>
+                                <li>Managed and mentored development teams on modern front-end technologies</li>
+                                <li>Implemented technical proposals and architectural decisions</li>
+                                <li>Fostered a culture of continuous improvement and engineering excellence</li>
+                            </ul>
+                        </div>
+                        <div class="timeline-tech">
+                            <span>React</span>
+                            <span>Angular</span>
+                            <span>TypeScript</span>
+                            <span>Team Leadership</span>
+                        </div>
+                    </article>
+
+                    <article class="timeline-item" role="listitem">
+                        <p class="timeline-date">Previous Role</p>
+                        <h3 class="timeline-title">Front-End Team Lead</h3>
+                        <p class="timeline-company">Syntrino Solutions</p>
+                        <div class="timeline-description">
+                            <p>Led front-end development initiatives, building scalable and performant web applications.</p>
+                            <ul>
+                                <li>Directed technical strategy and front-end architecture</li>
+                                <li>Collaborated with cross-functional teams to deliver high-quality products</li>
+                                <li>Established coding standards and review processes</li>
+                            </ul>
+                        </div>
+                        <div class="timeline-tech">
+                            <span>JavaScript</span>
+                            <span>React</span>
+                            <span>CSS3</span>
+                            <span>Agile</span>
+                        </div>
+                    </article>
+
+                    <article class="timeline-item" role="listitem">
+                        <p class="timeline-date">Previous Role</p>
+                        <h3 class="timeline-title">R&D Engineer</h3>
+                        <p class="timeline-company">PERSOL Process & Technology Vietnam</p>
+                        <div class="timeline-description">
+                            <p>Contributed to R&D initiatives focused on intelligent chatbot development and AI-driven solutions.</p>
+                            <ul>
+                                <li>Developed intelligent chatbots using Azure QnA and TensorFlow</li>
+                                <li>Researched and implemented AI/ML solutions for enterprise applications</li>
+                                <li>Explored innovative approaches to enhance developer productivity</li>
+                            </ul>
+                        </div>
+                        <div class="timeline-tech">
+                            <span>Azure QnA</span>
+                            <span>TensorFlow</span>
+                            <span>Python</span>
+                            <span>AI/ML</span>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" aria-labelledby="about-title">
+                <h2 id="about-title">About Me</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>
+                            I'm a Front-End Technical Lead with a deep passion for building high-performance web applications
+                            that deliver exceptional user experiences. With a strong foundation in computer science, algorithms,
+                            and performance optimization, I specialize in creating scalable, accessible, and SEO-friendly web solutions.
+                        </p>
+                        <p>
+                            Beyond coding, I'm passionate about team enablement and technical leadership. I believe in mentoring engineers,
+                            driving technical proposals, leading sprint planning, and fostering a culture of continuous improvement
+                            and engineering excellence.
+                        </p>
+                        <p>
+                            Recently, I've been exploring how AI can enhance software development, from improving developer productivity
+                            to creating smarter, more adaptive web experiences. I'm always open to new challenges, collaborations,
+                            and conversations around front-end innovation and AI-driven development.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" aria-labelledby="contact-title">
+                <div class="contact-content">
+                    <h2 id="contact-title">Let's Connect</h2>
+                    <p>Always open to new challenges, collaborations, and conversations around front-end innovation.</p>
+                    <div class="contact-links">
+                        <a href="https://linkedin.com/in/glorynguyen" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Connect on LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a href="https://github.com/glorynguyen" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="View GitHub profile">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <p>&copy; 2025 Glory Nguyen. Built with clean HTML, CSS, and a passion for web performance.</p>
+        </div>
+    </footer>
+</body>
+</html>
