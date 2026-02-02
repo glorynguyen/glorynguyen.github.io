@@ -18,7 +18,7 @@
 glorynguyen.github.io/
 ├── index.html              # Main portfolio page (~1100 lines)
 ├── assets/
-│   └── profile.jpg         # Profile image
+│   └── profile.webp         # Profile image
 ├── blog/
 │   ├── index.html          # Blog listing page
 │   ├── css/blog.css        # Blog styles

@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ollama Code Review - AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, and Mistral.">
+    <meta name="keywords" content="VS Code Extension, Code Review, AI, Ollama, Claude, Gemini, Mistral, Git, Commit Messages, Code Quality, Developer Tools">
+    <meta name="author" content="Vinh Nguyen (Vincent)">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ollama Code Review - AI Code Reviews for VS Code">
+    <meta property="og:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, and more.">
+    <meta property="og:url" content="https://glorynguyen.github.io/ollama-code-review.html">
+    <meta property="og:image" content="https://glorynguyen.github.io/assets/ollama-code-review-og.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ollama Code Review - AI Code Reviews for VS Code">
+    <meta name="twitter:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, and more.">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://glorynguyen.github.io/ollama-code-review.html">
+
+    <title>Ollama Code Review - AI-Powered Code Reviews for VS Code</title>
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #007ACC;
+            --color-primary-dark: #005a9e;
+            --color-secondary: #10b981;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f9fafb;
+            --color-bg-dark: #1e1e1e;
+            --color-border: #e5e7eb;
+            --color-accent: #f59e0b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --max-width: 1200px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            text-decoration: none;
+            border-radius: 0 0 var(--radius) 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-brand svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus {
+            background-color: var(--color-bg-alt);
+            color: var(--color-primary);
+        }
+
+        .nav-links a:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        .nav-links .nav-cta {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .nav-links .nav-cta:hover,
+        .nav-links .nav-cta:focus {
+            background: var(--color-primary-dark);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 50%, #1e1e1e 100%);
+            color: white;
+            padding: 80px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(0, 122, 204, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 122, 204, 0.2);
+            border: 1px solid rgba(0, 122, 204, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            width: fit-content;
+            color: #60a5fa;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 16px;
+        }
+
+        .hero-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .hero-visual {
+            position: relative;
+        }
+
+        .hero-code-window {
+            background: #1e1e1e;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid #3c3c3c;
+            overflow: hidden;
+        }
+
+        .code-window-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #2d2d2d;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .code-window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-window-dot.red { background: #ff5f56; }
+        .code-window-dot.yellow { background: #ffbd2e; }
+        .code-window-dot.green { background: #27ca40; }
+
+        .code-window-title {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            color: #858585;
+        }
+
+        .code-window-content {
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .code-comment { color: #6a9955; }
+        .code-keyword { color: #569cd6; }
+        .code-string { color: #ce9178; }
+        .code-function { color: #dcdcaa; }
+        .code-variable { color: #9cdcfe; }
+        .code-ai-response {
+            background: rgba(0, 122, 204, 0.1);
+            border-left: 3px solid var(--color-primary);
+            padding: 12px;
+            margin-top: 16px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .code-ai-response .ai-label {
+            color: var(--color-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Providers Section */
+        .providers {
+            padding: 60px 0;
+            background: var(--color-bg-alt);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .providers-title {
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-text-light);
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .providers-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .provider-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-text-light);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+
+        .provider-item:hover {
+            color: var(--color-text);
+        }
+
+        .provider-item svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--color-text);
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--color-text-light);
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: var(--color-bg);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+            border-color: var(--color-primary);
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon svg {
+            width: 26px;
+            height: 26px;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .feature-card p {
+            color: var(--color-text-light);
+            line-height: 1.7;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--color-bg-alt);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .step-card p {
+            color: var(--color-text-light);
+            line-height: 1.7;
+        }
+
+        /* Code Actions Section */
+        .code-actions {
+            padding: 100px 0;
+        }
+
+        .code-actions-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .action-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--color-bg-alt);
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+            transition: all 0.2s;
+        }
+
+        .action-item:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-item svg {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            color: var(--color-primary);
+        }
+
+        .action-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--color-text);
+        }
+
+        .action-item p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        /* Installation Section */
+        .installation {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: white;
+        }
+
+        .installation .section-header h2 {
+            color: white;
+        }
+
+        .installation .section-header p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .install-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .install-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .install-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .install-card h3 svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-primary);
+        }
+
+        .install-card p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .install-code {
+            background: #0d0d0d;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+            overflow-x: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .install-code code {
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: white;
+        }
+
+        /* Testimonials / Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: var(--color-bg-alt);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            color: var(--color-text-light);
+            font-size: 1rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--color-text);
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            color: var(--color-text-light);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e1e1e;
+            color: white;
+            padding: 60px 0 32px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-bottom p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-social a {
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.2s;
+        }
+
+        .footer-social a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text {
+                align-items: center;
+            }
+
+            .hero-badge {
+                margin: 0 auto;
+            }
+
+            .hero-description {
+                margin: 0 auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .code-actions-content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 60px 0 80px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .features, .how-it-works, .code-actions, .installation, .cta {
+                padding: 60px 0;
+            }
+
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .feature-card:hover,
+            .btn-primary:hover {
+                transform: none;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav, .hero::before, .cta {
+                display: none;
+            }
+        }
+    </style>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Ollama Code Review",
+        "description": "AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, and Mistral.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Vinh Nguyen (Vincent)",
+            "url": "https://glorynguyen.github.io"
+        },
+        "softwareVersion": "1.19.0",
+        "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review"
+    }
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="nav-brand" aria-label="Ollama Code Review Home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    Ollama Code Review
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#installation">Install</a></li>
+                    <li><a href="https://github.com/glorynguyen/ollama-code-review" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review" class="nav-cta" target="_blank" rel="noopener noreferrer">Install Extension</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <div class="hero-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                            VS Code Extension
+                        </div>
+                        <h1 id="hero-title">
+                            AI-Powered <span>Code Reviews</span> in Your Editor
+                        </h1>
+                        <p class="hero-description">
+                            Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code.
+                            Use local Ollama models or connect to Claude, Gemini, Mistral, and more.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Install Free
+                            </a>
+                            <a href="https://github.com/glorynguyen/ollama-code-review" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                View on GitHub
+                            </a>
+                        </div>
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <span class="hero-stat-value">v1.19</span>
+                                <span class="hero-stat-label">Latest Version</span>
+                            </div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-value">6+</span>
+                                <span class="hero-stat-label">AI Providers</span>
+                            </div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-value">MIT</span>
+                                <span class="hero-stat-label">Open Source</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="hero-code-window">
+                            <div class="code-window-header">
+                                <span class="code-window-dot red"></span>
+                                <span class="code-window-dot yellow"></span>
+                                <span class="code-window-dot green"></span>
+                                <span class="code-window-title">review-output.md</span>
+                            </div>
+                            <div class="code-window-content">
+                                <div class="code-comment">// Staged changes reviewed</div>
+                                <div style="margin-top: 8px;">
+                                    <span class="code-keyword">function</span> <span class="code-function">processPayment</span>(<span class="code-variable">amount</span>) {
+                                </div>
+                                <div style="padding-left: 16px;">
+                                    <span class="code-keyword">return</span> <span class="code-variable">amount</span> * <span class="code-string">1.1</span>;
+                                </div>
+                                <div>}</div>
+                                <div class="code-ai-response">
+                                    <div class="ai-label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                        </svg>
+                                        AI Review
+                                    </div>
+                                    <div><span class="code-keyword">Bug:</span> Magic number 1.1 should be a named constant (TAX_RATE)</div>
+                                    <div style="margin-top: 4px;"><span class="code-keyword">Security:</span> Validate amount parameter to prevent negative values</div>
+                                    <div style="margin-top: 4px;"><span class="code-keyword">Suggestion:</span> Add JSDoc documentation for clarity</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Providers Section -->
+        <section class="providers" aria-label="Supported AI Providers">
+            <div class="container">
+                <p class="providers-title">Works with your favorite AI providers</p>
+                <div class="providers-grid">
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        Ollama (Local)
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                        </svg>
+                        Claude (Anthropic)
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 19h20L12 2z"/>
+                        </svg>
+                        Gemini (Google)
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        </svg>
+                        Mistral AI
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                        </svg>
+                        Hugging Face
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
+                        </svg>
+                        GLM (Z.AI)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features" aria-labelledby="features-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="features-title">Powerful Features for Modern Development</h2>
+                    <p>Everything you need to improve code quality, catch bugs early, and maintain consistent commit messages across your team.</p>
+                </div>
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Review Staged Changes</h3>
+                        <p>Analyze all your staged Git modifications with comprehensive AI-powered feedback. Detect bugs, security issues, and optimization opportunities before you commit.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <line x1="1.05" y1="12" x2="7" y2="12"></line>
+                                <line x1="17.01" y1="12" x2="22.96" y2="12"></line>
+                            </svg>
+                        </div>
+                        <h3>Smart Commit Messages</h3>
+                        <p>Auto-generate conventional commit messages based on your actual code changes. Maintain consistent, descriptive commits across your entire team.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </div>
+                        <h3>Inline Code Actions</h3>
+                        <p>Use the lightbulb menu to explain code, generate tests, fix issues, add documentation, and get refactoring suggestions—all without leaving your editor.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <h3>Agent Skills System</h3>
+                        <p>Download specialized review profiles from GitHub repositories for targeted feedback—security audits, performance optimization, accessibility checks, and more.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <h3>Performance Metrics</h3>
+                        <p>Track token usage, generation latency, and inference costs. Monitor AI performance and optimize your workflow with detailed analytics.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Multi-Provider Support</h3>
+                        <p>Switch between local Ollama and cloud providers instantly. Use the status bar to change models on the fly without configuration hassle.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                        </div>
+                        <h3>Cross-Branch Analysis</h3>
+                        <p>Compare and review differences between any two branches or Git references. Perfect for pull request preparation and code comparison.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Smart Diff Filtering</h3>
+                        <p>Automatically excludes node_modules, lock files, and minified code. Detects formatting-only changes to reduce noise and focus on real modifications.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="how-it-works" aria-labelledby="how-it-works-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="how-it-works-title">How It Works</h2>
+                    <p>Get started in minutes with a simple setup process. No complex configuration required.</p>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Install the Extension</h3>
+                        <p>Search for "Ollama Code Review" in VS Code Marketplace or install directly from the command line.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Configure Your Provider</h3>
+                        <p>Set up Ollama locally or add API keys for cloud providers like Claude, Gemini, or Mistral in VS Code settings.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Stage Your Changes</h3>
+                        <p>Use Git as normal. Stage your code changes and the extension integrates seamlessly with your workflow.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Review & Commit</h3>
+                        <p>Run the review command, get AI feedback, generate commit messages, and ship better code faster.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Actions Section -->
+        <section class="code-actions" aria-labelledby="code-actions-title">
+            <div class="container">
+                <div class="code-actions-content">
+                    <div>
+                        <h2 id="code-actions-title" style="font-size: 2.25rem; font-weight: 700; margin-bottom: 16px;">Inline AI Actions at Your Fingertips</h2>
+                        <p style="font-size: 1.1rem; color: var(--color-text-light); line-height: 1.7; margin-bottom: 32px;">
+                            Right-click any code selection or use the lightbulb menu to access powerful AI-driven code actions.
+                            Get instant help without breaking your flow.
+                        </p>
+                        <div class="actions-list">
+                            <div class="action-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <div>
+                                    <h4>Explain Code</h4>
+                                    <p>Get clear explanations of complex logic and algorithms</p>
+                                </div>
+                            </div>
+                            <div class="action-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                                </svg>
+                                <div>
+                                    <h4>Fix Issues</h4>
+                                    <p>Automatically fix bugs and apply suggested improvements</p>
+                                </div>
+                            </div>
+                            <div class="action-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 11 12 14 22 4"></polyline>
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                </svg>
+                                <div>
+                                    <h4>Generate Tests</h4>
+                                    <p>Create unit tests for your functions and methods</p>
+                                </div>
+                            </div>
+                            <div class="action-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                                <div>
+                                    <h4>Add Documentation</h4>
+                                    <p>Generate JSDoc, docstrings, and inline comments</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-code-window">
+                        <div class="code-window-header">
+                            <span class="code-window-dot red"></span>
+                            <span class="code-window-dot yellow"></span>
+                            <span class="code-window-dot green"></span>
+                            <span class="code-window-title">example.ts</span>
+                        </div>
+                        <div class="code-window-content">
+                            <div><span class="code-comment">// Select code and use lightbulb menu</span></div>
+                            <div style="margin-top: 12px;">
+                                <span class="code-keyword">async function</span> <span class="code-function">fetchUserData</span>(<span class="code-variable">id</span>: <span class="code-keyword">string</span>) {
+                            </div>
+                            <div style="padding-left: 16px;">
+                                <span class="code-keyword">const</span> <span class="code-variable">response</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-string">`/api/users/${id}`</span>);
+                            </div>
+                            <div style="padding-left: 16px;">
+                                <span class="code-keyword">return</span> <span class="code-variable">response</span>.<span class="code-function">json</span>();
+                            </div>
+                            <div>}</div>
+                            <div class="code-ai-response" style="margin-top: 20px;">
+                                <div class="ai-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                    </svg>
+                                    Generated Test
+                                </div>
+                                <div><span class="code-keyword">describe</span>(<span class="code-string">'fetchUserData'</span>, () => {</div>
+                                <div style="padding-left: 12px;"><span class="code-keyword">it</span>(<span class="code-string">'returns user data'</span>, <span class="code-keyword">async</span> () => {</div>
+                                <div style="padding-left: 24px;"><span class="code-keyword">const</span> <span class="code-variable">data</span> = <span class="code-keyword">await</span> <span class="code-function">fetchUserData</span>(<span class="code-string">'123'</span>);</div>
+                                <div style="padding-left: 24px;"><span class="code-function">expect</span>(<span class="code-variable">data</span>).<span class="code-function">toBeDefined</span>();</div>
+                                <div style="padding-left: 12px;">});</div>
+                                <div>});</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="installation" aria-labelledby="installation-title">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="installation-title">Quick Installation</h2>
+                    <p>Choose your preferred installation method and start reviewing code in minutes.</p>
+                </div>
+                <div class="install-methods">
+                    <div class="install-card">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                            VS Code Marketplace
+                        </h3>
+                        <p>Open VS Code, go to Extensions (Ctrl+Shift+X), and search for "Ollama Code Review". Click Install.</p>
+                        <a href="https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review" class="btn btn-primary" target="_blank" rel="noopener noreferrer" style="width: 100%; justify-content: center; margin-top: 8px;">
+                            Open in Marketplace
+                        </a>
+                    </div>
+                    <div class="install-card">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="4 17 10 11 4 5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                            Command Line
+                        </h3>
+                        <p>Use the VS Code CLI to install the extension directly from your terminal.</p>
+                        <div class="install-code">
+                            <code>code --install-extension VinhNguyen-Vincent.ollama-code-review</code>
+                            <button class="copy-btn" onclick="navigator.clipboard.writeText('code --install-extension VinhNguyen-Vincent.ollama-code-review')" aria-label="Copy command">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="install-card">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            Ollama Setup (Local)
+                        </h3>
+                        <p>For local AI, install Ollama from ollama.com and pull a coding model.</p>
+                        <div class="install-code">
+                            <code>ollama pull deepseek-coder:6.7b</code>
+                            <button class="copy-btn" onclick="navigator.clipboard.writeText('ollama pull deepseek-coder:6.7b')" aria-label="Copy command">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section" aria-label="Extension Statistics">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>6+</h3>
+                        <p>AI Providers Supported</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>19+</h3>
+                        <p>Feature Releases</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100%</h3>
+                        <p>Open Source</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>MIT</h3>
+                        <p>Licensed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta" aria-labelledby="cta-title">
+            <div class="container">
+                <h2 id="cta-title">Ready to Ship Better Code?</h2>
+                <p>Join developers who are catching bugs earlier, writing better commit messages, and shipping with confidence.</p>
+                <div class="cta-buttons">
+                    <a href="https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Install Free Extension
+                    </a>
+                    <a href="https://github.com/glorynguyen/ollama-code-review" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Star on GitHub
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Ollama Code Review</h3>
+                    <p>AI-powered code reviews and commit message generation for VS Code. Built with love for the developer community.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="https://github.com/glorynguyen/ollama-code-review/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Changelog</a></li>
+                        <li><a href="https://github.com/glorynguyen/ollama-code-review/blob/main/docs/roadmap/README.md" target="_blank" rel="noopener noreferrer">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/glorynguyen/ollama-code-review" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+                        <li><a href="https://github.com/glorynguyen/ollama-code-review/issues" target="_blank" rel="noopener noreferrer">Report Issues</a></li>
+                        <li><a href="https://github.com/glorynguyen/ollama-code-review/blob/main/LICENSE.md" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Author</h4>
+                    <ul>
+                        <li><a href="https://glorynguyen.github.io">Portfolio</a></li>
+                        <li><a href="https://glorynguyen.github.io/blog/">Blog</a></li>
+                        <li><a href="https://www.linkedin.com/in/vinh-nguyen-479781130" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                        <li><a href="https://github.com/glorynguyen" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vinh Nguyen (Vincent). All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/glorynguyen" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/vinh-nguyen-479781130" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

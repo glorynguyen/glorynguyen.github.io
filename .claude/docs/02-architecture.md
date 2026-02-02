@@ -28,7 +28,7 @@ glorynguyen.github.io/
 │   └── HTML content              # All sections
 │
 ├── assets/
-│   └── profile.jpg               # Profile image (198KB)
+│   └── profile.webp               # Profile image (82KB)
 │
 ├── blog/
 │   ├── index.html                # Blog listing page
@@ -83,7 +83,7 @@ glorynguyen.github.io/
    │   └── Inline <style> applied immediately
    └── <body> rendered progressively
 3. Google Fonts loaded (async, swap)
-4. Images loaded (profile.jpg)
+4. Images loaded (profile.webp)
 5. Page interactive (no JS blocking)
 ```
 
