@@ -131,7 +131,7 @@
   <meta property="og:title" content="Post Title">
   <meta property="og:description" content="Post description...">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://glorynguyen.github.io/blog/posts/...">
+  <meta property="og:url" content="https://vinhnguyenba.dev/blog/posts/...">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">

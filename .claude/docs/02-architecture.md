@@ -22,7 +22,7 @@
 ## File Structure
 
 ```
-glorynguyen.github.io/
+vinhnguyenba.dev/
 ├── index.html                    # Main portfolio (single-page)
 │   ├── <style> block             # All CSS (~800 lines)
 │   └── HTML content              # All sections
@@ -126,7 +126,7 @@ blog/
   "@type": "Person",
   "name": "Vinh Nguyen",
   "jobTitle": "Front-End Technical Lead",
-  "url": "https://glorynguyen.github.io",
+  "url": "https://vinhnguyenba.dev",
   "sameAs": ["linkedin-url", "github-url"],
   "knowsAbout": ["React", "Next.js", "Angular", ...]
 }
@@ -192,5 +192,5 @@ Review & Merge to main
 GitHub Pages Auto-Deploy
        │
        ▼
-Live at glorynguyen.github.io
+Live at vinhnguyenba.dev
 ```

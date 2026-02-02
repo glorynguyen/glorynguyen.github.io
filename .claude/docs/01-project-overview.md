@@ -17,7 +17,7 @@ This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-
 
 ### Professional Links
 
-- **Website**: https://glorynguyen.github.io
+- **Website**: https://vinhnguyenba.dev
 - **LinkedIn**: https://www.linkedin.com/in/vinh-nguyen-479781130
 - **GitHub**: https://github.com/glorynguyen
 

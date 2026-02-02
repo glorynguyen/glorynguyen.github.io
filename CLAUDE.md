@@ -6,16 +6,16 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Project** | glorynguyen.github.io |
+| **Project** | vinhnguyenba.dev |
 | **Type** | Static Portfolio Website (GitHub Pages) |
 | **Owner** | Vinh Nguyen (Vincent) - Front-End Technical Lead |
 | **Stack** | HTML5, CSS3, Vanilla JavaScript |
-| **URL** | https://glorynguyen.github.io |
+| **URL** | https://vinhnguyenba.dev |
 
 ## Project Structure
 
 ```
-glorynguyen.github.io/
+vinhnguyenba.dev/
 ├── index.html              # Main portfolio page (~1100 lines)
 ├── assets/
 │   └── profile.webp         # Profile image
