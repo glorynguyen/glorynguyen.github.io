@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP: Bridging AI and Real-World Data | Blog | Vinh Nguyen (Vincent)</title>
+    <meta name="description" content="Model Context Protocol (MCP) enables AI to connect directly with external data sources. Explore my experiments with GitSage and Confluence MCP servers.">
+    <meta name="keywords" content="MCP, Model Context Protocol, AI Agent, GitSage, Confluence, AI integration, Anthropic, Claude">
+    <meta name="author" content="Vinh Nguyen (Vincent)">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="MCP: Bridging AI and Real-World Data">
+    <meta property="og:description" content="Model Context Protocol (MCP) enables AI to connect directly with external data sources. Explore my experiments with GitSage and Confluence MCP servers.">
+    <meta property="og:url" content="https://vinhnguyenba.dev/blog/posts/mcp-ai-real-world-data.html">
+    <meta property="article:published_time" content="2026-02-04">
+    <meta property="article:author" content="Vinh Nguyen (Vincent)">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="MCP: Bridging AI and Real-World Data">
+    <meta name="twitter:description" content="Model Context Protocol (MCP) enables AI to connect directly with external data sources. Explore my experiments with GitSage and Confluence MCP servers.">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vinhnguyenba.dev/blog/posts/mcp-ai-real-world-data.html">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/blog.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "MCP: Bridging AI and Real-World Data",
+        "datePublished": "2026-02-04",
+        "author": {
+            "@type": "Person",
+            "name": "Vinh Nguyen (Vincent)",
+            "url": "https://vinhnguyenba.dev"
+        },
+        "publisher": {
+            "@type": "Person",
+            "name": "Vinh Nguyen (Vincent)"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://vinhnguyenba.dev/blog/posts/mcp-ai-real-world-data.html"
+        }
+    }
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="blog-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="../../" class="logo" aria-label="Back to portfolio">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Vincent</span>
+                </a>
+                <a href="../" class="blog-title-link">Blog</a>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="lang-switcher" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang-switch="en" aria-pressed="true">EN</button>
+                <button type="button" class="lang-btn" data-lang-switch="vi" aria-pressed="false">VI</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="blog-main">
+        <!-- Back Link -->
+        <a href="../" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span data-lang="en">Back to all posts</span>
+            <span data-lang="vi" hidden>Quay lại danh sách bài viết</span>
+        </a>
+
+        <article>
+            <!-- Post Header -->
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-date">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span data-lang="en">February 4, 2026</span>
+                        <span data-lang="vi" hidden>04/02/2026</span>
+                    </span>
+                    <span class="post-tag" data-lang="en">AI & Integration</span>
+                    <span class="post-tag" data-lang="vi" hidden>AI & Tích hợp</span>
+                </div>
+
+                <h1 class="post-title" data-lang="en">MCP: Bridging AI and Real-World Data</h1>
+                <h1 class="post-title" data-lang="vi" hidden>MCP: Cầu nối giữa AI và dữ liệu thực tế</h1>
+            </header>
+
+            <!-- Post Content - English -->
+            <div class="post-content" data-lang="en">
+                <p>
+                    Recently, there has been significant discussion around AI Agents—autonomous bots capable of working independently. However, I have observed a fundamental limitation: AI typically operates within a "black box," struggling to directly access data on local machines or internal systems unless we manually feed it piece by piece.
+                </p>
+
+                <p>
+                    This is why Anthropic's introduction of MCP (Model Context Protocol) caught my attention as a promising direction.
+                </p>
+
+                <h2>What is MCP?</h2>
+
+                <p>
+                    Think of MCP as a standardized protocol enabling AI to connect with external data sources. Previously, if you wanted AI to read from Slack, GitHub, or Google Drive, you had to write custom API integrations—a time-consuming process. With MCP, you simply implement a server following the standard protocol, and models like Claude or GPT can interact directly with your data sources. It's simpler and more secure.
+                </p>
+
+                <div class="highlight-box">
+                    <p>I believe this represents a significant step forward in transforming AI from an "advisor" into a genuine "collaborator"—one that can open files, query databases, or use tools directly.</p>
+                </div>
+
+                <h2>Two Practical Experiments</h2>
+
+                <p>
+                    I have implemented two simple MCP servers to address common challenges in my daily technical work:
+                </p>
+
+                <h3>GitSage MCP: Deeper Code Understanding for AI</h3>
+
+                <p>
+                    Rather than providing only the current codebase, this tool enables AI to examine commit history and understand relationships between different components. I incorporated data filtering to avoid overwhelming the model with unnecessary information. The result: AI can now review code and write commit messages that more accurately reflect the original intent.
+                </p>
+
+                <p>
+                    <strong>Learn more:</strong> <a href="https://vinhnguyenba.dev/gitsage.html" target="_blank" rel="noopener noreferrer">vinhnguyenba.dev/gitsage.html</a>
+                </p>
+
+                <h3>Confluence MCP: Partial Documentation Automation</h3>
+
+                <p>
+                    This tool allows AI to search existing documentation in Confluence to answer questions, or automatically document recent code changes. While not perfect, it significantly reduces manual documentation overhead.
+                </p>
+
+                <p>
+                    <strong>Learn more:</strong> <a href="https://vinhnguyenba.dev/confluence-mcp.html" target="_blank" rel="noopener noreferrer">vinhnguyenba.dev/confluence-mcp.html</a>
+                </p>
+
+                <h2>My Current Workflow</h2>
+
+                <p>
+                    I have integrated these three components into a simple iterative loop:
+                </p>
+
+                <ol>
+                    <li><strong>Claude</strong> writes the code.</li>
+                    <li><strong>GitSage</strong> assists with code review and commits with historical context.</li>
+                    <li><strong>Confluence MCP</strong> automatically updates documentation.</li>
+                </ol>
+
+                <p>
+                    This creates a feedback loop where AI doesn't just generate code—it participates in the entire development lifecycle with full context awareness.
+                </p>
+
+                <h2>The Developer's Evolving Role</h2>
+
+                <p>
+                    AI is advancing rapidly, but for it to be truly useful, we need to build appropriate connection mechanisms. With MCP, I see the developer's role expanding beyond just writing code to designing how AI participates in our workflows.
+                </p>
+
+                <blockquote>
+                    <p>The future belongs not to those who can write the most code, but to those who can orchestrate the best collaboration between human insight and AI capability.</p>
+                </blockquote>
+
+                <p>
+                    If you're also experimenting with MCP or have discovered effective ways to integrate AI into your workflow, I'd be interested to hear about your experiences.
+                </p>
+            </div>
+
+            <!-- Post Content - Vietnamese -->
+            <div class="post-content" data-lang="vi" hidden>
+                <p>
+                    Dạo này mọi người nói nhiều về AI Agent—những con bot có thể tự làm việc độc lập. Nhưng tôi nhận thấy một hạn chế lớn: AI thường chỉ hoạt động trong "hộp kín," khó tiếp cận trực tiếp dữ liệu trên máy tính hay hệ thống nội bộ trừ khi chúng ta đưa từng chút một.
+                </p>
+
+                <p>
+                    Vì vậy khi Anthropic giới thiệu MCP (Model Context Protocol), tôi thấy đây là một hướng đi thú vị.
+                </p>
+
+                <h2>MCP là gì?</h2>
+
+                <p>
+                    Nó giống như một giao thức chuẩn chung để AI kết nối với dữ liệu bên ngoài. Trước đây, muốn AI đọc Slack, GitHub hay Google Drive thì phải viết API riêng rất mất công. Với MCP, chỉ cần implement một server theo chuẩn là các model như Claude, GPT... có thể tương tác trực tiếp—đơn giản và an toàn hơn.
+                </p>
+
+                <div class="highlight-box">
+                    <p>Tôi nghĩ đây là một bước tiến giúp AI từ "người cố vấn" trở thành "cộng sự" thực sự—có thể mở file, tra database hay dùng tool trực tiếp.</p>
+                </div>
+
+                <h2>Hai thử nghiệm thực tế</h2>
+
+                <p>
+                    Tôi đã thử implement hai MCP server đơn giản để giải quyết một số khó khăn hàng ngày trong công việc kỹ thuật:
+                </p>
+
+                <h3>GitSage MCP: Hỗ trợ AI hiểu sâu hơn về mã nguồn</h3>
+
+                <p>
+                    Thay vì chỉ đưa code hiện tại, tool này giúp AI xem được lịch sử commit và mối liên hệ giữa các phần. Tôi thêm chút lọc dữ liệu để tránh đưa quá nhiều thông tin không cần thiết. Kết quả là AI review code và viết commit message sát hơn với ý đồ ban đầu.
+                </p>
+
+                <p>
+                    <strong>Chi tiết:</strong> <a href="https://vinhnguyenba.dev/gitsage.html" target="_blank" rel="noopener noreferrer">vinhnguyenba.dev/gitsage.html</a>
+                </p>
+
+                <h3>Confluence MCP: Giúp tự động hóa một phần tài liệu</h3>
+
+                <p>
+                    Tool này cho phép AI tra cứu tài liệu cũ trên Confluence để trả lời câu hỏi, hoặc tự động ghi lại những thay đổi vừa code. Nó giúp giảm bớt công đoạn viết document thủ công—dù chưa hoàn hảo nhưng khá tiện lợi.
+                </p>
+
+                <p>
+                    <strong>Chi tiết:</strong> <a href="https://vinhnguyenba.dev/confluence-mcp.html" target="_blank" rel="noopener noreferrer">vinhnguyenba.dev/confluence-mcp.html</a>
+                </p>
+
+                <h2>Quy trình tôi đang sử dụng</h2>
+
+                <p>
+                    Tôi kết hợp ba thứ lại thành một vòng lặp đơn giản:
+                </p>
+
+                <ol>
+                    <li><strong>Claude</strong> viết code.</li>
+                    <li><strong>GitSage</strong> giúp review và commit với context lịch sử.</li>
+                    <li><strong>Confluence MCP</strong> cập nhật tài liệu tự động.</li>
+                </ol>
+
+                <p>
+                    Điều này tạo ra một vòng phản hồi nơi AI không chỉ sinh code—mà tham gia vào toàn bộ vòng đời phát triển với nhận thức đầy đủ về ngữ cảnh.
+                </p>
+
+                <h2>Vai trò đang thay đổi của Developer</h2>
+
+                <p>
+                    AI đang tiến bộ rất nhanh, nhưng để nó thực sự hữu ích thì cần xây dựng cách kết nối phù hợp. Với MCP, tôi thấy vai trò của developer không chỉ là viết code mà còn là thiết kế cách AI tham gia vào quy trình.
+                </p>
+
+                <blockquote>
+                    <p>Tương lai thuộc về những người không chỉ viết được nhiều code nhất, mà là những người có thể điều phối sự hợp tác tốt nhất giữa trí tuệ con người và khả năng của AI.</p>
+                </blockquote>
+
+                <p>
+                    Nếu bạn cũng đang thử nghiệm MCP hoặc có cách kết nối AI nào hay, hãy chia sẻ với tôi nhé!
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="blog-footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="../../">Portfolio</a>
+                <a href="https://linkedin.com/in/phamduyvinh" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href="https://github.com/glorynguyen" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+            <p class="footer-copyright" data-lang="en">&copy; 2026 Vinh Nguyen (Vincent). All rights reserved.</p>
+            <p class="footer-copyright" data-lang="vi" hidden>&copy; 2026 Vinh Nguyen (Vincent). Bản quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <!-- i18n Script -->
+    <script src="../js/i18n.js"></script>
+</body>
+</html>
