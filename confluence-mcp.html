@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Confluence MCP Server - AI-Powered Confluence Management for Claude Desktop and Claude Code. Read, create, and search Confluence content via AI.">
+    <meta name="keywords"
+        content="MCP, Model Context Protocol, Claude Desktop, Claude Code, Confluence, Atlassian, AI, Developer Tools, Documentation, Anthropic Claude">
+    <meta name="author" content="Vinh Nguyen (Vincent)">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Confluence MCP Server - AI Assistant for Confluence">
+    <meta property="og:description"
+        content="Give your AI assistant full access to your Confluence workspace. Search pages, create content, and manage spaces directly in Claude.">
+    <meta property="og:url" content="https://vinhnguyenba.dev/confluence-mcp.html">
+    <meta property="og:image" content="https://vinhnguyenba.dev/assets/confluence-og.png">
+
+    <title>Confluence MCP - AI-Powered Confluence Management Server</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #0052CC; /* Confluence/Atlassian Blue */
+            --color-primary-dark: #0747A6;
+            --color-secondary: #6366f1;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f8fafc;
+            --color-bg-dark: #0f172a;
+            --color-border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --max-width: 1200px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--color-bg-alt);
+            color: var(--color-primary);
+        }
+
+        .nav-cta {
+            background: var(--color-primary) !important;
+            color: white !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-primary-dark) !important;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #091e42 0%, #0747a6 100%);
+            color: white;
+            padding: 80px 0 100px;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4c9aff;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            color: #4c9aff;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Code Window */
+        .code-window {
+            background: #1e1e1e;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid #334155;
+            overflow: hidden;
+            font-family: 'Monaco', monospace;
+            font-size: 0.85rem;
+        }
+
+        .code-header {
+            background: #334155;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-content {
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .mcp-tool {
+            color: #4c9aff;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .json-key {
+            color: #f87171;
+        }
+
+        .json-val {
+            color: #4ade80;
+        }
+
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: var(--color-bg);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.25rem;
+            margin-bottom: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-bg-alt);
+            color: var(--color-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Installation */
+        .install-section {
+            padding: 100px 0;
+            background: var(--color-bg-alt);
+        }
+
+        .install-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .install-card {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .install-card h3 {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            position: relative;
+            margin: 16px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        /* Tools Table */
+        .tools-section {
+            padding: 100px 0;
+        }
+
+        .tools-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 32px;
+        }
+
+        .tools-table th,
+        .tools-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tools-table th {
+            background: var(--color-bg-alt);
+            font-weight: 600;
+        }
+
+        .tool-tag {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #091e42;
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 968px) {
+
+            .hero-content,
+            .install-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin: 0 auto 32px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="nav-brand">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="color: var(--color-primary)">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Confluence MCP
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#installation">Setup</a></li>
+                    <li><a href="#tools">Tools</a></li>
+                    <li><a href="https://github.com/glorynguyen/confluence-mcp" target="_blank">GitHub</a></li>
+                    <li><a href="https://www.npmjs.com/package/@vinhnguyen/confluence-mcp" class="nav-cta">View on NPM</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div>
+                        <div class="hero-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                            </svg>
+                            Model Context Protocol Server
+                        </div>
+                        <h1>Seamless <span>Confluence Access</span> for Claude</h1>
+                        <p class="hero-description">
+                            Manage pages, search spaces, and extract data from your Atlassian workspace. Built for Claude Desktop and Claude Code.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#installation" class="btn btn-primary">Get Started</a>
+                            <a href="https://github.com/glorynguyen/confluence-mcp" class="btn btn-secondary">View Source</a>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-header">
+                            <div class="dot" style="background: #ff5f56;"></div>
+                            <div class="dot" style="background: #ffbd2e;"></div>
+                            <div class="dot" style="background: #27ca40;"></div>
+                            <span style="color: #94a3b8; font-size: 0.75rem;">claude-confluence-session</span>
+                        </div>
+                        <div class="code-content">
+                            <span class="mcp-tool">❯ confluence.get_page(pageId: "12345")</span>
+                            <div style="margin-left: 10px; border-left: 2px solid #0052CC; padding-left: 10px;">
+                                <div style="color: #94a3b8;">// Page Details Retrieved:</div>
+                                <div style="color: #4ade80;"><span class="json-key">"title":</span> "Q1 Product Roadmap"</div>
+                                <div style="color: #4ade80;"><span class="json-key">"space":</span> "Engineering"</div>
+                                <div style="color: #4ade80;"><span class="json-key">"author":</span> "Vincent"</div>
+                                <br>
+                                <div style="color: #94a3b8;">// AI Action:</div>
+                                <div style="color: #4c9aff;">✔ Extracted milestones</div>
+                                <div style="color: #4c9aff;">✔ Summarized blockers</div>
+                                <div style="color: #4c9aff;">✔ Drafted update comment</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Full Control Over Your Workspace</h2>
+                    <p>Connect Claude to Confluence to automate documentation, research project history, and keep your team updated.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Page Operations</h3>
+                        <p>Create, read, update, and delete pages using natural language commands via Claude.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <h3>Advanced Search</h3>
+                        <p>Leverage full CQL (Confluence Query Language) support to find exactly what you need in seconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </div>
+                        <h3>Report Automation</h3>
+                        <p>Specialized tool to extract "DONE" sections from daily reports for automated weekly summaries.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                        </div>
+                        <h3>Collaboration</h3>
+                        <p>Read and add comments, manage page labels, and list attachments without leaving the chat.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                        </div>
+                        <h3>Space Exploration</h3>
+                        <p>Browse space content, list all accessible spaces, and navigate hierarchy with ease.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <h3>Secure Integration</h3>
+                        <p>Standard Atlassian API Token authentication with environment variable security.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="install-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Quick Setup</h2>
+                    <p>Connect your Atlassian workspace to Claude in minutes.</p>
+                </div>
+                <div class="install-grid">
+                    <div class="install-card">
+                        <h3>1. Get API Token</h3>
+                        <p>Generate an API token from your <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Atlassian Security</a> settings.</p>
+                        <div class="code-block">
+                            <code>ATLASSIAN_API_TOKEN=your_token_here</code>
+                            <button class="copy-btn">📋</button>
+                        </div>
+                    </div>
+                    <div class="install-card">
+                        <h3>2. Configure Claude</h3>
+                        <p>Add to your <code>claude_desktop_config.json</code>:</p>
+                        <div class="code-block" style="font-size: 0.8rem;">
+                            <pre>{
+  "mcpServers": {
+    "confluence": {
+      "command": "npx",
+      "args": ["-y", "@vinhnguyen/confluence-mcp"],
+      "env": {
+        "ATLASSIAN_EMAIL": "your@email.com",
+        "ATLASSIAN_API_TOKEN": "your_token",
+        "ATLASSIAN_DOMAIN": "your.atlassian.net"
+      }
+    }
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Table -->
+        <section id="tools" class="tools-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Available MCP Tools</h2>
+                    <p>Claude can naturally use these tools to perform actions in your Confluence environment.</p>
+                </div>
+                <table class="tools-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Tool Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pages</td>
+                            <td><span class="tool-tag">confluence_get_page</span></td>
+                            <td>Get full page details and content by ID</td>
+                        </tr>
+                        <tr>
+                            <td>Pages</td>
+                            <td><span class="tool-tag">confluence_create_page</span></td>
+                            <td>Create a new page in a specific space</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="tool-tag">confluence_search</span></td>
+                            <td>Advanced search using CQL queries</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="tool-tag">confluence_search_by_text</span></td>
+                            <td>Simple text search across all pages</td>
+                        </tr>
+                        <tr>
+                            <td>Spaces</td>
+                            <td><span class="tool-tag">confluence_list_spaces</span></td>
+                            <td>List all available Confluence spaces</td>
+                        </tr>
+                        <tr>
+                            <td>Automation</td>
+                            <td><span class="tool-tag">confluence_extract_done_sections</span></td>
+                            <td>Extract DONE tasks from daily report pages</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Examples -->
+        <section class="features" style="background: var(--color-bg-alt);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Try These Prompts</h2>
+                    <p>Once connected, try asking Claude to help with your documentation:</p>
+                </div>
+                <div class="features-grid">
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Find all pages in the 'ENG' space that mention 'OAuth2' and summarize the implementation."</p>
+                    </div>
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Create a new page in the 'PRODUCT' space titled 'Meeting Notes' with a summary of our chat."</p>
+                    </div>
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Look at my last 5 daily reports and extract all the completed tasks into a weekly update."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3 style="margin-bottom: 16px;">Confluence MCP</h3>
+                    <p style="color: #94a3b8; font-size: 0.95rem;">Bridging the gap between AI reasoning and corporate knowledge. Part of the MCP ecosystem.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Documentation</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="https://github.com/glorynguyen/confluence-mcp/blob/main/LICENSE"
+                                target="_blank">License</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/glorynguyen/confluence-mcp" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/glorynguyen/confluence-mcp/issues" target="_blank">Issues</a></li>
+                        <li><a href="https://www.npmjs.com/package/@vinhnguyen/confluence-mcp" target="_blank">NPM Package</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Author</h4>
+                    <ul>
+                        <li><a href="https://vinhnguyenba.dev">Portfolio</a></li>
+                        <li><a href="https://github.com/glorynguyen" target="_blank">GitHub</a></li>
+                        <li><a href="https://www.linkedin.com/in/vinh-nguyen-479781130" target="_blank">LinkedIn</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vinh Nguyen (Vincent). Released under MIT License.</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="https://github.com/glorynguyen/confluence-mcp" style="color: #94a3b8;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple copy to clipboard functionality
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.previousElementSibling.innerText;
+                navigator.clipboard.writeText(code);
+                btn.innerText = '✅';
+                setTimeout(() => btn.innerText = '📋', 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>
