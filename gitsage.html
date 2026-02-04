@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="GitSage - AI-Powered Code Review MCP Server for Claude Desktop and Claude Code. Expert code analysis, commit generation, and agent skills.">
+    <meta name="keywords"
+        content="MCP, Model Context Protocol, Claude Desktop, Claude Code, Git, Code Review, AI, Developer Tools, GitSage, Anthropic Claude">
+    <meta name="author" content="Vinh Nguyen (Vincent)">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="GitSage - AI Code Review MCP Server for Claude">
+    <meta property="og:description"
+        content="Give your AI assistant expert git powers. Intelligent code reviews and commit generation directly in Claude via MCP.">
+    <meta property="og:url" content="https://vinhnguyenba.dev/gitsage.html">
+    <meta property="og:image" content="https://vinhnguyenba.dev/assets/gitsage-og.png">
+
+    <title>GitSage - AI-Powered Code Review MCP Server</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #4a7c59;
+            /* Sage Green */
+            --color-primary-dark: #365c42;
+            --color-secondary: #6366f1;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f8fafc;
+            --color-bg-dark: #0f172a;
+            --color-border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --max-width: 1200px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--color-bg-alt);
+            color: var(--color-primary);
+        }
+
+        .nav-cta {
+            background: var(--color-primary) !important;
+            color: white !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-primary-dark) !important;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 80px 0 100px;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(74, 124, 89, 0.2);
+            border: 1px solid rgba(74, 124, 89, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #86efac;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            color: #86efac;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Code Window */
+        .code-window {
+            background: #1e1e1e;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid #334155;
+            overflow: hidden;
+            font-family: 'Monaco', monospace;
+            font-size: 0.85rem;
+        }
+
+        .code-header {
+            background: #334155;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-content {
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .mcp-tool {
+            color: #86efac;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .diff-add {
+            color: #4ade80;
+        }
+
+        .diff-sub {
+            color: #f87171;
+        }
+
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: var(--color-bg);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.25rem;
+            margin-bottom: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-bg-alt);
+            color: var(--color-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Installation */
+        .install-section {
+            padding: 100px 0;
+            background: var(--color-bg-alt);
+        }
+
+        .install-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .install-card {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .install-card h3 {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            position: relative;
+            margin: 16px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        /* Tools Table */
+        .tools-section {
+            padding: 100px 0;
+        }
+
+        .tools-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 32px;
+        }
+
+        .tools-table th,
+        .tools-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tools-table th {
+            background: var(--color-bg-alt);
+            font-weight: 600;
+        }
+
+        .tool-tag {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 968px) {
+
+            .hero-content,
+            .install-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin: 0 auto 32px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="nav-brand">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="color: var(--color-primary)">
+                        <path
+                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                        </path>
+                    </svg>
+                    GitSage
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#installation">Setup</a></li>
+                    <li><a href="#tools">Tools</a></li>
+                    <li><a href="https://github.com/glorynguyen/gitsage" target="_blank">GitHub</a></li>
+                    <li><a href="https://www.npmjs.com/package/@vinhnguyen/gitsage" class="nav-cta">View on NPM</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div>
+                        <div class="hero-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 7h-9m3 3H5m16 6h-9m3 3H5" />
+                            </svg>
+                            Model Context Protocol Server
+                        </div>
+                        <h1>Expert <span>Git Analysis</span> for Claude</h1>
+                        <p class="hero-description">
+                            Empower your AI assistant with intelligent code reviews, commit generation, and specialized
+                            agent skills. Built for Claude Desktop and Claude Code.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#installation" class="btn btn-primary">Get Started</a>
+                            <a href="https://github.com/glorynguyen/gitsage" class="btn btn-secondary">View Source</a>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-header">
+                            <div class="dot" style="background: #ff5f56;"></div>
+                            <div class="dot" style="background: #ffbd2e;"></div>
+                            <div class="dot" style="background: #27ca40;"></div>
+                            <span style="color: #94a3b8; font-size: 0.75rem;">claude-desktop-mcp</span>
+                        </div>
+                        <div class="code-content">
+                            <span class="mcp-tool">❯ gitsage.review_staged_changes()</span>
+                            <div style="margin-left: 10px; border-left: 2px solid #4a7c59; padding-left: 10px;">
+                                <div class="diff-sub">- return data.filter(x => x.active)</div>
+                                <div class="diff-add">+ return data.filter(item => item.status === 'active')</div>
+                                <br>
+                                <div style="color: #94a3b8;">// AI Analysis:</div>
+                                <div style="color: #86efac;">✔ Code logic improved</div>
+                                <div style="color: #86efac;">✔ Consistent naming applied</div>
+                                <div style="color: #86efac;">✔ Conventional commit generated</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Everything for Smart Code Reviews</h2>
+                    <p>GitSage bridges the gap between your local Git repository and Claude's advanced reasoning
+                        capabilities.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Smart Code Reviews</h3>
+                        <p>Review staged changes, specific commits, or branch comparisons with context-aware AI
+                            feedback.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <h3>Commit Generation</h3>
+                        <p>Automatically generate clear, concise conventional commit messages based on your actual code
+                            diffs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </div>
+                        <h3>Agent Skills</h3>
+                        <p>Download specialized review profiles from GitHub for targeted audits like security,
+                            performance, or accessibility.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Diff Filtering</h3>
+                        <p>Noise reduction by automatically filtering out lock files, generated code, and minified
+                            assets.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3>Deep Integration</h3>
+                        <p>Full access to repository status, branches, and commit history via standard MCP protocols.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Language Agnostic</h3>
+                        <p>Works with any framework. Optimized context for React, TypeScript, Node.js, and more via
+                            config.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="install-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Quick Setup</h2>
+                    <p>Integrate GitSage into your Claude workflow in seconds.</p>
+                </div>
+                <div class="install-grid">
+                    <div class="install-card">
+                        <h3>1. Install Package</h3>
+                        <p>Install globally via NPM or use NPX directly in your configuration.</p>
+                        <div class="code-block">
+                            <code>npm install -g @vinhnguyen/gitsage</code>
+                            <button class="copy-btn">📋</button>
+                        </div>
+                    </div>
+                    <div class="install-card">
+                        <h3>2. Configure Claude</h3>
+                        <p>Add to your <code>claude_desktop_config.json</code>:</p>
+                        <div class="code-block" style="font-size: 0.8rem;">
+                            <pre>{
+  "mcpServers": {
+    "gitsage": {
+      "command": "npx",
+      "args": ["-y", "@vinhnguyen/gitsage"]
+    }
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Table -->
+        <section id="tools" class="tools-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Available MCP Tools</h2>
+                    <p>GitSage exposes these capabilities to Claude. You can ask Claude to use them naturally in
+                        conversation.</p>
+                </div>
+                <table class="tools-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Tool Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Review</td>
+                            <td><span class="tool-tag">review_staged_changes</span></td>
+                            <td>Review all changes currently in the Git stage</td>
+                        </tr>
+                        <tr>
+                            <td>Review</td>
+                            <td><span class="tool-tag">review_branches</span></td>
+                            <td>Compare and review differences between two branches</td>
+                        </tr>
+                        <tr>
+                            <td>Analysis</td>
+                            <td><span class="tool-tag">generate_commit_message</span></td>
+                            <td>Create conventional commit messages from staged diffs</td>
+                        </tr>
+                        <tr>
+                            <td>Analysis</td>
+                            <td><span class="tool-tag">explain_code</span></td>
+                            <td>Detailed logic explanation for selected files/diffs</td>
+                        </tr>
+                        <tr>
+                            <td>Skills</td>
+                            <td><span class="tool-tag">list_skills</span></td>
+                            <td>View available specialized agent review profiles</td>
+                        </tr>
+                        <tr>
+                            <td>Git</td>
+                            <td><span class="tool-tag">get_git_status</span></td>
+                            <td>Get the current status of the working directory</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Examples -->
+        <section class="features" style="background: var(--color-bg-alt);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Try These Prompts</h2>
+                    <p>Once installed, try asking Claude these questions:</p>
+                </div>
+                <div class="features-grid">
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Review my staged changes and
+                            check for any potential security vulnerabilities using GitSage."</p>
+                    </div>
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Look at the differences between
+                            main and my current branch and summarize the changes."</p>
+                    </div>
+                    <div class="install-card">
+                        <p style="font-style: italic; color: var(--color-text-light);">"Generate a conventional commit
+                            message for the work I just did."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3 style="margin-bottom: 16px;">GitSage</h3>
+                    <p style="color: #94a3b8; font-size: 0.95rem;">Empowering AI assistants with deep Git knowledge.
+                        Part of the MCP ecosystem for modern developers.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Documentation</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="https://github.com/glorynguyen/gitsage/blob/main/LICENSE"
+                                target="_blank">License</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/glorynguyen/gitsage" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/glorynguyen/gitsage/issues" target="_blank">Issues</a></li>
+                        <li><a href="https://www.npmjs.com/package/@vinhnguyen/gitsage" target="_blank">NPM Package</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Author</h4>
+                    <ul>
+                        <li><a href="https://vinhnguyenba.dev">Portfolio</a></li>
+                        <li><a href="https://github.com/glorynguyen" target="_blank">GitHub</a></li>
+                        <li><a href="https://www.linkedin.com/in/vinh-nguyen-479781130" target="_blank">LinkedIn</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vinh Nguyen (Vincent). Released under MIT License.</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="https://github.com/glorynguyen/gitsage" style="color: #94a3b8;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple copy to clipboard functionality
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.previousElementSibling.innerText;
+                navigator.clipboard.writeText(code);
+                btn.innerText = '✅';
+                setTimeout(() => btn.innerText = '📋', 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>
