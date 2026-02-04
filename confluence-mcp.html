@@ -466,6 +466,167 @@
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .nav-links li:not(:last-child):not(:nth-last-child(2)) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero {
+                padding: 60px 0 80px;
+            }
+
+            .features,
+            .install-section,
+            .tools-section {
+                padding: 60px 0;
+            }
+
+            .section-header {
+                margin-bottom: 40px;
+            }
+
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 24px;
+            }
+
+            .install-card {
+                padding: 24px;
+            }
+
+            .code-block {
+                font-size: 0.75rem;
+                padding: 12px;
+            }
+
+            .code-block pre {
+                font-size: 0.7rem;
+            }
+
+            /* Responsive table */
+            .tools-table {
+                display: block;
+            }
+
+            .tools-table thead {
+                display: none;
+            }
+
+            .tools-table tbody {
+                display: block;
+            }
+
+            .tools-table tr {
+                display: block;
+                margin-bottom: 16px;
+                padding: 16px;
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius);
+                background: var(--color-bg-alt);
+            }
+
+            .tools-table td {
+                display: block;
+                padding: 8px 0;
+                border: none;
+                text-align: left;
+            }
+
+            .tools-table td:first-child {
+                font-weight: 600;
+                color: var(--color-primary);
+                font-size: 0.85rem;
+                padding-bottom: 4px;
+            }
+
+            .tools-table td:nth-child(2) {
+                padding-bottom: 8px;
+            }
+
+            .tools-table td:last-child {
+                color: var(--color-text-light);
+                font-size: 0.9rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            footer {
+                padding: 60px 0 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-content {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .nav-brand {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                gap: 4px;
+            }
+
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .code-window {
+                font-size: 0.75rem;
+            }
+
+            .code-content {
+                padding: 16px;
+            }
+
+            .hero-badge {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+            }
         }
     </style>
 </head>
