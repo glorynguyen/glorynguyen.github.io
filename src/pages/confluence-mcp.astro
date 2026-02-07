@@ -1,3 +1,5 @@
+---
+---
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +18,7 @@
     <meta property="og:title" content="Confluence MCP Server - AI Assistant for Confluence">
     <meta property="og:description"
         content="Give your AI assistant full access to your Confluence workspace. Search pages, create content, and manage spaces directly in Claude.">
-    <meta property="og:url" content="https://vinhnguyenba.dev/confluence-mcp.html">
+    <meta property="og:url" content="https://vinhnguyenba.dev/confluence-mcp">
     <meta property="og:image" content="https://vinhnguyenba.dev/assets/confluence-og.png">
 
     <title>Confluence MCP - AI-Powered Confluence Management Server</title>
@@ -687,7 +689,7 @@
                             <span style="color: #94a3b8; font-size: 0.75rem;">claude-confluence-session</span>
                         </div>
                         <div class="code-content">
-                            <span class="mcp-tool">❯ confluence.get_page(pageId: "12345")</span>
+                            <span class="mcp-tool">{'❯'} confluence.get_page(pageId: "12345")</span>
                             <div style="margin-left: 10px; border-left: 2px solid #0052CC; padding-left: 10px;">
                                 <div style="color: #94a3b8;">// Page Details Retrieved:</div>
                                 <div style="color: #4ade80;"><span class="json-key">"title":</span> "Q1 Product Roadmap"</div>
@@ -695,9 +697,9 @@
                                 <div style="color: #4ade80;"><span class="json-key">"author":</span> "Vincent"</div>
                                 <br>
                                 <div style="color: #94a3b8;">// AI Action:</div>
-                                <div style="color: #4c9aff;">✔ Extracted milestones</div>
-                                <div style="color: #4c9aff;">✔ Summarized blockers</div>
-                                <div style="color: #4c9aff;">✔ Drafted update comment</div>
+                                <div style="color: #4c9aff;">{'✔'} Extracted milestones</div>
+                                <div style="color: #4c9aff;">{'✔'} Summarized blockers</div>
+                                <div style="color: #4c9aff;">{'✔'} Drafted update comment</div>
                             </div>
                         </div>
                     </div>
@@ -800,14 +802,14 @@
                         <p>Generate an API token from your <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Atlassian Security</a> settings.</p>
                         <div class="code-block">
                             <code>ATLASSIAN_API_TOKEN=your_token_here</code>
-                            <button class="copy-btn">📋</button>
+                            <button class="copy-btn">{'📋'}</button>
                         </div>
                     </div>
                     <div class="install-card">
                         <h3>2. Configure Claude</h3>
                         <p>Add to your <code>claude_desktop_config.json</code>:</p>
                         <div class="code-block" style="font-size: 0.8rem;">
-                            <pre>{
+                            <pre set:html={`{
   "mcpServers": {
     "confluence": {
       "command": "npx",
@@ -819,7 +821,7 @@
       }
     }
   }
-}</pre>
+}`}></pre>
                         </div>
                     </div>
                 </div>
@@ -954,8 +956,8 @@
             btn.addEventListener('click', () => {
                 const code = btn.previousElementSibling.innerText;
                 navigator.clipboard.writeText(code);
-                btn.innerText = '✅';
-                setTimeout(() => btn.innerText = '📋', 2000);
+                btn.innerText = '\u2705';
+                setTimeout(() => btn.innerText = '\uD83D\uDCCB', 2000);
             });
         });
     </script>

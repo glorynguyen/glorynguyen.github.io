@@ -1,0 +1,111 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+---
+
+<BlogLayout
+    title="Blog | Vinh Nguyen (Vincent)"
+    description="Thoughts on software engineering, leadership, and technology by Vinh Nguyen (Vincent)."
+    keywords="blog, software engineering, frontend, leadership, AI, technology"
+    ogUrl="https://vinhnguyenba.dev/blog/"
+    canonicalUrl="https://vinhnguyenba.dev/blog/"
+>
+    <!-- Page Title - English -->
+    <div data-lang="en">
+        <h1 class="page-title">Blog</h1>
+        <p class="page-description">Thoughts on software engineering, leadership, and the evolving tech landscape.</p>
+    </div>
+
+    <!-- Page Title - Vietnamese -->
+    <div data-lang="vi" hidden>
+        <h1 class="page-title">Blog</h1>
+        <p class="page-description">Những suy nghĩ về kỹ thuật phần mềm, lãnh đạo và bối cảnh công nghệ đang thay đổi.</p>
+    </div>
+
+    <!-- Posts List -->
+    <div class="posts-list">
+        <PostCard
+            slug="battle-of-brains-open-standards-ai"
+            dateEn="February 7, 2026"
+            dateVi="07/02/2026"
+            tagEn="AI & Open Standards"
+            tagVi="AI & Chuẩn mở"
+            titleEn="The Battle of Brains and Nervous Systems: Why Open Standards Will Define AI's Future"
+            titleVi="Cuộc Chiến Của Những Bộ Não Và Hệ Thần Kinh Chung"
+            excerptEn="AI giants want proprietary ecosystems—use their brain, use their limbs. MCP proposes a shared nervous system standard for every AI, breaking vendor lock-in. But will the tech giants truly embrace openness when it means giving up control?"
+            excerptVi={'Các ông lớn AI muốn sở hữu hệ sinh thái độc quyền—dùng \u201cNão\u201d của họ thì phải dùng luôn \u201cTay chân\u201d của họ. MCP đề xuất một chuẩn hệ thần kinh chung cho mọi AI, phá vỡ vendor lock-in. Nhưng liệu các ông lớn có thật sự chấp nhận chuẩn mở khi điều đó đồng nghĩa với từ bỏ quyền kiểm soát?'}
+        />
+
+        <PostCard
+            slug="the-tinkerers-path"
+            dateEn="February 5, 2026"
+            dateVi="05/02/2026"
+            tagEn="Personal Story"
+            tagVi="Câu chuyện cá nhân"
+            titleEn="The Tinkerer's Path - How Curiosity Accidentally Led Me to Programming"
+            titleVi="Thói vọc tạch - Hành trang vô tình đưa tôi đến với nghề lập trình"
+            excerptEn="Back when I was a kid, we didn't have toys at home. My main source of entertainment was picking up broken bricks and imagining them as cars. Looking back, I realize that the small joy found in scarcity is many times greater than a lavish feast in abundance..."
+            excerptVi="Ngày xưa lúc còn nhỏ, nhà không có đồ chơi, thú vui chủ yếu là lấy mấy cục gạch vỡ rồi tưởng tượng làm xe. Giờ tôi mới thấy niềm vui nhỏ nhoi trong sự thiếu thốn nó lớn gấp mấy lần một bữa tiệc thịnh soạn trong sự đủ đầy..."
+        />
+
+        <PostCard
+            slug="mcp-ai-real-world-data"
+            dateEn="February 4, 2026"
+            dateVi="04/02/2026"
+            tagEn="AI & Integration"
+            tagVi="AI & Tích hợp"
+            titleEn="MCP: Bridging AI and Real-World Data"
+            titleVi="MCP: Cầu nối giữa AI và dữ liệu thực tế"
+            excerptEn="Model Context Protocol (MCP) enables AI to connect directly with external data sources. Explore my experiments with GitSage and Confluence MCP servers, and how they're transforming the developer workflow..."
+            excerptVi="Model Context Protocol (MCP) cho phép AI kết nối trực tiếp với các nguồn dữ liệu bên ngoài. Khám phá các thử nghiệm của tôi với GitSage và Confluence MCP server, và cách chúng đang thay đổi quy trình làm việc của developer..."
+        />
+
+        <PostCard
+            slug="ai-2026-coworker-or-crutch"
+            dateEn="February 3, 2026"
+            dateVi="03/02/2026"
+            tagEn="AI & Productivity"
+            tagVi="AI & Năng suất"
+            titleEn="AI 2026: Capable Coworker or a Crutch That Weakens Us?"
+            titleVi='AI 2026: Đồng nghiệp đắc lực hay chiếc "gậy chống" khiến ta yếu đi?'
+            excerptEn=`We're in 2026, a time when AI is no longer a trend but has become the very "breath" of our work. But as AI evolves from a crude tool into a true "Coworker," we stand at an extremely thin line...`
+            excerptVi=`Chúng ta đang ở năm 2026, thời điểm AI không còn là trào lưu mà đã trở thành "hơi thở" trong công việc. Nhưng khi AI tiến hóa từ một công cụ thô sơ thành một "Đồng nghiệp" thực thụ, chúng ta đang đứng trước một ranh giới cực kỳ mong manh...`
+        />
+
+        <PostCard
+            slug="pm-tech-lead-duo"
+            dateEn="February 2, 2026"
+            dateVi="02/02/2026"
+            tagEn="Leadership & AI"
+            tagVi="Lãnh đạo & AI"
+            titleEn={'When "Execution" Becomes Free: The Rise of the PM & Tech Lead Duo'}
+            titleVi={'Khi "Thực thi" trở nên miễn phí: Sự trỗi dậy của bộ đôi PM & Tech Lead'}
+            excerptEn={'In the AI era, when coding is becoming cheap and fast, do we still need so many roles? Yes, but in a completely different way. The collaboration between PM and Tech Lead shifts from hand-over to symbiosis...'}
+            excerptVi={'Trong kỷ nguyên AI, khi việc viết code đang trở nên rẻ và nhanh chóng mặt, chúng ta còn cần nhiều vai trò đến thế không? Có, nhưng theo một cách hoàn toàn khác. Sự hợp tác giữa PM và Tech Lead chuyển từ bàn giao sang cộng sinh...'}
+        />
+
+        <PostCard
+            slug="headless-architecture-distributed-teams"
+            dateEn="February 2, 2026"
+            dateVi="02/02/2026"
+            tagEn="Engineering Strategy"
+            tagVi="Chiến lược Kỹ thuật"
+            titleEn="Navigating Complexity: Strategic Lessons in Headless Transitions"
+            titleVi="Làm chủ sự phức tạp: Bài học chiến lược khi chuyển đổi Headless"
+            excerptEn='Transitioning to a Headless Architecture is rarely just a technical challenge; it is an organizational one. When working across distributed teams on enterprise-scale systems, the "fog of war" can easily stall progress...'
+            excerptVi="Chuyển đổi sang Kiến trúc Headless hiếm khi chỉ là thử thách kỹ thuật; đó là thử thách về mặt tổ chức. Khi làm việc với các đội nhóm phân tán trên các hệ thống quy mô lớn, sự thiếu thông tin có thể dễ dàng làm chậm tiến độ..."
+        />
+
+        <PostCard
+            slug="ai-will-not-replace-developers"
+            dateEn="February 2, 2026"
+            dateVi="02/02/2026"
+            tagEn="AI & Career"
+            tagVi="AI & Sự nghiệp"
+            titleEn="AI Won't Replace Developers - Empty Encouragement or the Truth?"
+            titleVi="AI không thay thế được lập trình viên - Lời động viên sáo rỗng hay là sự thật?"
+            excerptEn='If AI can truly do "everything" - from gathering requirements, designing, writing code to fixing bugs - where do we stand? Perhaps we need to be honest with each other: The pure "coder" profession is counting down its days...'
+            excerptVi={'Nếu một ngày AI thực sự làm được "mọi thứ" - từ nhận yêu cầu, vẽ thiết kế, viết mã đến tự sửa lỗi - thì chúng ta đứng ở đâu? Có lẽ chúng ta cần thành thật với nhau: Cái nghề "thợ gõ" thuần túy đang đếm ngược ngày tàn...'}
+        />
+    </div>
+</BlogLayout>

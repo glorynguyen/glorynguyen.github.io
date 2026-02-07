@@ -1,3 +1,5 @@
+---
+---
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +18,7 @@
     <meta property="og:title" content="GitSage - AI Code Review MCP Server for Claude">
     <meta property="og:description"
         content="Give your AI assistant expert git powers. Intelligent code reviews and commit generation directly in Claude via MCP.">
-    <meta property="og:url" content="https://vinhnguyenba.dev/gitsage.html">
+    <meta property="og:url" content="https://vinhnguyenba.dev/gitsage">
     <meta property="og:image" content="https://vinhnguyenba.dev/assets/gitsage-og.png">
 
     <title>GitSage - AI-Powered Code Review MCP Server</title>
@@ -689,15 +691,15 @@
                             <span style="color: #94a3b8; font-size: 0.75rem;">claude-desktop-mcp</span>
                         </div>
                         <div class="code-content">
-                            <span class="mcp-tool">❯ gitsage.review_staged_changes()</span>
+                            <span class="mcp-tool">{'❯'} gitsage.review_staged_changes()</span>
                             <div style="margin-left: 10px; border-left: 2px solid #4a7c59; padding-left: 10px;">
                                 <div class="diff-sub">- return data.filter(x => x.active)</div>
                                 <div class="diff-add">+ return data.filter(item => item.status === 'active')</div>
                                 <br>
                                 <div style="color: #94a3b8;">// AI Analysis:</div>
-                                <div style="color: #86efac;">✔ Code logic improved</div>
-                                <div style="color: #86efac;">✔ Consistent naming applied</div>
-                                <div style="color: #86efac;">✔ Conventional commit generated</div>
+                                <div style="color: #86efac;">{'✔'} Code logic improved</div>
+                                <div style="color: #86efac;">{'✔'} Consistent naming applied</div>
+                                <div style="color: #86efac;">{'✔'} Conventional commit generated</div>
                             </div>
                         </div>
                     </div>
@@ -806,21 +808,21 @@
                         <p>Install globally via NPM or use NPX directly in your configuration.</p>
                         <div class="code-block">
                             <code>npm install -g @vinhnguyen/gitsage</code>
-                            <button class="copy-btn">📋</button>
+                            <button class="copy-btn">{'📋'}</button>
                         </div>
                     </div>
                     <div class="install-card">
                         <h3>2. Configure Claude</h3>
                         <p>Add to your <code>claude_desktop_config.json</code>:</p>
                         <div class="code-block" style="font-size: 0.8rem;">
-                            <pre>{
+                            <pre set:html={`{
   "mcpServers": {
     "gitsage": {
       "command": "npx",
       "args": ["-y", "@vinhnguyen/gitsage"]
     }
   }
-}</pre>
+}`}></pre>
                         </div>
                     </div>
                 </div>
@@ -960,8 +962,8 @@
             btn.addEventListener('click', () => {
                 const code = btn.previousElementSibling.innerText;
                 navigator.clipboard.writeText(code);
-                btn.innerText = '✅';
-                setTimeout(() => btn.innerText = '📋', 2000);
+                btn.innerText = '\u2705';
+                setTimeout(() => btn.innerText = '\uD83D\uDCCB', 2000);
             });
         });
     </script>

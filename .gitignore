@@ -17,3 +17,7 @@ node_modules/
 # Editor directories
 .idea/
 .vscode/
+
+# Astro
+dist/
+.astro/

@@ -1,0 +1,53 @@
+---
+interface Props {
+    slug: string;
+    dateEn: string;
+    dateVi: string;
+    tagEn: string;
+    tagVi: string;
+    titleEn: string;
+    titleVi: string;
+    excerptEn: string;
+    excerptVi: string;
+}
+
+const { slug, dateEn, dateVi, tagEn, tagVi, titleEn, titleVi, excerptEn, excerptVi } = Astro.props;
+---
+
+<a href={`/blog/posts/${slug}.html`} class="post-card">
+    <div class="post-meta">
+        <span class="post-date">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span data-lang="en">{dateEn}</span>
+            <span data-lang="vi" hidden>{dateVi}</span>
+        </span>
+        <span class="post-tag" data-lang="en">{tagEn}</span>
+        <span class="post-tag" data-lang="vi" hidden>{tagVi}</span>
+    </div>
+
+    <h2 class="post-title" data-lang="en">{titleEn}</h2>
+    <h2 class="post-title" data-lang="vi" hidden>{titleVi}</h2>
+
+    <p class="post-excerpt" data-lang="en">{excerptEn}</p>
+    <p class="post-excerpt" data-lang="vi" hidden>{excerptVi}</p>
+
+    <span class="read-more" data-lang="en">
+        Read more
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </span>
+    <span class="read-more" data-lang="vi" hidden>
+        Đọc tiếp
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </span>
+</a>

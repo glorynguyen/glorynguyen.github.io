@@ -1,3 +1,5 @@
+---
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Ollama Code Review - AI Code Reviews for VS Code">
     <meta property="og:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, GLM, Hugging Face, and more.">
-    <meta property="og:url" content="https://vinhnguyenba.dev/ollama-code-review.html">
+    <meta property="og:url" content="https://vinhnguyenba.dev/ollama-code-review">
     <meta property="og:image" content="https://vinhnguyenba.dev/assets/ollama-code-review-og.png">
 
     <!-- Twitter -->
@@ -21,7 +23,7 @@
     <meta name="twitter:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, GLM, Hugging Face, and more.">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://vinhnguyenba.dev/ollama-code-review.html">
+    <link rel="canonical" href="https://vinhnguyenba.dev/ollama-code-review">
 
     <title>Ollama Code Review - AI-Powered Code Reviews for VS Code</title>
 
@@ -906,8 +908,7 @@
     </style>
 
     <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
-    {
+    <script type="application/ld+json" set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Ollama Code Review",
@@ -926,8 +927,7 @@
         },
         "softwareVersion": "2.1.0",
         "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review"
-    }
-    </script>
+    })}></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -1017,12 +1017,12 @@
                             <div class="code-window-content">
                                 <div class="code-comment">// Staged changes reviewed</div>
                                 <div style="margin-top: 8px;">
-                                    <span class="code-keyword">function</span> <span class="code-function">processPayment</span>(<span class="code-variable">amount</span>) {
+                                    <span class="code-keyword">function</span> <span class="code-function">processPayment</span>(<span class="code-variable">amount</span>) {'{'}
                                 </div>
                                 <div style="padding-left: 16px;">
                                     <span class="code-keyword">return</span> <span class="code-variable">amount</span> * <span class="code-string">1.1</span>;
                                 </div>
-                                <div>}</div>
+                                <div>{'}'}</div>
                                 <div class="code-ai-response">
                                     <div class="ai-label">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -1195,7 +1195,7 @@
                             </svg>
                         </div>
                         <h3>Custom Prompt Templates</h3>
-                        <p>Override AI prompts for code reviews and commit messages with your own templates. Use variable placeholders like ${code}, ${frameworks}, and ${skills} for full control.</p>
+                        <p>Override AI prompts for code reviews and commit messages with your own templates. Use variable placeholders like {'${code}'}, {'${frameworks}'}, and {'${skills}'} for full control.</p>
                     </article>
 
                     <article class="feature-card">
@@ -1332,15 +1332,15 @@
                         <div class="code-window-content">
                             <div><span class="code-comment">// Select code and use lightbulb menu</span></div>
                             <div style="margin-top: 12px;">
-                                <span class="code-keyword">async function</span> <span class="code-function">fetchUserData</span>(<span class="code-variable">id</span>: <span class="code-keyword">string</span>) {
+                                <span class="code-keyword">async function</span> <span class="code-function">fetchUserData</span>(<span class="code-variable">id</span>: <span class="code-keyword">string</span>) {'{'}
                             </div>
                             <div style="padding-left: 16px;">
-                                <span class="code-keyword">const</span> <span class="code-variable">response</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-string">`/api/users/${id}`</span>);
+                                <span class="code-keyword">const</span> <span class="code-variable">response</span> = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-string">{`\`/api/users/\${id}\``}</span>);
                             </div>
                             <div style="padding-left: 16px;">
                                 <span class="code-keyword">return</span> <span class="code-variable">response</span>.<span class="code-function">json</span>();
                             </div>
-                            <div>}</div>
+                            <div>{'}'}</div>
                             <div class="code-ai-response" style="margin-top: 20px;">
                                 <div class="ai-label">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -1348,12 +1348,14 @@
                                     </svg>
                                     Generated Test
                                 </div>
-                                <div><span class="code-keyword">describe</span>(<span class="code-string">'fetchUserData'</span>, () => {</div>
-                                <div style="padding-left: 12px;"><span class="code-keyword">it</span>(<span class="code-string">'returns user data'</span>, <span class="code-keyword">async</span> () => {</div>
+                                <div><span class="code-keyword">describe</span>(<span class="code-string">'fetchUserData'</span>, () => {'{'}
+                                </div>
+                                <div style="padding-left: 12px;"><span class="code-keyword">it</span>(<span class="code-string">'returns user data'</span>, <span class="code-keyword">async</span> () => {'{'}
+                                </div>
                                 <div style="padding-left: 24px;"><span class="code-keyword">const</span> <span class="code-variable">data</span> = <span class="code-keyword">await</span> <span class="code-function">fetchUserData</span>(<span class="code-string">'123'</span>);</div>
                                 <div style="padding-left: 24px;"><span class="code-function">expect</span>(<span class="code-variable">data</span>).<span class="code-function">toBeDefined</span>();</div>
-                                <div style="padding-left: 12px;">});</div>
-                                <div>});</div>
+                                <div style="padding-left: 12px;">{'}'});</div>
+                                <div>{'}'});</div>
                             </div>
                         </div>
                     </div>
