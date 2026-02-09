@@ -58,6 +58,8 @@
 
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- GSDevTools (Club GSAP plugin) -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/GSDevTools.min.js"></script>
 
     <script>
         const textElement = document.getElementById('target-text');
@@ -106,7 +108,8 @@
         // Total sweep across ~120 chars ≈ 3.5s
 
         const tl = gsap.timeline({
-            paused: true
+            paused: true,
+            id: "textReveal"
         });
 
         const stagger = 0.025; // Per-character delay
@@ -138,7 +141,11 @@
             }, offset);
         });
 
-        // ── 3. Hover interaction ──
+        // ── 3. GSDevTools ──
+        gsap.registerPlugin(GSDevTools);
+        GSDevTools.create({ animation: tl });
+
+        // ── 4. Hover interaction ──
         hoverArea.addEventListener('mouseenter', () => {
             tl.play();
         });
