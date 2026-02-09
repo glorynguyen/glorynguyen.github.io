@@ -7,9 +7,9 @@
     <style>
         :root {
             --bg-color: #000000;
-            --text-off: #222222;    /* Dark gray initial state */
-            --text-on: #ffffff;     /* Final white state */
-            --accent: #ec008c;      /* Huge Inc Pink */
+            --text-off: #222222;
+            --text-on: #ffffff;
+            --accent: #ec008c;
         }
 
         body {
@@ -38,10 +38,13 @@
             user-select: none;
         }
 
-        /* Span styling for individual words */
-        .word {
+        .char {
             display: inline-block;
-            white-space: pre; /* Keeps spaces intact */
+            color: var(--text-off);
+        }
+
+        .char-space {
+            display: inline;
         }
     </style>
 </head>
@@ -53,63 +56,96 @@
         </h1>
     </div>
 
-    <!-- GSAP Latest Version -->
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
     <script>
         const textElement = document.getElementById('target-text');
         const hoverArea = document.getElementById('hover-area');
-        
-        // 1. Split text into words and wrap in spans
-        const wordsArray = textElement.innerText.split(' ');
+
+        // ── 1. Split text into character spans ──
+        const rawText = textElement.innerText.trim();
         textElement.innerHTML = '';
-        
-        wordsArray.forEach((word, i) => {
+
+        const chars = [];
+
+        for (let i = 0; i < rawText.length; i++) {
             const span = document.createElement('span');
-            span.classList.add('word');
-            // Add a space after the word except for the last one
-            span.textContent = word + (i === wordsArray.length - 1 ? '' : ' ');
+            if (rawText[i] === ' ') {
+                span.classList.add('char-space');
+                span.textContent = ' ';
+            } else {
+                span.classList.add('char');
+                span.textContent = rawText[i];
+                chars.push(span);
+            }
             textElement.appendChild(span);
+        }
+
+        // ── 2. Build the timeline with multi-stop color keyframes ──
+        //
+        // Pixel analysis of the video screenshot reveals the color gradient:
+        //
+        //   #222222 (dark gray)          ← base state
+        //       ↓ 
+        //   #6b2849 (dark magenta)       ← first warmth appearing
+        //       ↓
+        //   #c70e73 (deep magenta)       ← entering the pink zone
+        //       ↓
+        //   #ec008c (hot pink)           ← peak intensity
+        //       ↓
+        //   #fe52b4 (bright pink)        ← starting to lighten
+        //       ↓
+        //   #f679bb (medium pink)        ← mid fade
+        //       ↓
+        //   #ffc2e3 (light pink)         ← trailing glow
+        //       ↓
+        //   #ffffff (white)              ← final state
+        //
+        // The band spans ~30-35 chars wide at any moment.
+        // Total sweep across ~120 chars ≈ 3.5s
+
+        const tl = gsap.timeline({
+            paused: true
         });
 
-        const words = document.querySelectorAll('.word');
+        const stagger = 0.025; // Per-character delay
 
-        // 2. Create the Timeline
-        // We set paused: true so it only plays on hover
-        const tl = gsap.timeline({ 
-            paused: true,
-            defaults: { ease: "power2.out" }
+        // Each character's full color journey duration
+        // Longer = wider visible gradient band
+        const totalCharDuration = 1.0;
+
+        chars.forEach((char, i) => {
+            const offset = i * stagger;
+
+            tl.to(char, {
+                keyframes: [
+                    // Gray → Dark magenta (entering the wave)
+                    { color: "#6b2849", duration: totalCharDuration * 0.03, ease: "power1.in" },
+                    // Dark magenta → Deep magenta
+                    { color: "#c70e73", duration: totalCharDuration * 0.03, ease: "power1.inOut" },
+                    // Deep magenta → Hot pink (peak!)
+                    { color: "#ec008c", duration: totalCharDuration * 0.03, ease: "power2.out" },
+                    // Hot pink → Bright pink (starting to resolve)
+                    { color: "#fe52b4", duration: totalCharDuration * 0.03, ease: "power1.out" },
+                    // Bright pink → Medium pink
+                    { color: "#f679bb", duration: totalCharDuration * 0.03, ease: "none" },
+                    // Medium pink → Light pink
+                    { color: "#ffc2e3", duration: totalCharDuration * 0.03, ease: "none" },
+                    // Light pink → White (final settle)
+                    { color: "#ffffff", duration: totalCharDuration * 0.03, ease: "power2.out" }
+                ]
+            }, offset);
         });
 
-        // 3. Define the animation sequence (following the video timing)
-        // Each word follows this path: Gray -> Pink (Flash) -> White
-        words.forEach((word, index) => {
-            const delay = index * 0.08; // This controls the speed of the "wave"
-
-            // Sequence for a single word
-            tl.to(word, {
-                color: "#ec008c", // Turn Pink
-                duration: 0.25,
-            }, delay)
-            .to(word, {
-                color: "#ffffff", // Then turn White
-                duration: 0.4,
-            }, delay + 0.15); // Starts turning white shortly after turning pink
-        });
-
-        // 4. Event Listeners for Hover
+        // ── 3. Hover interaction ──
         hoverArea.addEventListener('mouseenter', () => {
             tl.play();
         });
 
         hoverArea.addEventListener('mouseleave', () => {
-            // Option A: Reverse it back to gray
             tl.reverse();
-            
-            // Option B: Snap back to gray instantly
-            // tl.pause(0); 
         });
-
     </script>
 </body>
 </html>
