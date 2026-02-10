@@ -1,0 +1,221 @@
+---
+title: "React Context: Teleporting State Without Prop Drilling"
+titleVi: "React Context: 'Dịch chuyển' State mà không cần Prop Drilling"
+description: "A comprehensive guide for frontend teams on mastering React Context, from mental models to performance optimization."
+descriptionVi: "Hướng dẫn toàn diện cho frontend team về React Context, từ tư duy hệ thống đến tối ưu hóa hiệu năng."
+pubDate: 2026-02-10
+author: "Vinh Nguyen (Vincent)"
+tags: ["React", "Frontend", "Architecture", "State Management"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+If you've ever passed a `user` object through five layers of components just so a small `Avatar` component in the footer can show a profile picture, you've experienced **Prop Drilling**. 
+
+React Context is the built-in solution to this "Bucket Brigade" problem. It allows us to share data globally across the component tree without manually passing props at every level.
+
+<Callout type="info" title="The Mental Model">
+  Think of Context like a **Radio Station**. The **Provider** is the broadcast tower sending out a signal. Any component within the signal range (the tree) can tune in using a **Hook** (the radio receiver) to get the data, regardless of how deep they are.
+</Callout>
+
+## The Three Pillars of Context
+
+To use Context, you only need to master three specific parts of the API:
+
+### 1. `createContext`
+This initializes the "channel." It’s usually defined in its own file or at the top of a feature folder.
+```javascript
+const ThemeContext = createContext('light'); // 'light' is the default value
+```
+
+### 2. `Provider`
+The component that "wraps" your app (or a specific section). It holds the value that will be broadcasted to all children.
+```jsx
+<ThemeContext.Provider value="dark">
+  <App />
+</ThemeContext.Provider>
+```
+
+### 3. `useContext`
+The Hook used by child components to "listen" to the data.
+```javascript
+const theme = useContext(ThemeContext); // returns "dark"
+```
+
+## Practical Example: Theme Switcher
+
+Here is a production-ready pattern. Notice how we wrap the logic into a custom provider component to keep the `App.js` clean.
+
+```jsx
+// ThemeContext.tsx
+import { createContext, useContext, useState } from 'react';
+
+const ThemeContext = createContext(undefined);
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+  
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  // We pass an object containing both state and the updater function
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+// Custom hook for easier consumption & error handling
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+}
+```
+
+## The Secret Ingredient: Closures
+One reason Context is so powerful is **Closures**. When we pass a function like `toggleTheme` into the Provider's `value`, that function "captures" the scope of the `ThemeProvider`. 
+
+Even if a component 10 levels down calls `toggleTheme()`, it correctly updates the state inside the `ThemeProvider` because of the closure created when the provider rendered. This allows children to trigger state changes in parents they don't even know exist.
+
+---
+
+## Best Practices & Common Pitfalls
+
+### ✅ Do:
+- **Use for "Global" data:** Current user, UI themes, language/localization, or feature flags.
+- **Keep it small:** Create multiple specialized contexts (e.g., `AuthContext`, `CartContext`) rather than one giant `GlobalContext`.
+- **Wrap your Hook:** Always create a custom hook (like `useTheme`) to handle the `undefined` case.
+
+### ❌ Don't:
+- **Avoid Overuse:** Don't use Context just to avoid passing props 1 or 2 levels down. Standard props are more traceable and easier to test.
+- **The Performance Trap:** Every time the `value` in a Provider changes, **all** components consuming that context will re-render. If your context object is huge and changes often, you'll hit performance bottlenecks.
+
+---
+
+## Context vs. Redux vs. Zustand
+
+| Feature | React Context | Zustand / Redux | Custom Hooks |
+| :--- | :--- | :--- | :--- |
+| **Setup** | Low (Built-in) | Medium/High | Low |
+| **Re-renders** | Harder to optimize | Highly optimized | Only local |
+| **Complexity** | Simple values | Complex logic/Middleware | Logic only |
+| **Best For** | Low-frequency updates | High-frequency / Large state | Logic reuse only |
+
+## Final Summary
+1. **Context solves Prop Drilling** by creating a direct data tunnel.
+2. **Provider** sends the data; **useContext** receives it.
+3. **Closures** allow child components to update the central state.
+4. **Be careful with performance**: Context is not a silver bullet for high-frequency state updates (like text inputs or game loops).
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Nếu bạn từng phải truyền object `user` qua 5 lớp component chỉ để cái `Avatar` nhỏ xíu ở footer có thể hiển thị ảnh profile, bạn đã gặp phải vấn đề **Prop Drilling**.
+
+React Context là giải pháp "cây nhà lá vườn" cho vấn đề này. Nó cho phép chúng ta chia sẻ dữ liệu toàn cục trong cây component mà không cần truyền props thủ công qua từng cấp.
+
+<Callout type="info" title="Mô hình tư duy">
+  Hãy tưởng tượng Context như một **Đài Phát Thanh**. **Provider** là tháp truyền hình đang phát tín hiệu. Bất kỳ component nào nằm trong vùng phủ sóng (cây component) đều có thể "dò đài" bằng một **Hook** (máy radio) để lấy dữ liệu, bất kể chúng nằm sâu đến đâu.
+</Callout>
+
+## 3 Trụ Cột của Context
+
+Để sử dụng Context, bạn chỉ cần nắm vững 3 phần sau:
+
+### 1. `createContext`
+Khởi tạo "kênh" dữ liệu. Thường được định nghĩa trong file riêng hoặc đầu thư mục tính năng.
+```javascript
+const ThemeContext = createContext('light'); // 'light' là giá trị mặc định
+```
+
+### 2. `Provider`
+Component bao bọc ứng dụng (hoặc một vùng). Nó nắm giữ giá trị sẽ được "phát sóng" tới tất cả các con.
+```jsx
+<ThemeContext.Provider value="dark">
+  <App />
+</ThemeContext.Provider>
+```
+
+### 3. `useContext`
+Hook được các component con sử dụng để "nghe" dữ liệu.
+```javascript
+const theme = useContext(ThemeContext); // trả về "dark"
+```
+
+## Ví dụ thực tế: Bộ chuyển đổi Theme
+
+Đây là pattern thường dùng trong thực tế. Chúng ta đóng gói logic vào một Provider riêng để giữ `App.js` sạch sẽ.
+
+```jsx
+// ThemeContext.tsx
+import { createContext, useContext, useState } from 'react';
+
+const ThemeContext = createContext(undefined);
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+  
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  // Truyền một object chứa cả state và hàm cập nhật
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+// Custom hook để sử dụng dễ dàng hơn và xử lý lỗi
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme phải được dùng trong ThemeProvider");
+  return context;
+}
+```
+
+## "Gia vị" bí mật: Closures
+Một lý do khiến Context mạnh mẽ là nhờ **Closures**. Khi chúng ta truyền một hàm như `toggleTheme` vào `value` của Provider, hàm đó "ghi nhớ" phạm vi (scope) của `ThemeProvider`.
+
+Ngay cả khi một component cách đó 10 tầng gọi `toggleTheme()`, nó vẫn cập nhật đúng state bên trong `ThemeProvider`. Điều này cho phép con cái kích hoạt thay đổi state ở cha mà chúng thậm chí không cần biết cha là ai.
+
+---
+
+## Best Practices & Sai lầm thường gặp
+
+### ✅ Nên làm:
+- **Dùng cho dữ liệu "Toàn cục":** User hiện tại, UI themes, ngôn ngữ (i18n), hoặc feature flags.
+- **Giữ nó nhỏ gọn:** Nên tạo nhiều Context chuyên biệt (ví dụ: `AuthContext`, `CartContext`) thay vì một cái `GlobalContext` khổng lồ.
+- **Tạo Custom Hook:** Luôn tạo hook riêng (như `useTheme`) để check lỗi khi dùng ngoài Provider.
+
+### ❌ Không nên:
+- **Tránh lạm dụng:** Đừng dùng Context chỉ để tránh truyền props 1-2 tầng. Props thông thường dễ debug và test hơn.
+- **Bẫy hiệu năng:** Mỗi khi `value` của Provider thay đổi, **tất cả** component sử dụng Context đó sẽ re-render. Nếu object quá lớn và thay đổi liên tục, app sẽ bị lag.
+
+---
+
+## So sánh: Context vs. Redux vs. Zustand
+
+| Đặc tính | React Context | Zustand / Redux | Custom Hooks |
+| :--- | :--- | :--- | :--- |
+| **Cài đặt** | Thấp (Có sẵn) | Trung bình/Cao | Thấp |
+| **Re-renders** | Khó tối ưu | Tối ưu cực tốt | Chỉ tại chỗ |
+| **Độ phức tạp** | Đơn giản | Logic phức tạp / Middleware | Chỉ chứa logic |
+| **Phù hợp** | Dữ liệu ít thay đổi | State lớn / Thay đổi liên tục | Tái sử dụng logic |
+
+## Tổng kết
+1. **Context giải quyết Prop Drilling** bằng cách tạo đường ống dẫn dữ liệu trực tiếp.
+2. **Provider** gửi dữ liệu; **useContext** nhận dữ liệu.
+3. **Closures** cho phép component con cập nhật state trung tâm.
+4. **Cẩn thận với hiệu năng**: Context không phải là "viên đạn bạc" cho các state thay đổi liên tục (như input text hoặc game loop).
+
+</div>
