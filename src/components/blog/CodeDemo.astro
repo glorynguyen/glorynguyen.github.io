@@ -1,0 +1,163 @@
+---
+// CodeDemo component for displaying interactive code snippets
+// Supports syntax highlighting via shiki orPrism
+
+interface Props {
+  code: string;
+  language?: 'javascript' | 'typescript' | 'python' | 'html' | 'css' | 'bash' | 'json';
+  title?: string;
+  filename?: string;
+  showLineNumbers?: boolean;
+}
+
+const {
+  code = '',
+  language = 'javascript',
+  title,
+  filename,
+  showLineNumbers = true,
+} = Astro.props;
+
+// Clean up the code (remove common leading whitespace)
+const cleanCode = () => {
+  const lines = code.split('\n');
+  // Find minimum indentation
+  const nonEmptyLines = lines.filter(line => line.trim().length > 0);
+  if (nonEmptyLines.length === 0) return '';
+
+  const minIndent = nonEmptyLines.reduce((min, line) => {
+    const match = line.match(/^(\s*)/);
+    const indent = match ? match[1].length : 0;
+    return Math.min(min, indent);
+  }, Infinity);
+
+  // Remove common indentation
+  return lines.map(line => line.slice(minIndent)).join('\n');
+};
+
+const formattedCode = cleanCode();
+
+// Simple syntax highlighting (basic implementation)
+const highlightCode = (code: string, lang: string) => {
+  if (!code) return '';
+
+  // keywords by language
+  const keywords = {
+    javascript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'class', 'import', 'from', 'export', 'default', 'async', 'await', 'try', 'catch', 'new', 'this'],
+    python: ['def', 'class', 'return', 'if', 'elif', 'else', 'for', 'while', 'import', 'from', 'as', 'with', 'try', 'except', 'finally', 'lambda', 'yield', 'async', 'await'],
+    typescript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'class', 'interface', 'type', 'import', 'from', 'export', 'default', 'async', 'await', 'public', 'private', 'protected', 'static', 'extends'],
+    html: ['<', '>', '</', 'html', 'head', 'body', 'div', 'span', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'img', 'script', 'style', 'link', 'meta', 'title'],
+    css: ['{', '}', ':', ';', '@media', '@import', 'background', 'color', 'font', 'margin', 'padding', 'display', 'flex', 'grid', 'position', 'width', 'height'],
+    bash: ['cd', 'ls', 'mkdir', 'rm', 'cp', 'mv', 'cat', 'echo', 'git', 'npm', 'yarn', 'node', 'pnpm', 'npx', 'chmod', 'chown', 'sudo', 'grep', 'find'],
+    json: ['{', '}', '[', ']', ':', ','],
+  };
+
+  let highlighted = code
+    // Escape HTML entities
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Strings
+    .replace(/(['"`])(.*?)\1/g, '<span class="token string">"$2"</span>')
+    // Numbers
+    .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="token number">$1</span>')
+    // Comments
+    .replace(/(\/\/.*$)/gm, '<span class="token comment">$1</span>')
+    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="token comment">$1</span>')
+    // Keywords
+    .replace(/\b(const|let|var|function|return|if|else|for|while|class|import|from|export|default|async|await|try|catch|new|this|public|private|protected|static|extends|interface|type)\b/g, '<span class="token keyword">$1</span>')
+    // Functions
+    .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\()/g, '<span class="token function">$1</span>')
+    // Booleans
+    .replace(/\b(true|false)\b/g, '<span class="token boolean">$1</span>')
+    // Null/undefined
+    .replace(/\b(null|undefined)\b/g, '<span class="token null">$1</span>')
+    // Tags (HTML)
+    .replace(/(&lt;\/?)(\w+)(.*?)(&gt;)/g, '$1<span class="token tag">$2</span>$3$4');
+
+  return highlighted;
+};
+
+const highlightedCode = highlightCode(formattedCode, language);
+---
+
+<div class="code-demo">
+  {(title || filename) && (
+    <div class="code-header">
+      <span class="code-title">{title || filename}</span>
+      <span class="code-language">{language}</span>
+    </div>
+  )}
+  <div class="code-content">
+    <pre><code innerHTML={highlightedCode} class={language}></code></pre>
+  </div>
+</div>
+
+<style>
+  .code-demo {
+    margin: 1.5rem 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-alt);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.75rem;
+  }
+
+  .code-title {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .code-language {
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+  }
+
+  .code-content {
+    background: var(--color-text);
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .token {
+    &.keyword { color: #c678dd; }
+    &.string { color: #98c379; }
+    &.number { color: #d19a66; }
+    &.comment { color: #5c6370; font-style: italic; }
+    &.function { color: #61afef; }
+    &.boolean { color: #c678dd; }
+    &.null { color: #c678dd; }
+    &.tag { color: #e06c75; }
+  }
+
+  @media (max-width: 768px) {
+    pre {
+      padding: 0.75rem;
+    }
+
+    code {
+      font-size: 0.8rem;
+    }
+  }
+</style>

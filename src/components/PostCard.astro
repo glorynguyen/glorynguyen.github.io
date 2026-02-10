@@ -1,17 +1,55 @@
 ---
+// PostCard component for blog index page
+// Works with MDX content collection posts
+
 interface Props {
-    slug: string;
-    dateEn: string;
-    dateVi: string;
-    tagEn: string;
-    tagVi: string;
-    titleEn: string;
-    titleVi: string;
-    excerptEn: string;
-    excerptVi: string;
+  slug: string;
+  pubDate: Date;
+  title: string;
+  titleVi?: string;
+  description: string;
+  descriptionVi?: string;
+  tags: string[];
 }
 
-const { slug, dateEn, dateVi, tagEn, tagVi, titleEn, titleVi, excerptEn, excerptVi } = Astro.props;
+const { slug, pubDate, title, titleVi, description, descriptionVi, tags } = Astro.props;
+
+// Helper functions for date formatting
+const formatDateEn = (date: Date) => {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+};
+
+const formatDateVi = (date: Date) => {
+  return date.toLocaleDateString('vi-VN');
+};
+
+// Simple tag mapping for Vietnamese
+const mapTag = (tag: string): string => {
+  const tagMap: Record<string, string> = {
+    'AI': 'AI',
+    'Open Standards': 'Chuẩn mở',
+    'Personal Story': 'Câu chuyện cá nhân',
+    'Leadership': 'Lãnh đạo',
+    'Engineering': 'Kỹ thuật',
+    'Engineering Strategy': 'Chiến lược Kỹ thuật',
+    'Career': 'Sự nghiệp',
+    'Productivity': 'Năng suất',
+    'Future of Work': 'Tương lai công việc',
+    'Programming': 'Lập trình',
+    'Technology': 'Công nghệ',
+    'MCP': 'MCP',
+    'GSAP': 'GSAP',
+    'Animation': 'Hoạt ảnh',
+    'Security': 'Bảo mật',
+    'Integration': 'Tích hợp',
+    'AI Agent': 'AI Agent',
+    'Distributed Teams': 'Đội ngũ phân tán',
+    'Architecture': 'Kiến trúc',
+    'Product Management': 'Quản lý sản phẩm',
+    'Technical Leadership': 'Lãnh đạo kỹ thuật',
+  };
+  return tagMap[tag] || tag;
+};
 ---
 
 <a href={`/blog/posts/${slug}.html`} class="post-card">
@@ -23,18 +61,18 @@ const { slug, dateEn, dateVi, tagEn, tagVi, titleEn, titleVi, excerptEn, excerpt
                 <line x1="8" y1="2" x2="8" y2="6"></line>
                 <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <span data-lang="en">{dateEn}</span>
-            <span data-lang="vi" hidden>{dateVi}</span>
+            <span data-lang="en">{formatDateEn(pubDate)}</span>
+            <span data-lang="vi" hidden>{formatDateVi(pubDate)}</span>
         </span>
-        <span class="post-tag" data-lang="en">{tagEn}</span>
-        <span class="post-tag" data-lang="vi" hidden>{tagVi}</span>
+        <span class="post-tag" data-lang="en">{tags.join(', ')}</span>
+        <span class="post-tag" data-lang="vi" hidden>{tags.map(mapTag).join(', ')}</span>
     </div>
 
-    <h2 class="post-title" data-lang="en">{titleEn}</h2>
-    <h2 class="post-title" data-lang="vi" hidden>{titleVi}</h2>
+    <h2 class="post-title" data-lang="en">{title}</h2>
+    <h2 class="post-title" data-lang="vi" hidden>{titleVi || title}</h2>
 
-    <p class="post-excerpt" data-lang="en">{excerptEn}</p>
-    <p class="post-excerpt" data-lang="vi" hidden>{excerptVi}</p>
+    <p class="post-excerpt" data-lang="en">{description}</p>
+    <p class="post-excerpt" data-lang="vi" hidden>{descriptionVi || description}</p>
 
     <span class="read-more" data-lang="en">
         Read more

@@ -1,0 +1,760 @@
+---
+// Layout for MDX blog posts
+// Handles SEO, language toggle, and consistent styling
+
+interface Props {
+  frontmatter: {
+    title: string;
+    titleVi?: string;
+    description: string;
+    descriptionVi?: string;
+    pubDate: Date;
+    author?: string;
+    tags: string[];
+  };
+  slug?: string;
+}
+
+const { frontmatter, slug } = Astro.props;
+
+// Default author
+const author = frontmatter.author ?? 'Vinh Nguyen (Vincent)';
+
+// Generate canonical URL - handle both client-side and server-side rendering
+const canonicalUrl = (() => {
+  // Try to use Astro.request if available (client-side or streaming rendering)
+  if (typeof Astro.request !== 'undefined' && Astro.request) {
+    return Astro.request.url.href;
+  }
+  // Fallback: construct URL from slug during static generation
+  const slugPath = slug ? `/${String(slug)}` : '';
+  return `https://vinhnguyenba.dev/blog/posts${slugPath}`;
+})();
+
+// Helper function for tag mapping
+const mapTag = (tag: string): string => {
+  const tagMap: Record<string, string> = {
+    'AI': 'AI',
+    'Open Standards': 'Chuẩn mở',
+    'Personal Story': 'Câu chuyện cá nhân',
+    'Leadership': 'Lãnh đạo',
+    'Engineering': 'Kỹ thuật',
+    'Engineering Strategy': 'Chiến lược Kỹ thuật',
+    'Career': 'Sự nghiệp',
+    'Productivity': 'Năng suất',
+    'Future of Work': 'Tương lai công việc',
+    'Programming': 'Lập trình',
+    'Technology': 'Công nghệ',
+    'MCP': 'MCP',
+    'GSAP': 'GSAP',
+    'Animation': 'Hoạt ảnh',
+    'Security': 'Bảo mật',
+    'Integration': 'Tích hợp',
+    'AI Agent': 'AI Agent',
+    'Distributed Teams': 'Đội ngũ phân tán',
+    'Architecture': 'Kiến trúc',
+    'Product Management': 'Quản lý sản phẩm',
+    'Technical Leadership': 'Lãnh đạo kỹ thuật',
+  };
+  return tagMap[tag] || tag;
+};
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content={frontmatter.description} />
+    <meta name="author" content={author} />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={frontmatter.title} />
+    <meta property="og:description" content={frontmatter.description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content="https://vinhnguyenba.dev/og-image.png" />
+    <meta property="og:image:alt" content={frontmatter.title} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={frontmatter.title} />
+    <meta name="twitter:description" content={frontmatter.description} />
+    <meta name="twitter:image" content="https://vinhnguyenba.dev/og-image.png" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#2563eb" />
+
+    <!-- Article metadata -->
+    <meta property="article:published_time" content={frontmatter.pubDate.toISOString().split('T')[0]} />
+    <meta name="keywords" content={frontmatter.tags.join(', ')} />
+
+    <title>{frontmatter.title} | Blog | Vinh Nguyen (Vincent)</title>
+
+    <style is:global>
+        /**
+         * Blog Styles - Inline for single-request loading
+         * Consistent with main portfolio design system
+         */
+
+        /* CSS Custom Properties */
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-dark: #1d4ed8;
+            --color-text: #1f2937;
+            --color-text-light: #6b7280;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f9fafb;
+            --color-border: #e5e7eb;
+            --color-accent: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --max-width: 800px;
+            --max-width-wide: 1100px;
+        }
+
+        /* Reset & Base */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top 0.2s;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Header */
+        .blog-header {
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: var(--max-width-wide);
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo:hover {
+            color: var(--color-primary);
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .blog-title-link {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-primary);
+            text-decoration: none;
+            padding: 0.25rem 0.75rem;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: var(--radius);
+        }
+
+        .blog-title-link:hover {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--color-bg-alt);
+            padding: 0.25rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-border);
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--color-text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: calc(var(--radius) - 2px);
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        .lang-btn.active {
+            background: var(--color-bg);
+            color: var(--color-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Main Content */
+        .blog-main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Post Header */
+        .post-header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .post-header .post-title {
+            font-size: 2.25rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            line-height: 1.3;
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: .75rem;
+            font-size: 0.875rem;
+            color: var(--color-text-light);
+            flex-wrap: wrap;
+        }
+
+        .post-date {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .post-date svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .post-tag {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--color-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Post Content */
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+        }
+
+        .post-content p {
+            margin: 0 0 1.5rem 0;
+        }
+
+        .post-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem 0;
+            color: var(--color-text);
+        }
+
+        .post-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem 0;
+            color: var(--color-text);
+        }
+
+        .post-content blockquote {
+            margin: 2rem 0;
+            padding: 1.5rem 2rem;
+            background: var(--color-bg-alt);
+            border-left: 4px solid var(--color-primary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            font-style: italic;
+            color: var(--color-text-light);
+        }
+
+        .post-content blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        .post-content ul, .post-content ol {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-content strong {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .post-content a {
+            color: var(--color-primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .post-content a:hover {
+            color: var(--color-primary-dark);
+        }
+
+        .post-content code {
+            background: var(--color-bg-alt);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+
+        .post-content pre {
+            background: var(--color-text);
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .post-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: var(--radius);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        /* Callout Component Styles */
+        .callout {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+        }
+
+        .callout.info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .callout.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+        }
+
+        .callout.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .callout.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .callout-content {
+            color: var(--color-text);
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--color-primary);
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Footer */
+        .blog-footer {
+            background: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: var(--max-width-wide);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-primary);
+        }
+
+        .footer-copyright {
+            color: var(--color-text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .blog-main {
+                padding: 2rem 1rem;
+            }
+
+            .post-header .post-title {
+                font-size: 1.75rem;
+            }
+
+            .post-content {
+                font-size: 1rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .lang-btn {
+                padding: 0.375rem 0.75rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .blog-header,
+            .lang-switcher,
+            .back-link,
+            .blog-footer {
+                display: none;
+            }
+
+            .blog-main {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .post-content {
+                font-size: 12pt;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Hidden utility for i18n */
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": frontmatter.title,
+        "description": frontmatter.description,
+        "datePublished": frontmatter.pubDate.toISOString().split('T')[0],
+        "author": {
+            "@type": "Person",
+            "name": author,
+            "url": "https://vinhnguyenba.dev"
+        },
+        "publisher": {
+            "@type": "Person",
+            "name": author
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": canonicalUrl
+        }
+    })}></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Blog Header with Language Switcher -->
+    <header class="blog-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/" class="logo" aria-label="Back to portfolio">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Vincent</span>
+                </a>
+                <a href="/blog" class="blog-title-link">Blog</a>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="lang-switcher" role="group" aria-label="Language selection">
+                <button type="button" class="lang-btn" data-lang-switch="en" aria-pressed="true">EN</button>
+                <button type="button" class="lang-btn" data-lang-switch="vi" aria-pressed="false">VI</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="blog-main">
+        <article>
+            <!-- Back Link -->
+            <a href="/blog" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span data-lang="en">Back to all posts</span>
+                <span data-lang="vi" hidden>Quay lại danh sách bài viết</span>
+            </a>
+
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-date">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span class="post-date-en">{frontmatter.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        <span class="post-date-vi" hidden>{frontmatter.pubDate.toLocaleDateString('vi-VN')}</span>
+                    </span>
+                    <span class="post-tag post-tag-en" data-lang="en">{frontmatter.tags.join(', ')}</span>
+                    <span class="post-tag post-tag-vi" data-lang="vi" hidden>{frontmatter.tags.map(mapTag).join(', ')}</span>
+                </div>
+
+                <h1 class="post-title post-title-en" data-lang="en">{frontmatter.title}</h1>
+                <h1 class="post-title post-title-vi" data-lang="vi" hidden>{frontmatter.titleVi || frontmatter.title}</h1>
+            </header>
+
+            <div class="post-content">
+                <slot />
+            </div>
+        </article>
+    </main>
+
+    <!-- Blog Footer -->
+    <footer class="blog-footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Portfolio</a>
+                <a href="https://www.linkedin.com/in/vinh-nguyen-479781130/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href="https://github.com/glorynguyen" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+            <p class="footer-copyright footer-copyright-en" data-lang="en">&copy; {frontmatter.pubDate.getFullYear()} Vinh Nguyen (Vincent). All rights reserved.</p>
+            <p class="footer-copyright footer-copyright-vi" data-lang="vi" hidden>&copy; {frontmatter.pubDate.getFullYear()} Vinh Nguyen (Vincent). Bản quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script is:inline>
+        const I18n = (function() {
+            const SUPPORTED_LANGUAGES = ['en', 'vi'];
+            const DEFAULT_LANGUAGE = 'en';
+            const STORAGE_KEY = 'blog-language';
+
+            function detectBrowserLanguage() {
+                const browserLang = navigator.language || navigator.userLanguage;
+                const langCode = browserLang.split('-')[0].toLowerCase();
+                return SUPPORTED_LANGUAGES.includes(langCode) ? langCode : DEFAULT_LANGUAGE;
+            }
+
+            function getLanguage() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored && SUPPORTED_LANGUAGES.includes(stored)) {
+                    return stored;
+                }
+                return detectBrowserLanguage();
+            }
+
+            function setLanguage(lang) {
+                if (!SUPPORTED_LANGUAGES.includes(lang)) {
+                    console.warn(`Unsupported language: ${lang}. Using default.`);
+                    lang = DEFAULT_LANGUAGE;
+                }
+                localStorage.setItem(STORAGE_KEY, lang);
+                applyLanguage(lang);
+                return lang;
+            }
+
+            function applyLanguage(lang) {
+                document.documentElement.lang = lang;
+                document.querySelectorAll('[data-lang]').forEach(el => {
+                    if (el.getAttribute('data-lang') === lang) {
+                        el.style.display = '';
+                        el.removeAttribute('hidden');
+                    } else {
+                        el.style.display = 'none';
+                        el.setAttribute('hidden', '');
+                    }
+                });
+                document.querySelectorAll('[data-lang-switch]').forEach(btn => {
+                    const btnLang = btn.getAttribute('data-lang-switch');
+                    btn.classList.toggle('active', btnLang === lang);
+                    btn.setAttribute('aria-pressed', btnLang === lang);
+                });
+                window.dispatchEvent(new CustomEvent('languagechange', { detail: { language: lang } }));
+            }
+
+            function toggleLanguage() {
+                const current = getLanguage();
+                const currentIndex = SUPPORTED_LANGUAGES.indexOf(current);
+                const nextIndex = (currentIndex + 1) % SUPPORTED_LANGUAGES.length;
+                return setLanguage(SUPPORTED_LANGUAGES[nextIndex]);
+            }
+
+            function init() {
+                const lang = getLanguage();
+                applyLanguage(lang);
+                document.querySelectorAll('[data-lang-switch]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetLang = btn.getAttribute('data-lang-switch');
+                        setLanguage(targetLang);
+                    });
+                });
+                return lang;
+            }
+
+            return {
+                init,
+                getLanguage,
+                setLanguage,
+                toggleLanguage,
+                detectBrowserLanguage,
+                SUPPORTED_LANGUAGES,
+                DEFAULT_LANGUAGE
+            };
+        })();
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => I18n.init());
+        } else {
+            I18n.init();
+        }
+    </script>
+</body>
+</html>

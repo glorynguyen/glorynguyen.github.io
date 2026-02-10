@@ -1,0 +1,30 @@
+---
+// Dynamic route for single blog posts
+// Handles both MDX posts from content collection and legacy .astro posts
+
+import { getCollection, getEntry } from 'astro:content';
+import BlogPostLayout from '../../../layouts/BlogPostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Get slug from params (Astro.params) or from post.slug
+// The post.slug comes from the content collection entry's slug property
+const slugFromParams = Astro.params.slug;
+const slugFromPost = post.slug;
+const slug = slugFromParams ?? slugFromPost;
+
+---
+
+<BlogPostLayout frontmatter={post.data} slug={String(slug)}>
+  <Content />
+</BlogPostLayout>

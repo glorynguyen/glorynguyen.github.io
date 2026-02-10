@@ -1,0 +1,112 @@
+---
+// TableOfContents component for auto-generated table of contents
+// Uses client-side JS to read headings from the rendered page
+
+interface Props {
+  maxDepth?: 2 | 3;
+  title?: string;
+}
+
+const { maxDepth = 3, title = 'Table of Contents' } = Astro.props;
+---
+
+<div class="table-of-contents" data-max-depth={maxDepth}>
+  <h3 class="toc-title">{title}</h3>
+  <ul class="toc-list"></ul>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocContainer = document.querySelector('.table-of-contents');
+    if (!tocContainer) return;
+
+    const maxDepth = parseInt(tocContainer.getAttribute('data-max-depth') || '3', 10);
+    const tocList = tocContainer.querySelector('.toc-list');
+    if (!tocList) return;
+
+    const selector = maxDepth === 3 ? '.post-content h2, .post-content h3' : '.post-content h2';
+    const headings = document.querySelectorAll(selector);
+
+    if (headings.length === 0) {
+      tocContainer.style.display = 'none';
+      return;
+    }
+
+    headings.forEach((heading) => {
+      const id = heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, '-') || '';
+      if (!heading.id) heading.id = id;
+
+      const level = heading.tagName === 'H3' ? 3 : 2;
+      const li = document.createElement('li');
+      li.className = 'toc-item';
+      li.setAttribute('data-level', String(level));
+
+      const a = document.createElement('a');
+      a.className = 'toc-link';
+      a.href = `#${id}`;
+      a.textContent = heading.textContent || '';
+
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+  });
+</script>
+
+<style>
+  .table-of-contents {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+  }
+
+  .toc-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 1rem 0;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .toc-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .toc-item[data-level='3'] {
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+    border-left: 2px solid var(--color-border);
+  }
+
+  .toc-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .table-of-contents {
+      padding: 1rem;
+    }
+
+    .toc-title {
+      font-size: 0.875rem;
+    }
+
+    .toc-list {
+      font-size: 0.8rem;
+    }
+  }
+</style>

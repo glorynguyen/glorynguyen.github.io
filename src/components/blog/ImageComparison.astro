@@ -1,0 +1,178 @@
+---
+// ImageComparison component for before/after sliders
+
+interface Props {
+  before: string;
+  after: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  alt?: string;
+}
+
+const {
+  before,
+  after,
+  beforeLabel = 'Before',
+  afterLabel = 'After',
+  alt = 'Image comparison',
+} = Astro.props;
+---
+
+<div class="image-comparison">
+  <div class="comparison-container">
+    <img src={before} alt={alt} class="before-image" />
+    <div class="slider-container">
+      <img src={after} alt={alt} class="after-image" />
+      <div class="slider-handle"></div>
+    </div>
+    <input type="range" class="slider-input" min="0" max="100" value="50" />
+  </div>
+  <div class="comparison-labels">
+    <span class="label before-label">{beforeLabel}</span>
+    <span class="label after-label">{afterLabel}</span>
+  </div>
+</div>
+
+<style>
+  .image-comparison {
+    margin: 2rem 0;
+  }
+
+  .comparison-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    aspect-ratio: 16 / 9;
+  }
+
+  .before-image,
+  .after-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+
+  .before-image {
+    z-index: 1;
+  }
+
+  .slider-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .after-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200%;
+    height: 100%;
+  }
+
+  .slider-handle {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 4px;
+    height: 100%;
+    background: white;
+    transform: translateX(-50%);
+    cursor: ew-resize;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .slider-handle::after {
+    content: '↔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: var(--color-text);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+    z-index: 20;
+  }
+
+  .comparison-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .label.before-label {
+    color: var(--color-text);
+  }
+
+  /* Custom slider styling for webkit */
+  .slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    cursor: ew-resize;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider-input::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    cursor: ew-resize;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    .comparison-container {
+      aspect-ratio: 1;
+    }
+
+    .comparison-labels {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+title: "MCP: Bridging AI and Real-World Data"
+titleVi: "MCP: Cầu nối giữa AI và dữ liệu thực tế"
+description: "Model Context Protocol (MCP) enables AI to connect directly with external data sources. Explore my experiments with GitSage and Confluence MCP servers."
+descriptionVi: "Khám phá cách Model Context Protocol (MCP) giúp AI kết nối trực tiếp với dữ liệu bên ngoài qua các thử nghiệm GitSage và Confluence MCP."
+pubDate: 2026-02-04
+author: "Vinh Nguyen (Vincent)"
+tags: ["AI", "Integration", "MCP"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+Recently, there has been significant discussion around AI Agents—autonomous bots capable of working independently. However, I have observed a fundamental limitation: AI typically operates within a "black box," struggling to directly access data on local machines or internal systems unless we manually feed it piece by piece.
+
+This is why Anthropic's introduction of MCP (Model Context Protocol) caught my attention as a promising direction.
+
+## What is MCP?
+
+Think of MCP as a standardized protocol enabling AI to connect with external data sources. Previously, if you wanted AI to read from Slack, GitHub, or Google Drive, you had to write custom API integrations—a time-consuming process. With MCP, you simply implement a server following the standard protocol, and models like Claude or GPT can interact directly with your data sources.
+
+<Callout type="info" title="A Significant Step">
+  I believe this represents a significant step forward in transforming AI from an "advisor" into a genuine "collaborator"—one that can open files, query databases, or use tools directly.
+</Callout>
+
+## Two Practical Experiments
+
+I have implemented two simple MCP servers to address common challenges in my daily technical work:
+
+### GitSage MCP: Deeper Code Understanding for AI
+Rather than providing only the current codebase, this tool enables AI to examine commit history and understand relationships between different components. I incorporated data filtering to avoid overwhelming the model with unnecessary information. The result: AI can now review code and write commit messages that more accurately reflect the original intent.
+**Learn more:** [vinhnguyenba.dev/gitsage.html](https://vinhnguyenba.dev/gitsage.html)
+
+### Confluence MCP: Partial Documentation Automation
+This tool allows AI to search existing documentation in Confluence to answer questions, or automatically document recent code changes.
+**Learn more:** [vinhnguyenba.dev/confluence-mcp.html](https://vinhnguyenba.dev/confluence-mcp.html)
+
+## My Current Workflow
+
+I have integrated these components into a simple iterative loop:
+1. **Claude** writes the code.
+2. **GitSage** assists with code review and commits with historical context.
+3. **Confluence MCP** automatically updates documentation.
+
+This creates a feedback loop where AI doesn't just generate code—it participates in the entire development lifecycle with full context awareness.
+
+## The Developer's Evolving Role
+
+AI is advancing rapidly, but for it to be truly useful, we need to build appropriate connection mechanisms. With MCP, I see the developer's role expanding beyond just writing code to designing how AI participates in our workflows.
+
+<Callout type="info" title="The Future">
+  The future belongs not to those who can write the most code, but to those who can orchestrate the best collaboration between human insight and AI capability.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Dạo gần đây, cộng đồng nhắc đến rất nhiều về AI Agent—những thực thể tự vận hành có khả năng làm việc độc lập. Tuy nhiên, tôi nhận thấy một hạn chế cốt lõi: AI thường hoạt động trong một "chiếc hộp kín" (black box), rất khó tiếp cận trực tiếp dữ liệu trên máy tính cá nhân hay hệ thống nội bộ trừ khi chúng ta thủ công cung cấp từng chút một.
+
+Đó là lý do tại sao sự ra đời của MCP (Model Context Protocol) từ Anthropic lại thu hút sự chú ý của tôi như một hướng đi đầy hứa hẹn.
+
+## MCP là gì?
+
+Hãy hình dung MCP như một giao thức chuẩn hóa cho phép AI kết nối trực tiếp với các nguồn dữ liệu bên ngoài. Trước đây, nếu muốn AI đọc dữ liệu từ Slack, GitHub hay Google Drive, bạn phải viết các bộ tích hợp API tùy chỉnh—một quá trình cực kỳ tốn thời gian. Với MCP, bạn chỉ cần triển khai một server theo chuẩn chung, và các model như Claude hay GPT có thể tương tác trực tiếp với nguồn dữ liệu đó.
+
+<Callout type="info" title="Một bước tiến lớn">
+  Tôi tin rằng đây là một bước tiến quan trọng giúp chuyển đổi AI từ một "người cố vấn" thuần túy thành một "cộng sự" thực thụ—người có thể tự mở file, truy vấn cơ sở dữ liệu và sử dụng công cụ một cách trực tiếp.
+</Callout>
+
+## Hai thử nghiệm thực tế
+
+Tôi đã triển khai hai MCP server đơn giản để giải quyết các thách thức thường gặp trong công việc kỹ thuật hàng ngày:
+
+### GitSage MCP: Giúp AI hiểu sâu hơn về mã nguồn
+Thay vì chỉ cung cấp code hiện tại, công cụ này cho phép AI xem xét lịch sử commit và hiểu được mối quan hệ giữa các thành phần khác nhau qua thời gian. Tôi đã thêm chức năng lọc dữ liệu để tránh đưa quá nhiều thông tin không cần thiết cho model. Kết quả: AI có thể review code và viết commit message sát hơn với ý đồ ban đầu.
+**Chi tiết:** [vinhnguyenba.dev/gitsage.html](https://vinhnguyenba.dev/gitsage.html)
+
+### Confluence MCP: Tự động hóa một phần tài liệu
+Công cụ này cho phép AI tra cứu các tài liệu hiện có trên Confluence để trả lời câu hỏi, hoặc tự động ghi chép lại những thay đổi mã nguồn gần nhất.
+**Chi tiết:** [vinhnguyenba.dev/confluence-mcp.html](https://vinhnguyenba.dev/confluence-mcp.html)
+
+## Quy trình làm việc hiện tại của tôi
+
+Tôi đã tích hợp các thành phần này vào một vòng lặp đơn giản:
+1. **Claude** đảm nhận việc viết mã.
+2. **GitSage** hỗ trợ review code và commit dựa trên ngữ cảnh lịch sử.
+3. **Confluence MCP** tự động cập nhật tài liệu kỹ thuật.
+
+Điều này tạo ra một vòng phản hồi nơi AI không chỉ sinh code—mà tham gia vào toàn bộ vòng đời phát triển với nhận thức đầy đủ về ngữ cảnh.
+
+## Vai trò đang thay đổi của Lập trình viên
+
+AI đang tiến bộ thần tốc, nhưng để nó thực sự hữu ích, chúng ta cần xây dựng các cơ chế kết nối phù hợp. Với MCP, tôi thấy vai trò của lập trình viên không chỉ dừng lại ở việc viết code, mà còn mở rộng sang việc thiết kế cách AI tham gia vào quy trình làm việc của chúng ta.
+
+<Callout type="info" title="Tầm nhìn tương lai">
+  Tương lai không thuộc về những người viết được nhiều code nhất, mà thuộc về những người có khả năng điều phối sự cộng tác tốt nhất giữa tư duy con người và năng lực của AI.
+</Callout>
+
+Nếu bạn cũng đang thử nghiệm với MCP hoặc tìm ra cách tích hợp AI hiệu quả vào workflow, hãy chia sẻ với tôi nhé!
+
+</div>
