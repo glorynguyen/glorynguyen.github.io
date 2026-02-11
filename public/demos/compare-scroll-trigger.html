@@ -68,10 +68,11 @@ const tl = gsap.timeline({
   }
 });
 
-tl.to(".gsap-box", { x: 100 })
-  .to(".g-t1", { opacity: 1 })
-  .to(".g-t2", { opacity: 1 })
-  .to(".gsap-box", { rotation: 360 });</pre>
+tl.to(".gsap-box", { x: 100, duration: 1 })
+          .to(".g-t1", { opacity: 1, color: "#88ce02", duration: 1 }, "<")
+          .to(".g-t2", { opacity: 1, color: "#88ce02", duration: 1 })
+          .to(".g-t3", { opacity: 1, color: "#88ce02", duration: 1 })
+          .to(".gsap-box", { rotation: 360, duration: 1 }, "<");</pre>
                 </div>
             </div>
         </div>
@@ -129,9 +130,10 @@ scroll(
         });
 
         tl.to(".gsap-box", { x: 100, duration: 1 })
-          .to(".g-t1", { opacity: 1, color: "#88ce02", duration: 1 })
+          .to(".g-t1", { opacity: 1, color: "#88ce02", duration: 1 }, "<")
           .to(".g-t2", { opacity: 1, color: "#88ce02", duration: 1 })
-          .to(".gsap-box", { rotation: 360, duration: 1 });
+          .to(".g-t3", { opacity: 1, color: "#88ce02", duration: 1 })
+          .to(".gsap-box", { rotation: 360, duration: 1 }, "<");
 
 
         // --- 2. MOTION.DEV IMPLEMENTATION ---
