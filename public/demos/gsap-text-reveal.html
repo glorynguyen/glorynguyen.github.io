@@ -3,155 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huge Inc Text Reveal - Hover</title>
+    <title>Technical Evaluation: GSAP vs Motion.dev</title>
     <style>
         :root {
-            --bg-color: #000000;
+            --bg-color: #050505;
+            --card-bg: #111;
             --text-off: #222222;
-            --text-on: #ffffff;
-            --accent: #ec008c;
+            --gsap-accent: #88ce02;
+            --motion-accent: #00ddff;
+            --border: #222;
         }
 
         body {
             background-color: var(--bg-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            color: #eee;
             margin: 0;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            padding: 40px;
-            overflow: hidden;
+            font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .text-container {
-            max-width: 1000px;
-            cursor: pointer;
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            border-bottom: 1px solid var(--border);
+            width: 100%;
+        }
+
+        /* --- Visual Demo Section --- */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            min-height: 40vh;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .column {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 800;
         }
 
         .reveal-text {
-            font-size: clamp(2rem, 5vw, 4.5rem);
-            font-weight: 500;
-            line-height: 1.05;
-            letter-spacing: -0.03em;
+            font-size: clamp(1.5rem, 3.5vw, 2.8rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
             color: var(--text-off);
+            cursor: pointer;
             user-select: none;
         }
 
-        .char {
-            display: inline-block;
-            color: var(--text-off);
+        .char { display: inline-block; }
+
+        /* --- Code View Section --- */
+        .code-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            background: #000;
+            border-bottom: 1px solid var(--border);
         }
 
-        .char-space {
-            display: inline;
+        pre {
+            margin: 0;
+            padding: 30px;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: #888;
+            border-right: 1px solid var(--border);
         }
+
+        .hl-gsap { color: var(--gsap-accent); }
+        .hl-motion { color: var(--motion-accent); }
+        .comment { color: #444; font-style: italic; }
+
+        /* --- Pros & Cons Section --- */
+        .pros-cons-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 1400px;
+            padding: 60px 0;
+        }
+
+        .pc-card {
+            padding: 0 40px;
+            border-right: 1px solid var(--border);
+        }
+
+        .pc-card:last-child { border-right: none; }
+
+        h3 { font-size: 1.2rem; margin-bottom: 20px; }
+        
+        ul { list-style: none; padding: 0; }
+        li { 
+            margin-bottom: 12px; 
+            padding-left: 25px; 
+            position: relative; 
+            font-size: 0.95rem; 
+            line-height: 1.5;
+        }
+
+        .pro::before { content: "→"; position: absolute; left: 0; color: #88ce02; font-weight: bold; }
+        .con::before { content: "×"; position: absolute; left: 0; color: #ff4444; font-weight: bold; font-size: 1.2rem; }
+
+        .verdict {
+            grid-column: span 2;
+            text-align: center;
+            padding: 60px 40px;
+            background: #111;
+            margin: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .verdict h2 { color: var(--gsap-accent); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="text-container" id="hover-area">
-        <h1 class="reveal-text" id="target-text">
-            Huge is a design and technology company that creates innovative products and experiences that drive growth and deliver firsts for our clients.
-        </h1>
+    <div class="header">
+        <h1>Animation Strategy: GSAP vs Motion.dev</h1>
+        <p>A technical breakdown of the "Huge Inc" Text Reveal implementation.</p>
     </div>
 
-    <!-- GSAP -->
+    <div class="comparison-container">
+        <!-- GSAP COLUMN -->
+        <div class="column">
+            <div class="label" style="color: var(--gsap-accent);">GSAP (GreenSock)</div>
+            <div id="gsap-area" class="reveal-text">
+                Huge is a design and technology company that creates innovative products and experiences.
+            </div>
+        </div>
+
+        <!-- MOTION.DEV COLUMN -->
+        <div class="column">
+            <div class="label" style="color: var(--motion-accent);">Motion.dev Implementation</div>
+            <div id="motion-area" class="reveal-text">
+                Huge is a design and technology company that creates innovative products and experiences.
+            </div>
+        </div>
+    </div>
+
+    <!-- CODE VIEW -->
+    <div class="code-section">
+<pre>
+<span class="hl-gsap">// GSAP Logic</span>
+<span class="comment">// Uses an imperative Timeline approach</span>
+const tl = gsap.timeline({ paused: true });
+
+tl.to(chars, {
+  keyframes: [
+    { color: "#6b2849", duration: 0.1 },
+    { color: "#ec008c", duration: 0.1 },
+    { color: "#ffc2e3", duration: 0.2 },
+    { color: "#ffffff", duration: 0.2 }
+  ],
+  stagger: 0.025,
+  ease: "none"
+});
+
+area.onmouseenter = () => tl.play();
+area.onmouseleave = () => tl.reverse();
+</pre>
+<pre>
+<span class="hl-motion">// Motion.dev Logic</span>
+<span class="comment">// Uses a functional/array-based approach</span>
+let animation;
+
+area.onmouseenter = () => {
+  animation = <span class="hl-motion">animate</span>(chars, 
+    { <span class="hl-motion">color</span>: ["#222", "#6b2849", "#ec008c", "#ffc2e3", "#fff"] },
+    { 
+      <span class="hl-motion">delay</span>: stagger(0.025),
+      duration: 0.8,
+      easing: "ease-in-out"
+    }
+  );
+};
+
+area.onmouseleave = () => animation?.<span class="hl-motion">reverse()</span>;
+</pre>
+    </div>
+
+    <!-- PROS & CONS -->
+    <div class="pros-cons-section">
+        <!-- GSAP Pros/Cons -->
+        <div class="pc-card">
+            <h3 style="color: var(--gsap-accent)">GSAP Analysis</h3>
+            <ul>
+                <li class="pro"><b>State Management:</b> Uses a "Playhead" logic. Reversing halfway is perfectly fluid without visual jumps.</li>
+                <li class="pro"><b>Granular Timing:</b> Can define exact seconds for each color stop (critical for the "Pink Flash" effect).</li>
+                <li class="pro"><b>Scale:</b> Highly optimized for animating 100+ characters via a single internal loop.</li>
+                <li class="con"><b>File Size:</b> Slightly heavier (~25kb).</li>
+                <li class="con"><b>Imperative:</b> Requires creating and managing a timeline object manually.</li>
+            </ul>
+        </div>
+
+        <!-- Motion Pros/Cons -->
+        <div class="pc-card">
+            <h3 style="color: var(--motion-accent)">Motion.dev Analysis</h3>
+            <ul>
+                <li class="pro"><b>Syntax:</b> Declarative and clean; mapping colors to an array is very intuitive.</li>
+                <li class="pro"><b>Hardware Acceleration:</b> Uses WAAPI (native browser tech) for potential main-thread offloading.</li>
+                <li class="pro"><b>Lightweight:</b> Small footprint (~15kb).</li>
+                <li class="con"><b>Interruption Handling:</b> Requires manual management of animation instances; rapid hovering can cause "fighting" states.</li>
+                <li class="con"><b>Linear Keyframes:</b> Colors are evenly distributed by default; custom timing requires complex "offset" math.</li>
+            </ul>
+        </div>
+
+        <div class="verdict">
+            <h2>The Verdict for "Huge Inc" Effect: GSAP Wins</h2>
+            <p style="max-width: 800px; margin: 0 auto; line-height: 1.6; color: #ccc;">
+                Because this effect relies on <b>interruptible hover states</b> and <b>non-linear color durations</b> (a quick pink flash followed by a slow white settle), <b>GSAP is the superior choice</b>. It eliminates the "jumpy" behavior found in state-less libraries and provides the professional-grade control needed to match high-end design references exactly.
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <!-- GSDevTools (Club GSAP plugin) -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/GSDevTools.min.js"></script>
+    
+    <script type="module">
+        import { animate, stagger } from "https://cdn.jsdelivr.net/npm/motion@11.11.13/+esm"
 
-    <script>
-        const textElement = document.getElementById('target-text');
-        const hoverArea = document.getElementById('hover-area');
-
-        // ── 1. Split text into character spans ──
-        const rawText = textElement.innerText.trim();
-        textElement.innerHTML = '';
-
-        const chars = [];
-
-        for (let i = 0; i < rawText.length; i++) {
-            const span = document.createElement('span');
-            if (rawText[i] === ' ') {
-                span.classList.add('char-space');
-                span.textContent = ' ';
-            } else {
-                span.classList.add('char');
-                span.textContent = rawText[i];
-                chars.push(span);
-            }
-            textElement.appendChild(span);
+        // Helper to split text
+        function splitText(id) {
+            const el = document.getElementById(id);
+            const text = el.innerText.trim();
+            el.innerHTML = '';
+            return text.split('').map(c => {
+                const span = document.createElement('span');
+                span.textContent = c;
+                span.className = c === ' ' ? 'char-space' : 'char';
+                el.appendChild(span);
+                return span;
+            });
         }
 
-        // ── 2. Build the timeline with multi-stop color keyframes ──
-        //
-        // Pixel analysis of the video screenshot reveals the color gradient:
-        //
-        //   #222222 (dark gray)          ← base state
-        //       ↓ 
-        //   #6b2849 (dark magenta)       ← first warmth appearing
-        //       ↓
-        //   #c70e73 (deep magenta)       ← entering the pink zone
-        //       ↓
-        //   #ec008c (hot pink)           ← peak intensity
-        //       ↓
-        //   #fe52b4 (bright pink)        ← starting to lighten
-        //       ↓
-        //   #f679bb (medium pink)        ← mid fade
-        //       ↓
-        //   #ffc2e3 (light pink)         ← trailing glow
-        //       ↓
-        //   #ffffff (white)              ← final state
-        //
-        // The band spans ~30-35 chars wide at any moment.
-        // Total sweep across ~120 chars ≈ 3.5s
+        const gsapChars = splitText('gsap-area');
+        const motionChars = splitText('motion-area');
 
-        const tl = gsap.timeline({
-            paused: true,
-            id: "textReveal"
+        // --- 1. GSAP IMPLEMENTATION ---
+        const gsapTl = gsap.timeline({ paused: true });
+        
+        // Note: Keyframes are distributed across the total duration
+        gsapTl.to(gsapChars, {
+            keyframes: [
+                { color: "#6b2849", duration: 0.1 },
+                { color: "#c70e73", duration: 0.1 },
+                { color: "#ec008c", duration: 0.1 },
+                { color: "#f679bb", duration: 0.2 },
+                { color: "#ffc2e3", duration: 0.2 },
+                { color: "#ffffff", duration: 0.3 }
+            ],
+            stagger: 0.025,
+            ease: "power1.inOut"
         });
 
-        const stagger = 0.025; // Per-character delay
+        document.getElementById('gsap-area').addEventListener('mouseenter', () => gsapTl.play());
+        document.getElementById('gsap-area').addEventListener('mouseleave', () => gsapTl.reverse());
 
-        // Each character's full color journey duration
-        // Longer = wider visible gradient band
-        const totalCharDuration = 1.0;
 
-        chars.forEach((char, i) => {
-            const offset = i * stagger;
+        // --- 2. MOTION.DEV IMPLEMENTATION ---
+        let motionAnim;
+        const motionColors = ["#222222", "#6b2849", "#c70e73", "#ec008c", "#f679bb", "#ffc2e3", "#ffffff"];
 
-            tl.to(char, {
-                keyframes: [
-                    // Gray → Dark magenta (entering the wave)
-                    { color: "#6b2849", duration: totalCharDuration * 0.03, ease: "power1.in" },
-                    // Dark magenta → Deep magenta
-                    { color: "#c70e73", duration: totalCharDuration * 0.03, ease: "power1.inOut" },
-                    // Deep magenta → Hot pink (peak!)
-                    { color: "#ec008c", duration: totalCharDuration * 0.03, ease: "power2.out" },
-                    // Hot pink → Bright pink (starting to resolve)
-                    { color: "#fe52b4", duration: totalCharDuration * 0.03, ease: "power1.out" },
-                    // Bright pink → Medium pink
-                    { color: "#f679bb", duration: totalCharDuration * 0.03, ease: "none" },
-                    // Medium pink → Light pink
-                    { color: "#ffc2e3", duration: totalCharDuration * 0.03, ease: "none" },
-                    // Light pink → White (final settle)
-                    { color: "#ffffff", duration: totalCharDuration * 0.03, ease: "power2.out" }
-                ]
-            }, offset);
+        document.getElementById('motion-area').addEventListener('mouseenter', () => {
+            // Motion handles the "wave" by mapping the color array over the duration
+            motionAnim = animate(
+                "#motion-area .char", 
+                { color: motionColors }, 
+                { 
+                    delay: stagger(0.025), 
+                    duration: 1.0,
+                    easing: "linear" 
+                }
+            );
         });
 
-        // ── 3. GSDevTools ──
-        gsap.registerPlugin(GSDevTools);
-        GSDevTools.create({ animation: tl });
-
-        // ── 4. Hover interaction ──
-        hoverArea.addEventListener('mouseenter', () => {
-            tl.play();
-        });
-
-        hoverArea.addEventListener('mouseleave', () => {
-            tl.reverse();
+        document.getElementById('motion-area').addEventListener('mouseleave', () => {
+            if (motionAnim) motionAnim.reverse();
         });
     </script>
 </body>
