@@ -2,7 +2,7 @@
 
 ## Overview
 
-The blog section supports multiple languages using a client-side JavaScript implementation. Currently supports:
+The blog section supports multiple languages using a client-side JavaScript implementation embedded inline in `BlogPostLayout.astro`. Currently supports:
 
 - **English (en)** - Default
 - **Vietnamese (vi)** - Secondary
@@ -11,16 +11,21 @@ The blog section supports multiple languages using a client-side JavaScript impl
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      HTML Content                           │
+│                   Astro Blog Content                        │
+│                                                             │
+│  MDX Frontmatter:                 HTML Content:             │
 │  ┌─────────────────┐    ┌─────────────────┐                │
-│  │  data-lang="en" │    │  data-lang="vi" │                │
-│  │  (visible)      │    │  (hidden)       │                │
-│  └─────────────────┘    └─────────────────┘                │
+│  │ title (EN)      │    │ data-lang="en"  │                │
+│  │ titleVi (VI)    │    │ (visible)       │                │
+│  │ description     │    ├─────────────────┤                │
+│  │ descriptionVi   │    │ data-lang="vi"  │                │
+│  └─────────────────┘    │ (hidden)        │                │
+│                          └─────────────────┘                │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                       i18n.js                               │
+│              Inline JavaScript (BlogPostLayout)             │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
 │  │ Detection   │  │ Switching   │  │ Persistence         │ │
 │  │ (browser)   │→ │ (toggle)    │→ │ (localStorage)      │ │
@@ -28,9 +33,24 @@ The blog section supports multiple languages using a client-side JavaScript impl
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## HTML Markup Pattern
+## Two Layers of i18n
 
-### Content Blocks
+### Layer 1: MDX Frontmatter (Blog Listing Page)
+
+The blog listing page (`src/pages/blog/index.astro`) uses frontmatter fields to display bilingual titles and descriptions:
+
+```yaml
+---
+title: "English Title"
+description: "English description"
+titleVi: "Tiêu đề tiếng Việt"       # Optional
+descriptionVi: "Mô tả tiếng Việt"   # Optional
+---
+```
+
+The `PostCard.astro` component renders both versions, toggled by the i18n script.
+
+### Layer 2: HTML Content Blocks (Blog Posts & Listing)
 
 ```html
 <!-- English content (shown by default) -->
@@ -57,7 +77,7 @@ The blog section supports multiple languages using a client-side JavaScript impl
 
 ## JavaScript Implementation
 
-### File: `blog/js/i18n.js`
+The i18n script is embedded inline in `src/layouts/BlogPostLayout.astro` as an IIFE:
 
 ```javascript
 (function() {
@@ -65,7 +85,6 @@ The blog section supports multiple languages using a client-side JavaScript impl
   const DEFAULT_LANGUAGE = 'en';
   const STORAGE_KEY = 'blog-language';
 
-  // Get saved or detected language
   function getInitialLanguage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && SUPPORTED_LANGUAGES.includes(saved)) return saved;
@@ -76,7 +95,6 @@ The blog section supports multiple languages using a client-side JavaScript impl
     return DEFAULT_LANGUAGE;
   }
 
-  // Switch language
   function setLanguage(lang) {
     if (!SUPPORTED_LANGUAGES.includes(lang)) return;
 
@@ -95,7 +113,7 @@ The blog section supports multiple languages using a client-side JavaScript impl
     // Save preference
     localStorage.setItem(STORAGE_KEY, lang);
 
-    // Dispatch event for other components
+    // Dispatch event
     document.dispatchEvent(new CustomEvent('languagechange', {
       detail: { language: lang }
     }));
@@ -104,13 +122,11 @@ The blog section supports multiple languages using a client-side JavaScript impl
   // Initialize
   document.addEventListener('DOMContentLoaded', () => {
     setLanguage(getInitialLanguage());
-
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
     });
   });
 
-  // Expose API
   window.i18n = { setLanguage, getLanguage: getInitialLanguage };
 })();
 ```
@@ -123,7 +139,7 @@ The blog section supports multiple languages using a client-side JavaScript impl
 
 ## Adding New Languages
 
-### Step 1: Update i18n.js
+### Step 1: Update the inline script in BlogPostLayout.astro
 
 ```javascript
 const SUPPORTED_LANGUAGES = ['en', 'vi', 'fr']; // Add new language code
@@ -132,22 +148,33 @@ const SUPPORTED_LANGUAGES = ['en', 'vi', 'fr']; // Add new language code
 ### Step 2: Add Language Button
 
 ```html
-<div class="language-switcher">
-  <button class="lang-btn" data-lang="en">EN</button>
-  <button class="lang-btn" data-lang="vi">VI</button>
-  <button class="lang-btn" data-lang="fr">FR</button> <!-- New -->
-</div>
+<button class="lang-btn" data-lang="fr">FR</button>
 ```
 
 ### Step 3: Add Content Blocks
 
+In MDX frontmatter (for listing page):
+```yaml
+titleFr: "Titre en français"
+descriptionFr: "Description en français"
+```
+
+In HTML content blocks (for post body):
 ```html
-<div data-lang="en">English content</div>
-<div data-lang="vi" hidden>Vietnamese content</div>
-<div data-lang="fr" hidden>French content</div> <!-- New -->
+<div data-lang="fr" hidden>French content</div>
+```
+
+### Step 4: Update Zod Schema
+
+Add optional fields to `src/content/config.ts`:
+```typescript
+titleFr: z.string().optional(),
+descriptionFr: z.string().optional(),
 ```
 
 ## CSS for Language Switcher
+
+Styles are defined inline in `BlogPostLayout.astro`:
 
 ```css
 .language-switcher {
@@ -165,10 +192,6 @@ const SUPPORTED_LANGUAGES = ['en', 'vi', 'fr']; // Add new language code
   transition: all 0.2s;
 }
 
-.lang-btn:hover {
-  border-color: var(--color-primary);
-}
-
 .lang-btn.active {
   background: var(--color-primary);
   color: white;
@@ -178,54 +201,10 @@ const SUPPORTED_LANGUAGES = ['en', 'vi', 'fr']; // Add new language code
 
 ## Listening to Language Changes
 
-Other scripts can react to language changes:
-
 ```javascript
 document.addEventListener('languagechange', (e) => {
   console.log('Language changed to:', e.detail.language);
-  // Update dynamic content, analytics, etc.
 });
-```
-
-## Blog Post Template with i18n
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title data-lang="en">Post Title - English</title>
-  <title data-lang="vi" hidden>Tiêu đề bài viết - Tiếng Việt</title>
-  <link rel="stylesheet" href="../css/blog.css">
-</head>
-<body>
-  <header>
-    <a href="../index.html" class="logo">Blog</a>
-    <div class="language-switcher">
-      <button class="lang-btn active" data-lang="en">EN</button>
-      <button class="lang-btn" data-lang="vi">VI</button>
-    </div>
-  </header>
-
-  <main>
-    <article>
-      <!-- English Version -->
-      <div data-lang="en">
-        <h1>Post Title</h1>
-        <p>Post content in English...</p>
-      </div>
-
-      <!-- Vietnamese Version -->
-      <div data-lang="vi" hidden>
-        <h1>Tiêu đề bài viết</h1>
-        <p>Nội dung bài viết tiếng Việt...</p>
-      </div>
-    </article>
-  </main>
-
-  <script src="../js/i18n.js"></script>
-</body>
-</html>
 ```
 
 ## Best Practices
@@ -234,6 +213,7 @@ document.addEventListener('languagechange', (e) => {
 - Keep both language versions in sync structurally
 - Use semantic HTML in both versions
 - Test both languages after changes
+- Add `titleVi` and `descriptionVi` to frontmatter for listing page support
 - Maintain consistent formatting across languages
 
 ### DON'T:
@@ -241,12 +221,3 @@ document.addEventListener('languagechange', (e) => {
 - Forget the `hidden` attribute on non-default languages
 - Hard-code language strings in JavaScript
 - Forget `aria-pressed` on language buttons
-
-## Troubleshooting
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Content not switching | Missing `data-lang` attribute | Add attribute to all translatable elements |
-| Wrong initial language | localStorage has old value | Clear localStorage or check detection logic |
-| Button not highlighting | Missing `.lang-btn` class | Ensure buttons have correct class |
-| Flash of wrong language | Script loading late | Move script to head with `defer` |

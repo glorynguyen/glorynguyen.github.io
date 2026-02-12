@@ -2,7 +2,9 @@
 
 ## About This Project
 
-This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-End Technical Lead with 10+ years of experience. The site showcases technical leadership, career achievements, and serves as a platform for sharing technical insights.
+This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-End Technical Lead with 10+ years of experience. The site showcases technical leadership, career achievements, and serves as a platform for sharing technical insights through a bilingual blog (English/Vietnamese).
+
+Built with **Astro 5.3** and **MDX**, deployed via **GitHub Actions** to **GitHub Pages**.
 
 ## Owner Profile
 
@@ -13,7 +15,6 @@ This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-
 | **Experience** | 10+ years |
 | **Current Position** | Frontend Technical Lead at Huge |
 | **Current Project** | PepsiCo Global Platform |
-| **Location** | (See LinkedIn for current location) |
 
 ### Professional Links
 
@@ -48,7 +49,7 @@ This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-
 | **CMS/Enterprise** | Sitecore XP, Sitecore JSS, Headless CMS, Bynder DAM |
 | **Search** | OpenSearch, Elasticsearch, REST APIs, Brightcove |
 | **DevOps** | CI/CD, Git, Azure, Docker, Testing |
-| **AI/ML** | Azure QnA, TensorFlow, AI Integration, Chatbots |
+| **AI/ML** | Azure QnA, TensorFlow, AI Integration, MCP Servers |
 
 ## Career Timeline
 
@@ -61,16 +62,22 @@ This is a professional portfolio website for **Vinh Nguyen (Vincent)**, a Front-
 
 ## Side Projects
 
-1. **Ollama Code Review** - VS Code Extension for AI-powered code review
-2. **Cheryx.com** - Personal website with knitting patterns
-3. **Video Compressor** - FFmpeg + WebAssembly web application
-4. **Free Craft Patterns** - Community platform for crafters
-5. **Oil Reminder** - PWA for car maintenance tracking
+### MCP Servers
+1. **GitSage** - MCP Server for Git operations (dedicated project page)
+2. **GSAP MCP** - MCP Server for GSAP animations (dedicated project page)
+3. **Confluence MCP** - MCP Server for Confluence integration (dedicated project page)
+
+### Tools & Applications
+4. **Ollama Code Review** - VS Code Extension for AI-powered code review (dedicated project page)
+5. **Cheryx.com** - Personal website with knitting patterns
+6. **Video Compressor** - FFmpeg + WebAssembly web application
+7. **Free Craft Patterns** - Community platform for crafters
+8. **Oil Reminder** - PWA for car maintenance tracking
 
 ## Project Goals
 
 1. **Showcase Expertise** - Demonstrate technical and leadership capabilities
 2. **Professional Branding** - Establish online presence for career opportunities
-3. **Knowledge Sharing** - Blog section for technical insights
+3. **Knowledge Sharing** - Blog section for technical insights (13 posts and growing)
 4. **Accessibility** - Ensure site is usable by everyone
-5. **Performance** - Fast, lightweight, no unnecessary dependencies
+5. **Performance** - Fast, lightweight, optimized static output
