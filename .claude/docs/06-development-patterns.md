@@ -1,56 +1,145 @@
 # Development Patterns & Conventions
 
-## Code Organization
+## Astro Component Pattern
 
-### HTML Structure Pattern
+### Page Structure (.astro files)
 
-```html
+```astro
+---
+// Frontmatter: runs at build time (server-side)
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+---
+
+<!-- Template: rendered to static HTML -->
+<BaseLayout title="Page Title">
+  <main>
+    <h1>Content</h1>
+    {posts.map(post => (
+      <article>{post.data.title}</article>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  /* Scoped CSS: auto-scoped to this component */
+  main { max-width: var(--max-width); }
+</style>
+```
+
+### Layout Pattern
+
+```astro
+---
+// src/layouts/BaseLayout.astro
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- 1. Meta tags (charset first) -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- 2. SEO meta tags -->
-  <title>Page Title</title>
-  <meta name="description" content="...">
-
-  <!-- 3. Open Graph / Social -->
-  <meta property="og:...">
-
-  <!-- 4. Structured data -->
-  <script type="application/ld+json">...</script>
-
-  <!-- 5. Fonts (with preconnect) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/..." rel="stylesheet">
-
-  <!-- 6. Styles -->
-  <style>/* CSS here */</style>
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
 </head>
 <body>
-  <!-- 7. Skip link -->
-  <a href="#main" class="skip-link">Skip to main content</a>
-
-  <!-- 8. Header -->
-  <header role="banner">...</header>
-
-  <!-- 9. Navigation -->
-  <nav role="navigation">...</nav>
-
-  <!-- 10. Main content -->
-  <main id="main" role="main">
-    <section id="section-name">...</section>
-  </main>
-
-  <!-- 11. Footer -->
-  <footer role="contentinfo">...</footer>
-
-  <!-- 12. Scripts (if any) -->
-  <script src="..."></script>
+  <slot />  <!-- Child content injected here -->
 </body>
 </html>
+```
+
+### Component Pattern
+
+```astro
+---
+// src/components/PostCard.astro
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  pubDate: Date;
+  tags: string[];
+}
+
+const { title, description, slug, pubDate, tags } = Astro.props;
+---
+
+<article class="post-card">
+  <h2>{title}</h2>
+  <p>{description}</p>
+  <a href={`/blog/posts/${slug}`}>Read more</a>
+</article>
+
+<style>
+  .post-card { /* scoped styles */ }
+</style>
+```
+
+## Content Collection Pattern
+
+### Schema Definition (src/content/config.ts)
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+
+const blogCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.date(),
+    author: z.string().default('Vinh Nguyen'),
+    tags: z.array(z.string()),
+    titleVi: z.string().optional(),
+    descriptionVi: z.string().optional(),
+  }),
+});
+
+export const collections = { 'blog': blogCollection };
+```
+
+### Querying Content
+
+```astro
+---
+import { getCollection } from 'astro:content';
+
+// Get all posts sorted by date
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+```
+
+### Dynamic Routes
+
+```astro
+---
+// src/pages/blog/posts/[...slug].astro
+import { getCollection } from 'astro:content';
+import BlogPostLayout from '../../../layouts/BlogPostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<BlogPostLayout frontmatter={post.data}>
+  <Content />
+</BlogPostLayout>
 ```
 
 ## CSS Conventions
@@ -62,7 +151,6 @@
   /* 1. Positioning */
   position: relative;
   top: 0;
-  left: 0;
   z-index: 1;
 
   /* 2. Display & Box Model */
@@ -100,14 +188,19 @@
 .is-active { }
 .has-error { }
 
-/* Modifier: element--modifier */
-.btn--primary { }
-.card--featured { }
-
 /* Utility: descriptive action */
 .skip-link { }
 .visually-hidden { }
 ```
+
+### Where Styles Live
+
+| Location | Scope | What goes here |
+|----------|-------|----------------|
+| `src/styles/global.css` | Global | CSS variables, reset, base styles |
+| `src/styles/blog.css` | Blog pages | Blog listing and shared blog styles |
+| `<style>` in `.astro` files | Scoped | Component-specific styles |
+| `<style is:global>` | Global | Styles that need to pierce component boundaries |
 
 ### Responsive Pattern
 
@@ -135,78 +228,47 @@ h1 {
 
 ## JavaScript Conventions
 
-### Module Pattern (IIFE)
+### Inline Script Pattern (for Astro pages)
+
+JavaScript is kept minimal and typically inline within Astro layouts/pages:
+
+```astro
+<script>
+  // Runs on the client, bundled by Astro
+  document.addEventListener('DOMContentLoaded', () => {
+    // Setup code
+  });
+</script>
+```
+
+### IIFE Pattern (for i18n)
 
 ```javascript
 (function() {
   'use strict';
-
-  // Private variables
   const CONSTANT = 'value';
-  let state = {};
 
-  // Private functions
   function privateHelper() { }
-
-  // Public API
   function publicMethod() { }
 
-  // Initialization
-  function init() {
-    document.addEventListener('DOMContentLoaded', () => {
-      // Setup code
-    });
-  }
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize
+  });
 
-  // Expose public API
-  window.ModuleName = {
-    publicMethod,
-    init
-  };
-
-  // Auto-initialize
-  init();
+  window.ModuleName = { publicMethod };
 })();
 ```
 
 ### Event Handling
 
 ```javascript
-// Preferred: addEventListener
+// addEventListener preferred
 element.addEventListener('click', handleClick);
 
-// Event delegation for dynamic content
-document.addEventListener('click', (e) => {
-  if (e.target.matches('.btn')) {
-    handleButtonClick(e.target);
-  }
-});
-
-// Custom events for component communication
+// Custom events for cross-component communication
 document.dispatchEvent(new CustomEvent('eventname', {
   detail: { data: value }
 }));
-```
-
-### DOM Manipulation
-
-```javascript
-// Query elements
-const element = document.querySelector('.selector');
-const elements = document.querySelectorAll('.selector');
-
-// Modify classes
-element.classList.add('active');
-element.classList.remove('active');
-element.classList.toggle('active');
-
-// Modify attributes
-element.setAttribute('aria-pressed', 'true');
-element.hidden = true;
-
-// Modify content
-element.textContent = 'Safe text';
-element.innerHTML = '<span>Use sparingly</span>';
 ```
 
 ## Git Conventions
@@ -215,7 +277,6 @@ element.innerHTML = '<span>Use sparingly</span>';
 
 ```
 claude/feature-description-sessionId
-# Example: claude/add-blog-section-I5Sa9
 ```
 
 ### Commit Messages
@@ -238,41 +299,30 @@ Types:
 
 ### PR Workflow
 
-1. Create feature branch from `main`
+1. Create feature branch from `master`
 2. Make changes with descriptive commits
 3. Push to remote
 4. Create PR with summary
-5. Merge to `main` after review
-6. GitHub Pages auto-deploys
+5. Merge to `master` after review
+6. GitHub Actions auto-builds and deploys
 
 ## Accessibility Patterns
 
 ### Semantic HTML
 
 ```html
-<!-- Use semantic elements -->
-<header> not <div class="header">
-<nav> not <div class="nav">
-<main> not <div class="main">
-<article> not <div class="article">
-<section> not <div class="section">
-<footer> not <div class="footer">
+<header>   <!-- not <div class="header"> -->
+<nav>      <!-- not <div class="nav"> -->
+<main>     <!-- not <div class="main"> -->
+<article>  <!-- not <div class="article"> -->
+<section>  <!-- not <div class="section"> -->
+<footer>   <!-- not <div class="footer"> -->
 ```
 
 ### ARIA When Needed
 
 ```html
-<!-- Role for landmarks -->
-<header role="banner">
-<nav role="navigation">
-<main role="main">
-<footer role="contentinfo">
-
-<!-- State for interactive elements -->
 <button aria-pressed="false">Toggle</button>
-<div aria-expanded="false">Expandable</div>
-
-<!-- Labels for icons -->
 <a href="..." aria-label="LinkedIn Profile">
   <svg>...</svg>
 </a>
@@ -281,14 +331,11 @@ Types:
 ### Focus Management
 
 ```css
-/* Visible focus states */
-a:focus,
-button:focus {
+a:focus, button:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Skip link pattern */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -302,51 +349,24 @@ button:focus {
 }
 ```
 
-## Performance Patterns
-
-### Font Loading
-
-```html
-<!-- Preconnect to font origins -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<!-- Load with swap for fast text rendering -->
-<link href="...&display=swap" rel="stylesheet">
-```
-
-### Image Loading
-
-```html
-<!-- Lazy load below-fold images -->
-<img src="image.jpg" loading="lazy" alt="Description">
-
-<!-- Explicit dimensions prevent layout shift -->
-<img src="image.jpg" width="180" height="180" alt="Description">
-```
-
-### CSS Optimization
+### Reduced Motion
 
 ```css
-/* Use CSS variables for consistency and smaller file size */
-color: var(--color-primary);
-
-/* Avoid expensive selectors */
-.nav-links a { }  /* Good */
-* .nav-links > a { }  /* Avoid */
-
-/* Use transform for animations (GPU accelerated) */
-transform: translateY(-2px);  /* Good */
-margin-top: -2px;  /* Avoid for animation */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 ```
 
 ## Testing Checklist
 
 ### Before Committing
 
-- [ ] HTML validates (no errors)
-- [ ] CSS validates (no errors)
-- [ ] JavaScript console has no errors
+- [ ] `npm run build` succeeds without errors
+- [ ] HTML validates
+- [ ] No console errors
 - [ ] Links work (internal and external)
 - [ ] Images load correctly
 - [ ] Responsive on mobile (375px), tablet (768px), desktop (1200px)
@@ -355,7 +375,6 @@ margin-top: -2px;  /* Avoid for animation */
 
 - [ ] Keyboard navigation works
 - [ ] Focus states visible
-- [ ] Screen reader announces content logically
 - [ ] Color contrast passes (4.5:1 for text)
 - [ ] Skip link works
 
@@ -364,33 +383,5 @@ margin-top: -2px;  /* Avoid for animation */
 - [ ] Chrome (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (latest)
-- [ ] Edge (latest)
 - [ ] Mobile Safari (iOS)
 - [ ] Chrome (Android)
-
-## File Templates
-
-### New Blog Post Filename
-
-```
-blog/posts/descriptive-url-slug.html
-# Example: blog/posts/ai-will-not-replace-developers.html
-```
-
-### New Asset Filename
-
-```
-assets/description-size.extension
-# Example: assets/team-photo-800.jpg
-```
-
-## Common Issues & Solutions
-
-| Issue | Solution |
-|-------|----------|
-| CSS not updating | Hard refresh (Ctrl+Shift+R) |
-| Mobile nav broken | Check flexbox `flex-wrap` property |
-| Font flash (FOUT) | Ensure `display=swap` on font URL |
-| Layout shift | Add explicit width/height to images |
-| i18n not working | Check `data-lang` attributes and script load order |
-| Focus outline missing | Ensure `:focus` styles not overridden |

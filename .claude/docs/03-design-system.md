@@ -20,6 +20,14 @@
 | `--color-bg-alt` | `#f9fafb` | Section backgrounds |
 | `--color-border` | `#e5e7eb` | Borders, dividers |
 
+### Shadows
+
+| Variable | Value |
+|----------|-------|
+| `--shadow-sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` |
+| `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` |
+| `--shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` |
+
 ### Gradient Definitions
 
 ```css
@@ -33,13 +41,18 @@ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
 ```
 
+## Where Variables Are Defined
+
+- **Global CSS variables**: `src/styles/global.css` (38 lines)
+- Variables are available throughout all components and pages
+
 ## Typography
 
 ### Font Stack
 
 ```css
 font-family: 'Inter', -apple-system, BlinkMacSystemFont,
-             'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+             'Segoe UI', Roboto, sans-serif;
 ```
 
 ### Font Weights
@@ -89,19 +102,6 @@ p { line-height: 1.8; }  /* For readability */
 | Cards | `1.5rem` / `1.25rem` (mobile) |
 | Header | `4rem 0` (desktop) / `3rem 1rem` (mobile) |
 
-### Grid Gaps
-
-```css
-/* Highlights grid */
-gap: 1.5rem;
-
-/* Skills grid */
-gap: 2rem;
-
-/* Projects grid */
-gap: 1.5rem;
-```
-
 ## Components
 
 ### Cards
@@ -116,26 +116,6 @@ gap: 1.5rem;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-```
-
-### Buttons
-
-```css
-/* Primary Button (white on gradient bg) */
-.btn-primary {
-  background: white;
-  color: var(--color-primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -180,14 +160,6 @@ gap: 1.5rem;
 }
 ```
 
-## Shadows
-
-```css
---shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
---shadow-md: 0 4px 6px rgba(0,0,0,0.1);
---shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-```
-
 ## Border Radius
 
 ```css
@@ -204,13 +176,13 @@ border-radius: 50%;
 
 ```css
 /* Mobile-first approach */
+/* Single breakpoint at 768px */
 
-/* Tablet and up */
 @media (min-width: 768px) {
-  /* Adjustments for larger screens */
+  /* Desktop adjustments */
 }
 
-/* Desktop adjustments handled via clamp() */
+/* Fluid typography via clamp() */
 ```
 
 ### Common Responsive Patterns
@@ -229,7 +201,7 @@ border-radius: 50%;
   }
 }
 
-/* Larger grids: 4 columns on desktop */
+/* Highlights: 4 columns on desktop */
 @media (min-width: 768px) {
   .highlights-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -262,9 +234,7 @@ transition: transform 0.2s ease, box-shadow 0.2s ease;
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
@@ -305,8 +275,7 @@ All icons are inline SVGs with consistent sizing:
 ## Focus States (Accessibility)
 
 ```css
-a:focus,
-button:focus {
+a:focus, button:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -319,3 +288,12 @@ button:focus {
   z-index: 1000;
 }
 ```
+
+## Style File Locations
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `src/styles/global.css` | 38 | CSS variables, reset, base styles |
+| `src/styles/blog.css` | 525 | Blog listing page styles |
+| `src/pages/index.astro` (inline) | ~620 | Main portfolio page styles |
+| `src/layouts/BlogPostLayout.astro` (inline) | ~560 | Blog post page styles |

@@ -4,154 +4,187 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    GitHub Pages (Hosting)                   │
+│                 GitHub Pages (Hosting)                       │
+├─────────────────────────────────────────────────────────────┤
+│               GitHub Actions (CI/CD)                        │
+│         Node 20 → npm ci → astro build → dist/             │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │  index.html │  │  blog/      │  │  assets/            │  │
-│  │  (Main)     │  │  (Blog)     │  │  (Static Files)     │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐   │
+│  │ Astro 5.3    │  │ @astrojs/mdx │  │ TypeScript      │   │
+│  │ (SSG)        │  │ (Blog)       │  │ (Strict)        │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘   │
 │                                                             │
 ├─────────────────────────────────────────────────────────────┤
-│  HTML5 + CSS3 (inline) + Vanilla JavaScript                 │
+│  Astro Components + Scoped CSS + Vanilla JavaScript         │
 ├─────────────────────────────────────────────────────────────┤
 │  Google Fonts (Inter) - External Dependency                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## File Structure
+## Source Structure
 
 ```
-vinhnguyenba.dev/
-├── index.html                    # Main portfolio (single-page)
-│   ├── <style> block             # All CSS (~800 lines)
-│   └── HTML content              # All sections
+src/
+├── pages/                           # File-based routing
+│   ├── index.astro                  # Main portfolio (single-page, ~1200 lines)
+│   ├── gitsage.astro                # Project page (standalone)
+│   ├── ollama-code-review.astro     # Project page (standalone)
+│   ├── gsap-mcp.astro               # Project page (standalone)
+│   ├── confluence-mcp.astro         # Project page (standalone)
+│   └── blog/
+│       ├── index.astro              # Blog listing (uses getCollection)
+│       └── posts/
+│           └── [...slug].astro      # Dynamic route for blog posts
 │
-├── assets/
-│   └── profile.webp               # Profile image (82KB)
+├── layouts/
+│   ├── BaseLayout.astro             # HTML wrapper with SEO meta tags
+│   ├── BlogLayout.astro             # Blog listing page layout
+│   └── BlogPostLayout.astro         # Blog post layout (763 lines, inline CSS)
 │
-├── blog/
-│   ├── index.html                # Blog listing page
-│   ├── css/
-│   │   └── blog.css              # Blog-specific styles (~520 lines)
-│   ├── js/
-│   │   └── i18n.js               # Internationalization (~120 lines)
-│   └── posts/
-│       └── [post-name].html      # Individual blog posts
+├── components/
+│   ├── BlogHeader.astro             # Blog header with navigation
+│   ├── BlogFooter.astro             # Blog footer with links
+│   ├── PostCard.astro               # Blog post card (94 lines)
+│   └── blog/                        # MDX-usable blog components
+│       ├── Callout.astro            # Alert boxes (info/success/warning/error)
+│       ├── CodeDemo.astro           # Interactive code demos
+│       ├── ImageComparison.astro    # Before/after slider
+│       ├── ShareButtons.astro       # Social sharing buttons
+│       └── TableOfContents.astro    # Auto-generated TOC
 │
-├── .claude/
-│   └── docs/                     # Knowledge base (you are here)
+├── content/
+│   ├── config.ts                    # Zod schema for blog collection
+│   └── blog/                        # 13 MDX blog posts
 │
-├── CLAUDE.md                     # Main context file for Claude
-└── .git/                         # Git repository
+└── styles/
+    ├── global.css                   # CSS variables and base reset
+    └── blog.css                     # Blog page styles (525 lines)
+```
+
+## Static Assets (public/)
+
+```
+public/
+├── assets/profile.webp              # Profile image (81 KB)
+├── demos/                           # GSAP demo HTML files
+│   ├── gsap-text-reveal.html
+│   ├── compare-scroll-trigger.html
+│   └── morph-toggle.html
+├── favicon.ico, favicon-16x16.png, favicon-32x32.png
+├── apple-touch-icon.png
+├── android-chrome-192x192.png, android-chrome-512x512.png
+├── site.webmanifest                 # PWA manifest
+├── CNAME                            # Custom domain: vinhnguyenba.dev
+└── .nojekyll                        # Disable Jekyll processing
 ```
 
 ## Design Decisions
 
-### Why No Build Tools?
+### Why Astro?
 
 | Reason | Benefit |
 |--------|---------|
-| Simplicity | No npm, webpack, or toolchain setup |
-| Speed | Instant deployment, no build step |
-| Maintenance | No dependency updates or vulnerabilities |
-| Portability | Works anywhere, any server |
-| Debugging | WYSIWYG - what you write is what runs |
+| Static output | Pre-rendered HTML, no runtime overhead |
+| MDX support | Rich blog content with embedded components |
+| Content Collections | Type-safe content with Zod validation |
+| File-based routing | Intuitive page structure |
+| Scoped CSS | Component-level styling without conflicts |
+| Zero JS by default | Ships no JavaScript unless explicitly needed |
 
-### Why Inline CSS?
+### Why MDX for Blog?
 
-1. **Single Request** - No additional HTTP requests for stylesheets
-2. **No FOUC** - Flash of Unstyled Content eliminated
-3. **Atomic Deployment** - One file = complete page
-4. **Cache Efficiency** - Entire page cached together
+1. **Markdown simplicity** - Write content naturally
+2. **Component embedding** - Use Astro components (Callout, CodeDemo, etc.) within posts
+3. **Frontmatter validation** - Zod schema ensures all posts have required metadata
+4. **Auto-collection** - New MDX files automatically appear in blog listing
+
+### Why Scoped/Inline CSS?
+
+1. **No FOUC** - Styles load with the component
+2. **Component isolation** - Styles scoped to their component
+3. **No naming conflicts** - Astro auto-scopes CSS classes
+4. **Single-file components** - Template + styles in one file
 
 ### Why Vanilla JavaScript?
 
 1. **Blog i18n only** - Minimal JS needed (language switching)
-2. **No Runtime** - Zero framework overhead
-3. **Fast Load** - No large bundle to parse
-4. **Future-proof** - Browser APIs are stable
+2. **No runtime** - Zero framework overhead
+3. **Fast load** - No large bundle to parse
+4. **Astro islands** - Could add interactive islands if needed in the future
+
+## Build Pipeline
+
+```
+Source (src/)
+    │
+    ▼
+Astro Build (npm run build)
+    ├── Process .astro pages and layouts
+    ├── Compile MDX blog posts
+    ├── Apply Zod schema validation
+    ├── Generate static HTML
+    ├── Bundle and scope CSS
+    └── Copy public/ assets
+    │
+    ▼
+Output (dist/)
+    │
+    ▼
+GitHub Actions uploads dist/ as Pages artifact
+    │
+    ▼
+Live at vinhnguyenba.dev
+```
 
 ## Page Load Sequence
 
 ```
-1. Browser requests index.html
+1. Browser requests page (e.g., index.html)
 2. HTML parsing begins
    ├── <head> parsed
    │   ├── Meta tags processed
    │   ├── Font preconnect initiated
-   │   └── Inline <style> applied immediately
+   │   └── Scoped <style> applied immediately
    └── <body> rendered progressively
 3. Google Fonts loaded (async, swap)
 4. Images loaded (profile.webp)
-5. Page interactive (no JS blocking)
+5. Page interactive (minimal JS, only on blog pages for i18n)
 ```
 
 ## Blog Architecture
 
 ```
-blog/
-├── index.html          # Entry point
-│   ├── Links to blog.css
-│   ├── Links to i18n.js
-│   └── Post list cards
-│
-├── css/blog.css        # External stylesheet
-│   ├── CSS variables (same as main)
-│   ├── Blog-specific components
-│   └── Responsive styles
-│
-├── js/i18n.js          # Language system
-│   ├── Language detection
-│   ├── localStorage persistence
-│   ├── DOM visibility toggling
-│   └── Custom event dispatch
-│
-└── posts/
-    └── [post].html     # Each post is standalone
-        ├── Own <head> with meta tags
-        ├── Links to ../css/blog.css
-        ├── Links to ../js/i18n.js
-        ├── data-lang="en" content
-        └── data-lang="vi" content
+src/content/blog/*.mdx          → Content source (Markdown + components)
+        │
+        ▼
+src/content/config.ts           → Zod schema validation
+        │
+        ▼
+src/pages/blog/index.astro      → getCollection('blog') → sorted listing
+src/pages/blog/posts/[...slug]  → getStaticPaths() → individual pages
+        │
+        ▼
+src/layouts/BlogPostLayout.astro → Full page layout with styles & i18n
+src/components/PostCard.astro    → Card component for listing page
 ```
 
 ## SEO Architecture
 
 ### Structured Data (JSON-LD)
 
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Vinh Nguyen",
-  "jobTitle": "Front-End Technical Lead",
-  "url": "https://vinhnguyenba.dev",
-  "sameAs": ["linkedin-url", "github-url"],
-  "knowsAbout": ["React", "Next.js", "Angular", ...]
-}
-```
+- **index.astro**: Person schema (name, jobTitle, url, sameAs, knowsAbout)
+- **BlogPostLayout.astro**: BlogPosting schema (headline, datePublished, author)
 
-### Meta Tag Strategy
+### Meta Tag Strategy (via BaseLayout.astro)
 
 | Tag | Purpose |
 |-----|---------|
 | `<title>` | Search result title |
 | `<meta description>` | Search result snippet |
-| `<meta keywords>` | SEO keywords (limited value) |
 | `<link canonical>` | Authoritative URL |
 | `og:*` tags | Facebook/LinkedIn sharing |
 | `twitter:*` tags | Twitter sharing |
-
-## Performance Characteristics
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **HTML Size** | ~45KB | Includes inline CSS |
-| **Total Assets** | ~250KB | Including profile image |
-| **HTTP Requests** | 3-4 | HTML, font, image |
-| **Time to Interactive** | <1s | No JS blocking |
-| **Lighthouse Score** | 95+ | Performance optimized |
 
 ## Accessibility Architecture
 
@@ -159,25 +192,25 @@ blog/
 Skip Link (hidden until focused)
     │
     ▼
-Header (role="banner")
+Header (semantic <header>)
     │
     ▼
-Navigation (role="navigation")
+Navigation (semantic <nav>)
     │
     ▼
-Main Content (role="main")
+Main Content (semantic <main>)
     ├── Sections with headings (h2)
     │   └── Subsections (h3)
-    └── Proper landmark roles
+    └── Proper landmark structure
     │
     ▼
-Footer (role="contentinfo")
+Footer (semantic <footer>)
 ```
 
 ## Deployment Flow
 
 ```
-Local Development
+Local Development (npm run dev)
        │
        ▼
 Git Commit (claude/* branch)
@@ -186,10 +219,13 @@ Git Commit (claude/* branch)
 Pull Request Created
        │
        ▼
-Review & Merge to main
+Review & Merge to master
        │
        ▼
-GitHub Pages Auto-Deploy
+GitHub Actions: checkout → npm ci → astro build → upload artifact
+       │
+       ▼
+GitHub Pages Deploy
        │
        ▼
 Live at vinhnguyenba.dev

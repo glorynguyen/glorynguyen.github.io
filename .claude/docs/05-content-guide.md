@@ -1,21 +1,21 @@
 # Content Guide
 
-## Portfolio Sections (index.html)
+## Portfolio Sections (src/pages/index.astro)
 
 ### Section Overview
 
-| Section | Line Range | Purpose |
-|---------|------------|---------|
-| Header | ~855-900 | Hero with profile image and intro |
-| Navigation | ~900-920 | Sticky nav links |
-| Highlights | ~920-980 | 4 metric cards |
-| Leadership | ~980-1050 | 4 philosophy pillars |
-| Skills | ~1050-1150 | 8 skill categories |
-| Experience | ~1150-1280 | Timeline with 4 positions |
-| Projects | ~1280-1380 | 5 side project cards |
-| About | ~1380-1420 | Personal narrative |
-| Contact | ~1420-1460 | CTA with social links |
-| Footer | ~1460-1470 | Copyright |
+| Section | Purpose |
+|---------|---------|
+| Header | Hero with profile image and intro |
+| Navigation | Sticky nav links (8 sections + Blog) |
+| Highlights | 4 metric cards |
+| Leadership | 4 philosophy pillar cards |
+| Skills | 8 skill categories with tags |
+| Experience | 7-position timeline |
+| Projects | 8 side project cards (4 MCP + 4 personal) |
+| About | Personal narrative (3 paragraphs) |
+| Contact | CTA with LinkedIn/GitHub links |
+| Footer | Copyright |
 
 ### Highlight Card Template
 
@@ -95,118 +95,97 @@
 
 ## Blog Content
 
-### Blog Index (blog/index.html)
+### Adding a New Blog Post
+
+1. Create an MDX file in `src/content/blog/` with a URL-friendly slug name
+2. Add required frontmatter (see schema below)
+3. Write content using Markdown + optional Astro components
+4. The post auto-appears on the blog listing (sorted by date, newest first)
+
+### Blog Post Frontmatter Schema
+
+```yaml
+---
+title: "Post Title in English"
+description: "English description for SEO and listing page"
+pubDate: 2026-02-12
+author: "Vinh Nguyen"           # Optional, defaults to "Vinh Nguyen"
+tags: ["AI", "Leadership"]
+titleVi: "Tiêu đề tiếng Việt"  # Optional
+descriptionVi: "Mô tả tiếng Việt" # Optional
+---
+```
+
+### Using Components in MDX
+
+```mdx
+---
+title: "My Post"
+description: "Description"
+pubDate: 2026-02-12
+tags: ["topic"]
+---
+import Callout from '../../components/blog/Callout.astro';
+import CodeDemo from '../../components/blog/CodeDemo.astro';
+
+Regular markdown content here.
+
+<Callout type="info">
+  This is an informational callout box.
+</Callout>
+
+<Callout type="warning">
+  This is a warning callout box.
+</Callout>
+```
+
+### Available Blog Components
+
+| Component | Usage | Props |
+|-----------|-------|-------|
+| `Callout` | Alert/info boxes | `type`: info, success, warning, error |
+| `CodeDemo` | Interactive code demos | Varies |
+| `ImageComparison` | Before/after slider | Image sources |
+| `ShareButtons` | Social sharing | Auto-detects URL |
+| `TableOfContents` | Auto-generated TOC | Reads headings |
+
+### Bilingual Content in Blog Posts
+
+Blog posts use `data-lang` attributes for bilingual content within the `BlogPostLayout`:
 
 ```html
-<div class="posts-list">
-  <article class="post-card">
-    <a href="posts/post-slug.html" class="post-link">
-      <h2 data-lang="en">Post Title in English</h2>
-      <h2 data-lang="vi" hidden>Tiêu đề tiếng Việt</h2>
-      <p class="post-meta">
-        <time datetime="2026-02-02">February 2, 2026</time>
-        <span class="post-category">Category</span>
-      </p>
-      <p data-lang="en" class="post-excerpt">English excerpt...</p>
-      <p data-lang="vi" hidden class="post-excerpt">Vietnamese excerpt...</p>
-    </a>
-  </article>
+<!-- English content (shown by default) -->
+<div data-lang="en">
+  <h1>Title in English</h1>
+  <p>Content in English...</p>
+</div>
+
+<!-- Vietnamese content (hidden by default) -->
+<div data-lang="vi" hidden>
+  <h1>Tiêu đề tiếng Việt</h1>
+  <p>Nội dung tiếng Việt...</p>
 </div>
 ```
 
-### Blog Post Structure
+The frontmatter fields `titleVi` and `descriptionVi` are used on the blog listing page to show Vietnamese titles/descriptions.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+### Current Blog Posts (13)
 
-  <!-- SEO Meta Tags -->
-  <title>Post Title | Vinh Nguyen Blog</title>
-  <meta name="description" content="Post description...">
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Post Title">
-  <meta property="og:description" content="Post description...">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="https://vinhnguyenba.dev/blog/posts/...">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Post Title">
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": "Post Title",
-    "datePublished": "2026-02-02",
-    "author": {
-      "@type": "Person",
-      "name": "Vinh Nguyen"
-    }
-  }
-  </script>
-
-  <link rel="stylesheet" href="../css/blog.css">
-</head>
-<body>
-  <header class="blog-header">
-    <a href="../index.html" class="logo">Vinh's Blog</a>
-    <div class="language-switcher">
-      <button class="lang-btn active" data-lang="en">EN</button>
-      <button class="lang-btn" data-lang="vi">VI</button>
-    </div>
-  </header>
-
-  <main class="blog-main">
-    <article class="blog-post">
-      <a href="../index.html" class="back-link">&larr; Back to posts</a>
-
-      <header class="post-header">
-        <h1 data-lang="en">English Title</h1>
-        <h1 data-lang="vi" hidden>Vietnamese Title</h1>
-        <div class="post-meta">
-          <time datetime="2026-02-02">February 2, 2026</time>
-          <span class="category-tag">Category</span>
-        </div>
-      </header>
-
-      <!-- English Content -->
-      <div data-lang="en" class="post-content">
-        <p>Introduction paragraph...</p>
-
-        <h2>Section Heading</h2>
-        <p>Section content...</p>
-
-        <blockquote>
-          <p>Notable quote or callout...</p>
-        </blockquote>
-
-        <div class="highlight-box">
-          <p><strong>Key Point:</strong> Important information...</p>
-        </div>
-      </div>
-
-      <!-- Vietnamese Content -->
-      <div data-lang="vi" hidden class="post-content">
-        <p>Đoạn giới thiệu...</p>
-        <!-- Mirror structure of English content -->
-      </div>
-    </article>
-  </main>
-
-  <footer class="blog-footer">
-    <p>&copy; 2026 Vinh Nguyen</p>
-  </footer>
-
-  <script src="../js/i18n.js"></script>
-</body>
-</html>
-```
+| Slug | Topic |
+|------|-------|
+| ai-2026-coworker-or-crutch | AI trends |
+| ai-agent-security-warning | AI security |
+| ai-not-next-abstraction-risky-role-reversal | AI abstractions |
+| ai-will-not-replace-developers | AI & developers |
+| battle-of-brains-open-standards-ai | Open AI standards |
+| beyond-nvm-volta-future-nodejs | Node.js tooling |
+| e18e-frontend-leadership-2026 | Frontend leadership |
+| gsap-mcp-animation-tool | GSAP MCP Server |
+| headless-architecture-distributed-teams | Headless architecture |
+| mastering-react-context | React patterns |
+| mcp-ai-real-world-data | MCP servers |
+| pm-tech-lead-duo | PM & tech lead collaboration |
+| the-tinkerers-path | Career reflections |
 
 ## Writing Guidelines
 
@@ -232,11 +211,11 @@
 
 - [ ] Title is clear and descriptive
 - [ ] Meta description is compelling (150-160 chars)
-- [ ] Both EN and VI versions complete
-- [ ] Structured data is accurate
+- [ ] Both EN and VI versions provided (if bilingual)
+- [ ] Frontmatter validates against Zod schema
 - [ ] Links work (internal and external)
 - [ ] Images have alt text (if any)
-- [ ] Category is assigned
+- [ ] Tags are assigned
 - [ ] Date is correct
 
 ## SEO Guidelines
@@ -246,8 +225,6 @@
 ```
 [Topic] - [Benefit/Hook] | Vinh Nguyen Blog
 ```
-
-Example: "AI Won't Replace Developers - Empty Encouragement or Truth? | Vinh Nguyen Blog"
 
 ### Meta Description
 
@@ -262,29 +239,14 @@ Example: "AI Won't Replace Developers - Empty Encouragement or Truth? | Vinh Ngu
 <h1> - Page/Post title (one per page)
   <h2> - Major sections
     <h3> - Subsections
-      <h4> - (rarely needed)
 ```
 
 ## Image Guidelines
 
-### File Naming
-
-```
-descriptive-name-width.extension
-# Example: team-collaboration-800.jpg
-```
-
-### Dimensions
-
-| Usage | Size |
-|-------|------|
-| Profile | 180x180px |
-| Blog featured | 1200x630px (OG image) |
-| Inline images | Max 800px width |
-
 ### Optimization
 
-- JPEG for photos (80% quality)
+- WebP for photos (preferred)
 - PNG for graphics with transparency
 - SVG for icons and logos
 - Use `loading="lazy"` for below-fold images
+- Add explicit width/height to prevent layout shift
