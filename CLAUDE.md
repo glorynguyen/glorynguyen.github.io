@@ -45,7 +45,7 @@ vinhnguyenba.dev/
 │   │       └── TableOfContents.astro # Auto-generated TOC
 │   ├── content/
 │   │   ├── config.ts               # Zod schema for blog collection
-│   │   └── blog/                    # 13 MDX blog posts
+│   │   └── blog/                    # 14 MDX blog posts
 │   │       ├── ai-2026-coworker-or-crutch.mdx
 │   │       ├── ai-agent-security-warning.mdx
 │   │       ├── ai-not-next-abstraction-risky-role-reversal.mdx
@@ -55,6 +55,7 @@ vinhnguyenba.dev/
 │   │       ├── e18e-frontend-leadership-2026.mdx
 │   │       ├── gsap-mcp-animation-tool.mdx
 │   │       ├── headless-architecture-distributed-teams.mdx
+│   │       ├── how-https-works.mdx
 │   │       ├── mastering-react-context.mdx
 │   │       ├── mcp-ai-real-world-data.mdx
 │   │       ├── pm-tech-lead-duo.mdx
