@@ -5,22 +5,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ollama Code Review - AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, Mistral, GLM, and Hugging Face.">
-    <meta name="keywords" content="VS Code Extension, Code Review, AI, Ollama, Claude, Gemini, Mistral, GLM, Hugging Face, Git, Commit Messages, Code Quality, Developer Tools, MCP Server, Custom Prompts">
+    <meta name="description" content="Ollama Code Review - AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, and any OpenAI-compatible server.">
+    <meta name="keywords" content="VS Code Extension, Code Review, AI, Ollama, Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, OpenAI Compatible, Git, Commit Messages, Code Quality, Developer Tools, MCP Server, Custom Prompts, CI/CD, RAG, Pre-Commit Guard, GitHub PR, GitLab MR, Bitbucket PR">
     <meta name="author" content="Vinh Nguyen (Vincent)">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Ollama Code Review - AI Code Reviews for VS Code">
-    <meta property="og:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, GLM, Hugging Face, and more.">
+    <meta property="og:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, OpenAI-compatible servers, and more.">
     <meta property="og:url" content="https://vinhnguyenba.dev/ollama-code-review">
     <meta property="og:image" content="https://vinhnguyenba.dev/assets/ollama-code-review-og.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Ollama Code Review - AI Code Reviews for VS Code">
-    <meta name="twitter:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, GLM, Hugging Face, and more.">
+    <meta name="twitter:description" content="Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code. Supports Ollama, Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, OpenAI-compatible servers, and more.">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://vinhnguyenba.dev/ollama-code-review">
@@ -912,7 +912,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Ollama Code Review",
-        "description": "AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, Mistral, GLM, and Hugging Face.",
+        "description": "AI-powered code reviews and commit message generation for VS Code. Use local Ollama models or cloud providers like Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, and any OpenAI-compatible server.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Windows, macOS, Linux",
         "offers": {
@@ -925,7 +925,7 @@
             "name": "Vinh Nguyen (Vincent)",
             "url": "https://vinhnguyenba.dev"
         },
-        "softwareVersion": "2.1.0",
+        "softwareVersion": "3.19.0",
         "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review"
     })}></script>
 </head>
@@ -973,7 +973,7 @@
                         </h1>
                         <p class="hero-description">
                             Get lightning-fast, expert code reviews and AI-generated commit messages directly in VS Code.
-                            Use local Ollama models or connect to Claude, Gemini, Mistral, GLM, Hugging Face, and more.
+                            Use local Ollama models or connect to Claude, Gemini, Mistral, MiniMax, GLM, Hugging Face, or any OpenAI-compatible server.
                         </p>
                         <div class="hero-buttons">
                             <a href="https://marketplace.visualstudio.com/items?itemName=VinhNguyen-Vincent.ollama-code-review" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
@@ -993,11 +993,11 @@
                         </div>
                         <div class="hero-stats">
                             <div class="hero-stat">
-                                <span class="hero-stat-value">v2.1.0</span>
+                                <span class="hero-stat-value">v3.19.0</span>
                                 <span class="hero-stat-label">Latest Version</span>
                             </div>
                             <div class="hero-stat">
-                                <span class="hero-stat-value">6+</span>
+                                <span class="hero-stat-value">8+</span>
                                 <span class="hero-stat-label">AI Providers</span>
                             </div>
                             <div class="hero-stat">
@@ -1081,6 +1081,19 @@
                             <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
                         </svg>
                         GLM (Z.AI)
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/>
+                        </svg>
+                        MiniMax
+                    </div>
+                    <div class="provider-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12z"/>
+                            <path d="M7.5 13h2v2h-2zm0-4h2v2h-2zm4 4h2v2h-2zm0-4h2v2h-2zm4 4h2v2h-2zm0-4h2v2h-2z"/>
+                        </svg>
+                        OpenAI-Compatible
                     </div>
                 </div>
             </div>
@@ -1212,12 +1225,153 @@
                     <article class="feature-card">
                         <div class="feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <h3>Review Profiles & Presets</h3>
+                        <p>Switch between General, Security, Performance, Accessibility, Educational, and Strict profiles. Compliance profiles cite OWASP, PCI-DSS, GDPR, HIPAA, SOC 2, and NIST CSF standards.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                        </div>
+                        <h3>GitHub / GitLab / Bitbucket PR Integration</h3>
+                        <p>Review Pull Requests and Merge Requests directly from VS Code. Post AI-generated reviews as PR comments with summary, inline, or both styles.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <polyline points="9 12 11 14 15 10"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Pre-Commit Guard</h3>
+                        <p>Automatically review staged changes with AI before every commit. Configurable severity thresholds block commits when critical issues are found.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>
+                            </svg>
+                        </div>
+                        <h3>Agentic Multi-Step Reviews</h3>
+                        <p>5-step AI pipeline: analyze diff, gather context, detect patterns, deep review, and self-critique. Goes beyond single-pass reviews for comprehensive analysis.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="22"></line>
+                            </svg>
+                        </div>
+                        <h3>CI/CD Integration</h3>
+                        <p>Run AI code reviews headlessly in GitHub Actions, GitLab CI, and any pipeline via the @ollama-code-review/cli package. Auto-post results to PRs.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3>Persistent AI Chat Sidebar</h3>
+                        <p>Dedicated AI chat panel in the Activity Bar with full conversation history that persists across sessions. Use @-mentions to inject file, diff, and review context.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <h3>RAG-Enhanced Reviews</h3>
+                        <p>Index your codebase for semantic code retrieval. The AI retrieves the most similar code snippets and injects them as additional context for deeper, more accurate reviews.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                <path d="M3 9h18M9 21V9"></path>
+                            </svg>
+                        </div>
+                        <h3>Architecture Diagrams (Mermaid)</h3>
+                        <p>Generate visual class, flowchart, sequence, and dependency diagrams from code changes using Mermaid.js, rendered directly in the review panel.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                                <rect x="2" y="2" width="20" height="20" rx="2"></rect>
+                            </svg>
+                        </div>
+                        <h3>Review Analytics Dashboard</h3>
+                        <p>Track score trends, severity distributions, category breakdowns, model usage, and weekly activity. Export all data as CSV or JSON.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                        <h3>Team Knowledge Base</h3>
+                        <p>Encode architecture decisions (ADRs), coding patterns, and team rules in a YAML file. The AI cites specific entry IDs when flagging violations.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                        </div>
+                        <h3>Notification Integrations</h3>
+                        <p>Automatically post review summaries to Slack, Microsoft Teams, and Discord. Configure severity-based triggers to notify your team on critical findings.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Batch / Legacy Code Review</h3>
+                        <p>Review any file, folder, or selected text without needing Git. Perfect for legacy codebases, third-party code, or files not tracked by version control.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
                         </div>
-                        <h3>Copy Review Output</h3>
-                        <p>The review panel features a "Copy Review" button to quickly copy the entire Markdown feedback to your clipboard for sharing in Pull Requests or Slack.</p>
+                        <h3>Export Review Results</h3>
+                        <p>Copy to clipboard, save as Markdown, format as PR description, create GitHub Gists, generate commit messages, and discuss reviews in the AI chat sidebar.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                <line x1="4" y1="22" x2="4" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h3>Streaming Responses</h3>
+                        <p>Real-time, token-by-token output as the AI generates your review. Supported for Ollama, Claude, and any OpenAI-compatible server.</p>
                     </article>
 
                     <article class="feature-card">
@@ -1433,11 +1587,11 @@
             <div class="container">
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <h3>6+</h3>
+                        <h3>8+</h3>
                         <p>AI Providers Supported</p>
                     </div>
                     <div class="stat-item">
-                        <h3>19</h3>
+                        <h3>42</h3>
                         <p>Major Features</p>
                     </div>
                     <div class="stat-item">
@@ -1483,7 +1637,7 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <h3>Ollama Code Review</h3>
-                    <p>AI-powered code reviews and commit message generation for VS Code. Supports 6+ AI providers with custom prompts and MCP integration. Built with love for the developer community.</p>
+                    <p>AI-powered code reviews and commit message generation for VS Code. Supports 8+ AI providers with CI/CD integration, GitHub/GitLab/Bitbucket PR reviews, agentic multi-step analysis, RAG-enhanced reviews, and 42+ features. Built with love for the developer community.</p>
                 </div>
                 <div class="footer-column">
                     <h4>Product</h4>
