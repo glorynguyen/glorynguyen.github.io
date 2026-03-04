@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow: Roles & Responsibilities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .step-connector { height: 2px; flex-grow: 1; background-color: #cbd5e1; margin: 0 10px; min-width: 12px; margin-top: 28px; }
+        @media (max-width: 768px) {
+            .step-connector { width: 2px; height: 16px; margin: 8px 0; }
+            #flow-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white py-10 px-6 shadow-xl mb-8 border-b-4 border-indigo-500">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <h1 class="text-3xl font-extrabold mb-1 tracking-tight">Assignee Workflow</h1>
+                <p class="text-slate-400 text-sm uppercase tracking-widest font-bold">Ownership Tracking</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span class="text-xs font-bold">Developer</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+                    <div class="w-3 h-3 bg-amber-500 rounded-full"></div>
+                    <span class="text-xs font-bold">QA</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4">
+        
+        <!-- Tab Navigation -->
+        <div class="flex flex-col md:flex-row gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm">
+            <button onclick="switchScenario(1)" id="tab-1" class="scenario-tab flex-1 py-4 px-4 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-lg">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> 1. HAPPY PATH
+            </button>
+            <button onclick="switchScenario(2)" id="tab-2" class="scenario-tab flex-1 py-4 px-4 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i> 2. MAJOR REWORK
+            </button>
+            <button onclick="switchScenario(3)" id="tab-3" class="scenario-tab flex-1 py-4 px-4 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50">
+                <i data-lucide="copy-plus" class="w-4 h-4"></i> 3. MINOR BUG (LOG & MOVE)
+            </button>
+        </div>
+
+        <!-- Scenario Card -->
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+            
+            <div id="scenario-meta" class="p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 id="scenario-title" class="text-2xl font-black text-slate-800 uppercase italic">Scenario 1: Happy Path</h2>
+                    <div id="status-badge" class="bg-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Normal</div>
+                </div>
+                <p id="scenario-desc" class="text-slate-500 text-sm leading-relaxed max-w-3xl">Description</p>
+            </div>
+
+            <!-- Flow Visualizer -->
+            <div class="p-8 md:p-12 lg:p-16 bg-white overflow-x-auto">
+                <div id="flow-container" class="flex items-start justify-between min-w-[700px] md:min-w-0">
+                    <!-- Steps injected by JS -->
+                </div>
+            </div>
+
+            <!-- Rules / Context -->
+            <div class="p-8 bg-slate-900 text-white">
+                <h3 class="font-bold text-indigo-400 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> Responsibilities for this path:
+                </h3>
+                <div id="scenario-rules" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- List items injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Legend for Mobile -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
+                <div class="bg-blue-600 p-2 rounded-lg text-white"><i data-lucide="code-2"></i></div>
+                <div>
+                    <h4 class="font-bold text-blue-900 text-sm">Developer Ownership</h4>
+                    <p class="text-blue-700 text-xs">Responsible for coding, self-testing, requesting peer review, and fixing reported bugs.</p>
+                </div>
+            </div>
+            <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex items-start gap-4">
+                <div class="bg-amber-500 p-2 rounded-lg text-white"><i data-lucide="microscope"></i></div>
+                <div>
+                    <h4 class="font-bold text-amber-900 text-sm">QA Ownership</h4>
+                    <p class="text-amber-700 text-xs">Responsible for validating AC, logging bugs, and deciding if a bug is blocker or minor.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const scenarios = {
+            1: {
+                title: "Scenario 1: Happy Path",
+                badge: "Standard",
+                badgeClass: "bg-emerald-500 text-white",
+                desc: "No issues found. The ticket moves linearly from Dev to Code Review to QA.",
+                rules: [
+                    "<strong>Developer:</strong> Ensures PR description is clear for the Peer Reviewer.",
+                    "<strong>Developer:</strong> Moves ticket to 'Ready for QA' only after PR approval.",
+                    "<strong>QA:</strong> Confirms all Acceptance Criteria (AC) are met.",
+                    "<strong>QA:</strong> Moves ticket to 'Done' upon successful validation."
+                ],
+                steps: [
+                    { name: "IN PROGRESS", role: "Dev", color: "bg-blue-600" },
+                    { name: "CODE REVIEW", role: "Dev (Peer)", color: "bg-indigo-600" },
+                    { name: "READY FOR QA", role: "Dev", color: "bg-blue-500" },
+                    { name: "IN QA", role: "QA", color: "bg-amber-500" },
+                    { name: "VALIDATED", role: "QA", color: "bg-emerald-500" },
+                    { name: "DONE", role: "PM", color: "bg-slate-900" }
+                ]
+            },
+            2: {
+                title: "Scenario 2: Major QA Rework",
+                badge: "Rework Loop",
+                badgeClass: "bg-red-500 text-white",
+                desc: "QA finds a significant issue. Ticket must go back to the Developer, then through a new Code Review before QA sees it again.",
+                rules: [
+                    "<strong>QA:</strong> Reassigns ticket to Dev with clear bug documentation.",
+                    "<strong>Developer:</strong> Fixes the bug and requests a 2nd Code Review.",
+                    "<strong>Peer Reviewer:</strong> Must approve the fix before it returns to QA.",
+                    "<strong>QA:</strong> Re-tests both the fix and the original AC."
+                ],
+                steps: [
+                    { name: "IN QA", role: "QA", color: "bg-amber-600" },
+                    { name: "QA ISSUE", role: "QA", color: "bg-red-500" },
+                    { name: "IN PROGRESS", role: "Dev", color: "bg-blue-600" },
+                    { name: "CODE REVIEW", role: "Dev (Peer)", color: "bg-indigo-600" },
+                    { name: "READY FOR QA", role: "Dev", color: "bg-blue-500" },
+                    { name: "VALIDATED", role: "QA", color: "bg-emerald-500" }
+                ]
+            },
+            3: {
+                title: "Scenario 3: Minor Bug (Split Flow)",
+                badge: "Efficiency Path",
+                badgeClass: "bg-amber-500 text-white",
+                desc: "QA finds a minor/cosmetic bug. A separate ticket is created for the fix later, so the current story can be closed.",
+                rules: [
+                    "<strong>QA:</strong> Identifies bug as 'Minor' (Non-blocking).",
+                    "<strong>QA:</strong> Creates a new 'Bug' ticket in the backlog.",
+                    "<strong>Developer/QA:</strong> Links the new Bug to the current Story.",
+                    "<strong>QA:</strong> Validates the primary AC and moves Story to Done."
+                ],
+                steps: [
+                    { name: "IN QA", role: "QA", color: "bg-amber-600" },
+                    { name: "CREATE BUG", role: "QA / Dev", color: "bg-slate-600" },
+                    { name: "VALIDATED", role: "QA", color: "bg-emerald-500" },
+                    { name: "DONE", role: "PM", color: "bg-slate-900" }
+                ]
+            }
+        };
+
+        function switchScenario(id) {
+            const data = scenarios[id];
+            
+            // Update Tabs
+            document.querySelectorAll('.scenario-tab').forEach(tab => {
+                tab.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg');
+                tab.classList.add('text-slate-500', 'hover:bg-slate-50');
+            });
+            const activeTab = document.getElementById(`tab-${id}`);
+            activeTab.classList.add('bg-indigo-600', 'text-white', 'shadow-lg');
+            activeTab.classList.remove('text-slate-500', 'hover:bg-slate-50');
+
+            // Update Text
+            document.getElementById('scenario-title').innerText = data.title;
+            document.getElementById('scenario-desc').innerText = data.desc;
+            
+            // Update Badge
+            const badge = document.getElementById('status-badge');
+            badge.innerText = data.badge;
+            badge.className = `${data.badgeClass} px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest`;
+
+            // Update Rules
+            const rulesContainer = document.getElementById('scenario-rules');
+            rulesContainer.innerHTML = data.rules.map(rule => 
+                `<div class="flex items-start gap-3 text-slate-300 text-xs">
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-indigo-400 mt-0.5"></i> 
+                    <span>${rule}</span>
+                </div>`
+            ).join('');
+
+            // Update Flow
+            const flowContainer = document.getElementById('flow-container');
+            let flowHtml = '';
+            data.steps.forEach((step, index) => {
+                const roleColor = step.role.includes('QA') ? 'text-amber-500' : 'text-blue-500';
+                flowHtml += `
+                    <div class="flex flex-col items-center flex-shrink-0">
+                        <span class="mb-2 text-[9px] font-black uppercase tracking-tighter ${roleColor}">${step.role}</span>
+                        <div class="w-12 h-12 ${step.color} rounded-2xl flex items-center justify-center text-white shadow-lg border-2 border-white/20">
+                            <span class="text-xs font-black">${index + 1}</span>
+                        </div>
+                        <span class="mt-3 text-[10px] font-bold text-slate-500 uppercase tracking-tighter text-center max-w-[70px] leading-tight">${step.name}</span>
+                    </div>
+                `;
+                if (index < data.steps.length - 1) {
+                    flowHtml += `<div class="step-connector"></div>`;
+                }
+            });
+            flowContainer.innerHTML = flowHtml;
+
+            lucide.createIcons();
+        }
+
+        window.onload = () => switchScenario(1);
+    </script>
+</body>
+</html>
