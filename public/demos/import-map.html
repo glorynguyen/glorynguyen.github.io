@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Map Example</title>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "canvas-confetti": "https://cdn.skypack.dev/canvas-confetti"
+      }
+    }
+    </script>
+</head>
+<body>
+
+    <h1>Import Map Demo</h1>
+    <p>Click the button to fire confetti using a mapped module!</p>
+    <button id="confettiBtn">Celebrate!</button>
+
+    <script type="module">
+        // We use the "bare specifier" defined in the map above
+        import confetti from 'canvas-confetti';
+
+        document.getElementById('confettiBtn').addEventListener('click', () => {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        });
+    </script>
+</body>
+</html>
