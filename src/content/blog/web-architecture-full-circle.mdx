@@ -1,0 +1,221 @@
+---
+title: "The Web's Full Circle: From Server-First to SPA and Back Again"
+titleVi: "Web đã đi một vòng lớn: Từ server‑first, sang SPA, rồi lại quay về server‑first"
+description: "A 30-year retrospective on web architecture evolution—from server-rendered pages to SPAs and the return of server-first with modern superpowers."
+descriptionVi: "Nhìn lại 30 năm phát triển của web: từ server‑first, chuyển sang SPA, rồi quay về server‑first với những khả năng hoàn toàn mới."
+pubDate: 2026-03-08
+author: "Vinh Nguyen (Vincent)"
+tags: ["Architecture", "Web Development", "React", "Server Components", "SPA"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+If you look back at 30 years of web development history, you'll notice a fascinating cycle: the web started server-first, shifted to client-first (SPA), and is now swinging back to server-first. But here's the thing — this return isn't a step backward. It's a significant leap forward, built on the hard-won lessons of both eras.
+
+## The Early Days: Pure Server-First (1995–2010)
+
+The early web was the era of PHP, ASP, JSP, Rails, and Django. Everything happened on the server:
+
+- The server rendered complete HTML.
+- Every button click triggered a full page reload.
+- The client had almost no logic.
+
+**The upside:** Great SEO, fast initial load, simple code.
+
+**The downside:** User experience was rough. Every interaction meant waiting for a server round-trip, making the web feel rigid compared to desktop applications.
+
+## The Rise of SPAs: Client-First (2010–2020)
+
+Then React, Angular, and Vue arrived and changed everything.
+
+- Servers only returned JSON.
+- The client handled routing, state, and rendering.
+- The web became more "app-like" than ever before.
+
+UX became silky smooth — no page reloads, real-time interactions were easy.
+
+But the price was steep:
+
+- Too much JavaScript to download.
+- SEO became a nightmare.
+- Poor performance on mobile devices.
+- Complex architecture: hydration, state management, caching, API layers...
+
+SPAs solved UX problems but created a whole new category of problems in return.
+
+## The Return: Server-First 2.0 (2020–2026)
+
+Around 2020, the industry began to realize: the web had become too heavy, too complex, and no longer suited to the actual needs of most applications.
+
+And so server-first came back — but this time with a completely new face.
+
+**Technologies leading the charge:**
+
+- React Server Components (RSC)
+- Next.js App Router
+- Remix
+- HTMX
+- Laravel Livewire
+- Phoenix LiveView
+- Qwik
+- Astro (Islands Architecture)
+
+**What they all have in common:** Let the server do the heavy lifting; let the client handle only what truly requires interactivity.
+
+## Modern Server-First Is Nothing Like the Old One
+
+This is not a return to PHP reloading pages. Modern server-first has capabilities that were unimaginable before:
+
+- **Streaming UI** — send HTML progressively as it's ready
+- **Partial hydration** — hydrate only the interactive parts
+- **Server Components** — render on the server without sending JS to the client
+- **Edge rendering** — compute closer to the user
+- **Islands Architecture** — isolated interactive components in static HTML
+- **Selective interactivity** — opt-in to JavaScript, not opt-out
+
+It combines the simplicity of server-rendering with the smoothness of SPAs — without carrying the drawbacks of either.
+
+<Callout type="info" title="The Core Insight">
+  Server-first 2.0 isn't about choosing between server and client. It's about making each responsible for what it does best.
+</Callout>
+
+## Why Did the Web Go "Full Circle"?
+
+Because each era solved one problem while creating another:
+
+| Era | Problem Solved | New Problem Created |
+|-----|----------------|---------------------|
+| Old server-first | Simple, SEO-friendly | Poor UX, no interactivity |
+| SPA | Great UX, app-like feel | Heavy JS, SEO pain, complexity |
+| Modern server-first | Great UX + less JS + simpler | — (still evolving) |
+
+This is the natural cycle of technology: it evolves based on real needs, not fleeting trends.
+
+## The Future of the Web
+
+The current trajectory is clear:
+
+- **Less JavaScript** sent to the browser.
+- **More logic running on the server**.
+- **The client is only used when interactivity is genuinely needed**.
+- **Frameworks default to server-first**.
+
+React — once the symbol of the SPA era — is itself undergoing a major transformation with RSC. This signals that the web's direction has fundamentally shifted.
+
+<Callout type="info" title="Takeaway">
+  Understanding these cycles helps you make better architectural decisions today. The best framework isn't the newest one — it's the one that fits your actual use case.
+</Callout>
+
+<Callout type="warning" title="Disclaimer">
+  The views expressed here are my own and do not necessarily reflect the views of my current or former employers.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Nếu nhìn lại lịch sử phát triển của web trong 30 năm qua, ta sẽ thấy một vòng lặp thú vị: web bắt đầu với server‑first, chuyển sang client‑first (SPA), và giờ đang quay trở lại server‑first. Nhưng điều đáng nói là: lần quay lại này không phải là "đi lùi", mà là một bước tiến lớn dựa trên những bài học của cả hai thời kỳ trước.
+
+## Thời kỳ đầu: Web thuần server‑first (1995–2010)
+
+Những năm đầu của web là thời kỳ của PHP, ASP, JSP, Rails, Django. Mọi thứ đều diễn ra trên server:
+
+- Server render HTML hoàn chỉnh.
+- Mỗi lần bấm nút là reload trang.
+- Client gần như không có logic.
+
+**Ưu điểm:** SEO tốt, tốc độ tải ban đầu nhanh, code đơn giản.
+
+**Nhược điểm:** Trải nghiệm người dùng không mượt mà. Mỗi tương tác đều phải chờ server phản hồi, khiến web kém linh hoạt so với ứng dụng desktop.
+
+## Sự trỗi dậy của SPA: Client‑first (2010–2020)
+
+Rồi React, Angular, Vue xuất hiện và thay đổi mọi thứ.
+
+- Server chỉ trả JSON.
+- Client xử lý routing, state, rendering.
+- Web trở nên "giống app" hơn bao giờ hết.
+
+UX mượt, không reload trang, tương tác real‑time dễ dàng.
+
+Nhưng cái giá phải trả là:
+
+- Quá nhiều JavaScript phải tải xuống.
+- SEO khó khăn.
+- Performance kém trên mobile.
+- Kiến trúc phức tạp: hydration, state management, caching, API layer…
+
+SPA giải quyết vấn đề UX, nhưng lại tạo ra một loạt vấn đề mới.
+
+## Vòng quay trở lại: Server‑first 2.0 (2020–2026)
+
+Khoảng 2020 trở đi, ngành bắt đầu nhận ra: web đang trở nên quá nặng, quá phức tạp, và không còn phù hợp với nhu cầu thực tế của phần lớn ứng dụng.
+
+Và thế là server‑first quay trở lại — nhưng lần này với một diện mạo hoàn toàn mới.
+
+**Những công nghệ dẫn đầu xu hướng:**
+
+- React Server Components (RSC)
+- Next.js App Router
+- Remix
+- HTMX
+- Laravel Livewire
+- Phoenix LiveView
+- Qwik
+- Astro (Islands Architecture)
+
+**Điểm chung của chúng:** Để server làm phần nặng, client chỉ làm phần tương tác.
+
+## Server‑first ngày nay không giống server‑first ngày xưa
+
+Đây không phải là quay lại thời PHP reload trang. Server‑first hiện đại có những khả năng mà trước đây không thể tưởng tượng:
+
+- **Streaming UI** — gửi HTML dần dần khi sẵn sàng
+- **Partial hydration** — chỉ hydrate những phần cần tương tác
+- **Server Components** — render trên server, không gửi JS xuống client
+- **Edge rendering** — xử lý gần người dùng hơn
+- **Islands Architecture** — các component tương tác độc lập trong HTML tĩnh
+- **Selective interactivity** — chọn dùng JavaScript khi thật sự cần
+
+Nó kết hợp sự đơn giản của server‑rendering với sự mượt mà của SPA — nhưng không mang theo nhược điểm của cả hai.
+
+<Callout type="info" title="Insight cốt lõi">
+  Server‑first 2.0 không phải là chọn giữa server hay client. Mà là để mỗi bên chịu trách nhiệm cho những gì nó làm tốt nhất.
+</Callout>
+
+## Tại sao web lại "đi một vòng"?
+
+Vì mỗi giai đoạn giải quyết một vấn đề, nhưng đồng thời tạo ra vấn đề mới:
+
+| Giai đoạn | Vấn đề được giải quyết | Vấn đề mới phát sinh |
+|-----------|------------------------|----------------------|
+| Server‑first cũ | Đơn giản, SEO tốt | UX kém, không có interactivity |
+| SPA | UX tốt, giống app | JS nặng, SEO khó, phức tạp |
+| Server‑first mới | UX tốt + ít JS + đơn giản hơn | — (vẫn đang tiến hóa) |
+
+Đây là vòng lặp tự nhiên của công nghệ: tiến hóa theo nhu cầu thực tế, không theo xu hướng nhất thời.
+
+## Tương lai của web
+
+Xu hướng hiện tại đang rất rõ ràng:
+
+- **Ít JavaScript hơn** được gửi xuống browser.
+- **Nhiều logic chạy trên server hơn**.
+- **Client chỉ dùng khi thật sự cần interactivity**.
+- **Frameworks mặc định server‑first**.
+
+React — vốn là biểu tượng của SPA — cũng đang chuyển mình mạnh mẽ với RSC. Điều này cho thấy hướng đi của web đã thay đổi.
+
+<Callout type="info" title="Bài học rút ra">
+  Hiểu được các vòng lặp này giúp bạn đưa ra quyết định kiến trúc tốt hơn ngay hôm nay. Framework tốt nhất không phải là framework mới nhất — mà là framework phù hợp nhất với bài toán thực tế của bạn.
+</Callout>
+
+<Callout type="warning" title="Lưu ý">
+  Những quan điểm trong bài viết này là của cá nhân tôi và không nhất thiết phản ánh quan điểm của các tổ chức tôi đang hoặc đã từng làm việc.
+</Callout>
+
+</div>
