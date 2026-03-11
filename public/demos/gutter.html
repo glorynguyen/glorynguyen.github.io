@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout & Grid Confirmation - Vincent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom max-width for 2100px */
+        .container-2100 {
+            max-width: 2100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Visual guides for recording */
+        .grid-guide {
+            border-left: 1px dashed rgba(255, 255, 255, 0.2);
+            border-right: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .light-theme .grid-guide {
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <section class="w-full bg-[#1A1B2F] text-white py-20">
+        <div class="container-2100 px-8 grid-guide">
+            <div class="max-w-4xl py-10">
+                <span class="text-purple-400 font-bold uppercase tracking-widest text-sm">Concept Confirmation</span>
+                <h1 class="text-5xl font-bold mt-4 mb-6">Component 01: Hero Section (Dark)</h1>
+                <p class="text-xl text-gray-300 leading-relaxed mb-8">
+                    <strong>Logic:</strong> This outer wrapper is 100% width. On screens > 2100px, the "gutters"
+                    automatically inherit this Navy background (#1A1B2F). The content stays centered within the 2100px
+                    boundary.
+                </p>
+                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full transition-all">
+                    Primary CTA (Dark BG)
+                </button>
+            </div>
+            <div class="absolute top-0 right-0 bg-white/10 p-2 text-xs rounded">Inner Container: 2100px</div>
+        </div>
+    </section>
+
+    <section class="w-full bg-[#424769] text-white py-20 border-t border-white/10">
+        <div class="container-2100 px-8 grid-guide">
+            <h2 class="text-3xl font-bold mb-12">Component 02: Feature Tiles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white/5 p-8 rounded-lg border border-white/10">
+                    <h3 class="text-xl font-bold mb-4">Tile Behavior</h3>
+                    <p class="text-gray-300">Tiles will expand/shrink based on the 2100px grid. On Ultra-wide, they
+                        maintain a comfortable max width.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-lg border border-white/10">
+                    <h3 class="text-xl font-bold mb-4">Gutter Inheritance</h3>
+                    <p class="text-gray-300">The left/right gutters of this section will be #424769, ensuring visual
+                        continuity as requested.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-lg border border-white/10">
+                    <h3 class="text-xl font-bold mb-4">Responsive</h3>
+                    <p class="text-gray-300">Below 2100px, the container becomes fluid (100% width) with standard side
+                        paddings.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="w-full bg-white text-gray-900 py-24 light-theme">
+        <div class="container-2100 px-8 grid-guide">
+            <div class="text-center py-10">
+                <h2 class="text-4xl font-bold mb-6">Component 03: Call to Action (Light)</h2>
+                <p class="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+                    This demonstrates <strong>Component-level Theming</strong>. Since this block has a white background,
+                    we use the "Light Background" button style and dark text.
+                </p>
+                <button
+                    class="bg-[#6B46C1] hover:bg-[#553C9A] text-white px-10 py-4 rounded-full font-bold shadow-lg transition-all">
+                    Get Started (Light BG style)
+                </button>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>
