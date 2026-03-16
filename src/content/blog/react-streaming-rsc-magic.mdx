@@ -1,0 +1,249 @@
+---
+title: "The Teleporting HTML: Decoding the Magic of React Streaming"
+titleVi: "HTML Dịch Chuyển Tức Thời: Giải Mã Phép Thuật React Streaming"
+description: "Discover how React Streaming and Server Components deliver content instantly while keeping the page interactive—the hidden mechanics behind modern web speed."
+descriptionVi: "Khám phá cách React Streaming và Server Components cung cấp nội dung ngay lập tức trong khi giữ trang tương tác—những cơ chế ẩn đằng sau tốc độ web hiện đại."
+pubDate: 2026-03-16
+tags: ["React", "SSR", "Web Performance", "Server Components", "Next.js"]
+author: "Vinh Nguyen"
+---
+
+{/* English Version */}
+<div data-lang="en">
+
+For decades, the web worked like a restaurant that wouldn't bring you your appetizer until the main course and dessert were also ready. You sat at a blank table, waiting. This was the "All or Nothing" era of Server-Side Rendering (SSR).
+
+If your "Recent Activity" component took 3 seconds to fetch from a database, the user saw a white screen for 3 seconds.
+
+Then came Streaming SSR and React Server Components (RSC). Suddenly, the table is set instantly, the bread arrives while you wait, and the steak "teleports" onto your plate the moment it's cooked.
+
+If you look under the hood of a modern Next.js site, you'll see strange things: `id="S:1"`, hidden divs, and massive blocks of `self.__next_f.push`.
+
+Here is how the "teleportation" actually works.
+
+## 1. The Death of the "Wait for All"
+
+In the old world, the server generated a full HTML string and sent it once. The browser had to wait. No content appeared until everything was ready.
+
+In the RSC world, the server uses HTTP Chunked Transfer Encoding. It keeps the connection open. It doesn't wait for the slow data.
+
+It sends the "Shell" immediately: the layout, the navigation bar, the skeleton of your page. Fast. Instant.
+
+But what about the slow data? What about the Recent Activity list that isn't ready yet?
+
+React sends a **Suspense Boundary**.
+
+## 2. The "Hole" in the Page (id="S:1")
+
+When the server encounters a `<Suspense>` component wrapping a slow component, it doesn't wait. Instead, it sends a placeholder—a marker in the HTML. It essentially says to the browser:
+
+> "Something is coming here later. Keep this spot warm."
+
+The browser sees this and continues parsing. The page loads. The user sees content.
+
+Then, at the very bottom of the document (still streaming!), once the database query finishes, the server sends something like this:
+
+```html
+<div hidden id="S:1">
+  <ul>
+    <li>My first post</li>
+    <li>Great article!</li>
+    <li>Check this out!</li>
+  </ul>
+</div>
+```
+
+The problem: This HTML is at the bottom of the page, and it's hidden. The user can't see it, and it's in the wrong place.
+
+This is where the "teleportation" happens.
+
+## 3. The Teleportation Script (self.__next_f.push)
+
+Immediately after that hidden div, the server streams a tiny `<script>`. This script is the "instruction manual." It looks something like this:
+
+```javascript
+self.__next_f.push([1, "f:[\"$\",\"section\", ... "])
+```
+
+This script does two critical things:
+
+**1. The DOM Swap:** It tells the browser, "Take the content inside `id="S:1"` and move it into the Suspense placeholder we left earlier." The loading spinner vanishes. The content appears in the right place.
+
+**2. The Hydration Map:** It provides the Flight Data—React's internal format for understanding the component tree. It's the "blueprint" that tells React how to manage this content once the JavaScript takes over.
+
+The magic is in the timing: The script runs immediately as it arrives, before the page finishes downloading.
+
+## 4. The "Double Data" Mystery
+
+You might notice that the streamed content appears twice in your source code:
+- Once as HTML inside the hidden div
+- Once as a serialized string inside the script
+
+Why the duplication? This is the "Full Circle" moment.
+
+**The HTML is for the browser.** It allows the browser to paint the pixels instantly. The user sees the content. The page feels fast.
+
+**The Script Data is for React.** React is a JavaScript library. It doesn't "read" HTML to manage state and interactivity. It needs that serialized data (the Flight format) to understand the component tree. If you click a "Like" button on that streamed post, React needs to know which component that button belongs to. What state does it control? The script provides the "brain" for the HTML "body."
+
+Without this separation, you'd have to choose: either speed (HTML) or interactivity (JavaScript). Now you get both.
+
+## 5. The Browser: An Incremental Engine
+
+The true hero here is the browser's **Incremental HTML Parser**.
+
+Unlike a terminal command that sees a wall of text, a browser executes scripts as they arrive. It doesn't wait for the full document. It parses and executes in real-time.
+
+Because Next.js streams these scripts in the middle of the document, the browser can swap the UI and hydrate the components while the connection is still downloading the rest of the page.
+
+This is why your page feels interactive before it's "done" loading.
+
+## 6. Partial Hydration: Waking Up in Pieces
+
+Here's the revolutionary part: React doesn't hydrate your entire page at once.
+
+It hydrates as data arrives. The shell hydrates first. Then, as each Suspense boundary resolves and its script arrives, that piece of the app wakes up and becomes interactive.
+
+This means:
+- The user can interact with the shell immediately
+- Slow data doesn't block interactivity
+- The page gracefully reveals itself, piece by piece
+
+## The Result: The Best of Both Worlds
+
+By using this "hidden div + push script" dance, React Streaming solves a 20-year-old trade-off:
+
+**You get the speed of SSR:** The user sees pixels instantly. No white screen of death.
+
+**You get the power of SPAs:** The page remains interactive and dynamic. JavaScript can manage state and respond to user actions.
+
+**You get "Partial Hydration":** The page doesn't have to load all at once. It "wakes up" in pieces as data arrives.
+
+## A Note on This Magic
+
+The next time you see `self.__next_f.push` in your browser DevTools, don't dismiss it as junk code. See it as a courier, delivering a piece of your application's brain across the internet, one chunk at a time.
+
+The strangeness you see—the hidden divs, the mysterious IDs, the serialized data—that's not a hack. That's elegance. That's a decade of browser APIs, HTTP standards, and React's evolution coming together to give users the best experience possible.
+
+You're not looking at chaos. You're looking at symphony.
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Suốt hàng thập kỷ, các trang web hoạt động giống như một nhà hàng kỳ cục: họ bắt bạn phải nhịn đói chờ món khai vị cho đến khi cả món chính và tráng miệng đều đã được nấu xong. Bạn chỉ biết ngồi nhìn chiếc bàn trống trơn. Đó chính là kỷ nguyên "Tất cả hoặc Không có gì" (All-or-Nothing) của Server-Side Rendering (SSR) truyền thống.
+
+Nếu component "Hoạt động gần đây" của bạn mất 3 giây để truy vấn từ database, người dùng sẽ phải chịu đựng màn hình trắng xóa trong suốt 3 giây đó.
+
+Nhưng rồi Streaming SSR và React Server Components (RSC) xuất hiện. Đột nhiên, bàn ăn được dọn ra ngay lập tức, bánh mì nóng hổi được mang lên trong lúc bạn chờ, và món bít tết "dịch chuyển tức thời" vào đĩa của bạn ngay giây phút nó vừa chín tới.
+
+Nếu bạn thử soi mã nguồn (View Source) của một trang Next.js hiện đại, bạn sẽ thấy những thứ khá kỳ lạ: các id="S:1", những thẻ div bị ẩn, và hàng loạt đoạn code self.__next_f.push khổng lồ.
+
+Hãy cùng giải mã cách "phép thuật dịch chuyển" này thực sự diễn ra dưới nền tảng.
+
+## 1. Cáo chung của kỷ nguyên "Chờ đợi tất cả"
+
+Trong thế giới SSR cũ, server phải render ra một chuỗi HTML hoàn chỉnh rồi mới gửi đi một lần duy nhất. Trình duyệt không thể làm gì khác ngoài việc chờ đợi. Hoàn toàn không có nội dung nào được hiển thị cho đến khi mọi thứ đã sẵn sàng 100%.
+
+Tuy nhiên, trong thế giới của RSC, server sử dụng giao thức HTTP Chunked Transfer Encoding. Nó giữ cho kết nối luôn mở và quan trọng nhất: nó không chờ đợi các dữ liệu chậm.
+
+Server sẽ lập tức gửi đi phần "Vỏ" (Shell): bố cục trang (layout), thanh điều hướng (navbar), và các bộ khung giao diện (skeleton). Mọi thứ diễn ra chớp nhoáng. Người dùng ngay lập tức thấy trang web phản hồi.
+
+Vậy còn những dữ liệu tốn thời gian thì sao? Ví dụ như danh sách "Hoạt động gần đây" vẫn đang kẹt ở database?
+
+Lúc này, React tung ra vũ khí mang tên **Suspense Boundary**.
+
+## 2. "Lỗ hổng" trên giao diện (id="S:1")
+
+Khi server đi qua một component `<Suspense>` đang bọc một thành phần tải chậm, nó không hề dừng lại. Thay vào đó, nó gửi xuống một "trình giữ chỗ" (placeholder) — một cột mốc được đánh dấu trong HTML. Về cơ bản, server đang nói với trình duyệt rằng:
+
+> "Sẽ có nội dung được đưa vào đây sau. Cứ giữ ấm chỗ này nhé!"
+
+Trình duyệt ghi nhận điều đó và tiếp tục phân tích cú pháp (parse) phần còn lại. Trang web vẫn được tải, người dùng vẫn thấy giao diện mà không bị chặn lại.
+
+Và rồi, ở tận cùng của file HTML (vì luồng dữ liệu vẫn đang mở!), ngay khi truy vấn database hoàn tất, server sẽ gửi xuống một đoạn code tương tự như thế này:
+
+```html
+<div hidden id="S:1">
+  <ul>
+    <li>Bài viết đầu tiên của tôi</li>
+    <li>Nội dung này thật tuyệt vời!</li>
+    <li>Hãy xem thử cái này nhé!</li>
+  </ul>
+</div>
+```
+
+Vấn đề: Khối HTML này đang nằm ở dưới cùng của trang web, và nó bị ẩn (hidden). Người dùng không thấy nó, và vị trí của nó trên DOM cũng hoàn toàn sai.
+
+Đây chính là khoảnh khắc sự "dịch chuyển tức thời" xuất hiện.
+
+## 3. Bí thuật Dịch chuyển (self.__next_f.push)
+
+Ngay bên dưới thẻ div ẩn đó, server tiếp tục stream xuống một thẻ `<script>` siêu nhỏ. Thẻ script này đóng vai trò như một "bản hướng dẫn lắp ráp", trông như sau:
+
+```javascript
+self.__next_f.push([1, "f:[\"$\",\"section\", ... "])
+```
+
+Đoạn script này thực thi 2 nhiệm vụ cốt lõi:
+
+**1. DOM Swap (Hoán đổi DOM):** Nó ra lệnh cho trình duyệt: "Hãy lấy toàn bộ nội dung bên trong id="S:1" và nhét nó vào cái lỗ hổng Suspense mà chúng ta đã để lại lúc nãy." Ngay lập tức, icon loading biến mất, nội dung thật xuất hiện đúng vào vị trí của nó.
+
+**2. Hydration Map (Bản đồ Hydrate):** Nó cung cấp Flight Data — định dạng dữ liệu nội bộ của React dùng để mô tả cây component. Đây là "bản thiết kế" để React biết cách quản lý đoạn nội dung này khi JavaScript trên client bắt đầu tiếp quản.
+
+Điều kỳ diệu nằm ở yếu tố thời gian: Tập lệnh này được thực thi ngay tại khoảnh khắc nó được tải xuống, không cần đợi toàn bộ trang tải xong.
+
+## 4. Lời giải cho bí ẩn "Dữ liệu kép"
+
+Bạn có thể tinh ý nhận ra rằng, nội dung stream xuống bị lặp lại hai lần trong mã nguồn:
+- Một lần là HTML nằm trong thẻ div bị ẩn
+- Một lần là chuỗi dữ liệu (JSON/Flight) nằm trong thẻ script
+
+Tại sao phải dư thừa như vậy? Đây chính là sự bù trừ hoàn hảo của hệ sinh thái:
+
+**HTML sinh ra để phục vụ Trình duyệt.** Nó giúp trình duyệt vẽ (paint) các pixel lên màn hình ngay lập tức. Người dùng thấy được nội dung, trang web mang lại cảm giác cực nhanh.
+
+**Dữ Liệu Script sinh ra để phục vụ React.** React là một thư viện JavaScript. Nó không "đọc hiểu" HTML thuần để quản lý state (trạng thái) hay các tương tác. Nó cần dữ liệu đã được serialize (định dạng Flight) để tái tạo lại cây component. Nếu người dùng bấm "Like" vào một bài viết vừa được stream xuống, React cần biết nút bấm đó thuộc về component nào và state nào đang quản lý nó. Tập lệnh script chính là "bộ não" được gắn vào chiếc "thể xác" HTML.
+
+Nếu không có sự tách biệt này, bạn buộc phải chọn một trong hai: hoặc tốc độ (HTML thuần) hoặc tương tác (JavaScript SPA). Giờ đây, bạn có cả hai.
+
+## 5. Trình duyệt: Cỗ máy Phân tích Tăng dần
+
+Người hùng thầm lặng trong câu chuyện này chính là Trình phân tích HTML Tăng dần (Incremental HTML Parser) của trình duyệt.
+
+Không giống như màn hình terminal chỉ đọc mọi thứ như một bức tường văn bản cứng nhắc, trình duyệt thực thi các thẻ `<script>` ngay khi chúng vừa cập bến. Nó không chờ toàn bộ document tải xong. Nó đọc và thực thi theo thời gian thực (real-time).
+
+Nhờ việc Next.js stream các đoạn script này vào ngay giữa document, trình duyệt có thể hoán đổi UI và hydrate các component, trong khi kết nối mạng vẫn đang tiếp tục tải phần còn lại của trang web.
+
+Đây chính là lý do tại sao trang của bạn cảm thấy tương tác trước khi nó hoàn toàn "tải xong".
+
+## 6. Partial Hydration: Thức tỉnh từng phần
+
+Đây là cuộc cách mạng thực sự: React không còn cố gắng hydrate toàn bộ trang web cùng một lúc nữa.
+
+Nó hydrate dựa trên tiến độ dữ liệu trả về. Lớp "vỏ" (Shell) sẽ được hydrate trước tiên. Sau đó, cứ mỗi khi một Suspense Boundary nhận đủ dữ liệu và đoạn script của nó cập bến, phần ứng dụng đó sẽ "thức tỉnh" và sẵn sàng tương tác.
+
+Điều này mang lại lợi ích khổng lồ:
+- Người dùng có thể tương tác với thanh điều hướng (shell) ngay lập tức
+- Các truy vấn API chậm chạp không còn chặn (block) luồng tương tác của toàn trang
+- Trang web hiển thị dần dần một cách mượt mà và thanh lịch
+
+## Tổng kết: Sự giao thoa hoàn hảo
+
+Bằng cách tận dụng vũ điệu "Hidden Div + Push Script" này, React Streaming đã giải quyết thành công bài toán đánh đổi kéo dài suốt 20 năm của ngành web:
+
+**Bạn có được Tốc độ của SSR:** Mắt người dùng thấy pixel ngay lập tức. Chấm dứt kỷ nguyên của màn hình trắng chết chóc.
+
+**Bạn có được Sức mạnh của SPA:** Trang web vẫn giữ được sự năng động và linh hoạt. JavaScript vẫn ở đó để quản lý state và phản hồi mọi cú click.
+
+**Bạn có được "Partial Hydration":** Ứng dụng không nặng nề khởi động cùng một lúc, mà "bừng tỉnh" từng phần một cách thông minh.
+
+## Lần tới khi bạn thấy phép thuật này
+
+Lần tới, khi bạn mở DevTools và nhìn thấy những dòng `self.__next_f.push` trôi nổi, đừng vội coi chúng là những dòng code rác khó hiểu. Hãy nhìn chúng như những người đưa thư mẫn cán, đang vận chuyển từng mảnh "bộ não" của ứng dụng qua đường truyền internet, từng đoạn một.
+
+Những sự kỳ lạ mà bạn thấy—những div ẩn, những ID bí ẩn, những chuỗi dữ liệu loằng ngoằng—không phải là những mánh lới (hack) chắp vá. Đó là sự thanh lịch. Đó là thành quả hội tụ từ cả một thập kỷ phát triển của các API trình duyệt, tiêu chuẩn HTTP, và quá trình tiến hóa không ngừng của React để mang lại trải nghiệm tối thượng cho người dùng.
+
+Bạn không đang nhìn vào sự hỗn loạn. Bạn đang thưởng thức một bản giao hưởng của công nghệ.
+
+</div>
