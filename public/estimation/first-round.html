@@ -96,7 +96,6 @@
     </div>
 
     <script>
-        // 1. The Data from your sheet
         const components = [
             { name: "Navigation (Global)", variants: 3, size: 'XL' },
             { name: "Footer (Global)", variants: 1, size: 'M' },
@@ -134,8 +133,20 @@
             { name: "Contact Form", variants: 1, size: 'XL' }
         ];
 
-        // 2. Initialize or Load from LocalStorage
+        // 2. Initialize Logic & Component Data from LocalStorage
         let userEstimates = JSON.parse(localStorage.getItem('hugeEstimates')) || {};
+        
+        // Load global config or use defaults
+        const defaultConfig = { s: 1, m: 3, l: 6, xl: 12, mult: 30 };
+        let userConfig = JSON.parse(localStorage.getItem('hugeLogicConfig')) || defaultConfig;
+
+        function initLogicInputs() {
+            document.getElementById('base-s').value = userConfig.s;
+            document.getElementById('base-m').value = userConfig.m;
+            document.getElementById('base-l').value = userConfig.l;
+            document.getElementById('base-xl').value = userConfig.xl;
+            document.getElementById('var-mult').value = userConfig.mult;
+        }
 
         function renderTable() {
             const tbody = document.getElementById('component-body');
@@ -172,13 +183,19 @@
         }
 
         function calculateAll() {
-            const base = {
-                S: parseFloat(document.getElementById('base-s').value),
-                M: parseFloat(document.getElementById('base-m').value),
-                L: parseFloat(document.getElementById('base-l').value),
-                XL: parseFloat(document.getElementById('base-xl').value)
-            };
-            const varMult = parseFloat(document.getElementById('var-mult').value) / 100;
+            // Get current values from UI
+            const baseS = parseFloat(document.getElementById('base-s').value);
+            const baseM = parseFloat(document.getElementById('base-m').value);
+            const baseL = parseFloat(document.getElementById('base-l').value);
+            const baseXl = parseFloat(document.getElementById('base-xl').value);
+            const mult = parseFloat(document.getElementById('var-mult').value);
+
+            // Save these to localStorage
+            userConfig = { s: baseS, m: baseM, l: baseL, xl: baseXl, mult: mult };
+            localStorage.setItem('hugeLogicConfig', JSON.stringify(userConfig));
+
+            const base = { S: baseS, M: baseM, L: baseL, XL: baseXl };
+            const varMult = mult / 100;
 
             let totalO = 0, totalN = 0, totalP = 0;
 
@@ -186,10 +203,9 @@
                 const sizeKey = userEstimates[comp.name] || comp.size;
                 const baseDays = base[sizeKey];
 
-                // Formula: Base + (30% of base * additional variants)
                 const neutral = baseDays + (baseDays * varMult * (comp.variants - 1));
                 const optimistic = neutral * 0.8;
-                const pessimistic = neutral * 1.5; // Accounting for "Unknowns"
+                const pessimistic = neutral * 1.5;
 
                 document.getElementById(`opt-${index}`).innerText = optimistic.toFixed(1);
                 document.getElementById(`neu-${index}`).innerText = neutral.toFixed(1);
@@ -223,13 +239,18 @@
         }
 
         function resetData() {
-            if (confirm("Clear all custom sizes?")) {
+            if (confirm("Clear all custom sizes and logic settings?")) {
                 localStorage.removeItem('hugeEstimates');
+                localStorage.removeItem('hugeLogicConfig');
                 userEstimates = {};
+                userConfig = defaultConfig;
+                initLogicInputs();
                 renderTable();
             }
         }
 
+        // Initialize UI
+        initLogicInputs();
         renderTable();
     </script>
 </body>
