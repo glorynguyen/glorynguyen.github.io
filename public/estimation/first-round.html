@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huge Inc 2026 Redesign | TL Estimation Workbench</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .variant-tag {
+            font-size: 0.7rem;
+        }
+
+        input[type="number"] {
+            width: 60px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-black">Huge Inc 2026 Redesign</h1>
+                <p class="text-gray-500">Technical Lead Estimation Workbench</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="exportToCSV()"
+                    class="bg-black text-white px-4 py-2 rounded text-sm font-bold hover:bg-gray-800">Export
+                    CSV</button>
+                <button onclick="resetData()"
+                    class="border border-red-500 text-red-500 px-4 py-2 rounded text-sm hover:bg-red-50">Reset</button>
+            </div>
+        </header>
+
+        <!-- Global Logic Settings -->
+        <section class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
+            <h2 class="text-sm font-bold uppercase tracking-widest mb-4 text-gray-400">Estimation Logic (Base Days)</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div>
+                    <label class="block text-xs mb-1 font-bold">Simple (S)</label>
+                    <input type="number" id="base-s" value="1" onchange="calculateAll()"
+                        class="border p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-xs mb-1 font-bold">Medium (M)</label>
+                    <input type="number" id="base-m" value="3" onchange="calculateAll()"
+                        class="border p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-xs mb-1 font-bold">Large (L)</label>
+                    <input type="number" id="base-l" value="6" onchange="calculateAll()"
+                        class="border p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-xs mb-1 font-bold">X-Large (XL)</label>
+                    <input type="number" id="base-xl" value="12" onchange="calculateAll()"
+                        class="border p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-xs mb-1 font-bold">Variant Multiplier (%)</label>
+                    <input type="number" id="var-mult" value="30" onchange="calculateAll()"
+                        class="border p-2 w-full rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Component Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-100 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 text-xs font-bold uppercase">Component</th>
+                        <th class="p-4 text-xs font-bold uppercase">Variants</th>
+                        <th class="p-4 text-xs font-bold uppercase">Complexity</th>
+                        <th class="p-4 text-xs font-bold uppercase bg-blue-50 text-blue-700">Optimistic (O)</th>
+                        <th class="p-4 text-xs font-bold uppercase bg-green-50 text-green-700">Neutral (N)</th>
+                        <th class="p-4 text-xs font-bold uppercase bg-red-50 text-red-700">Pessimistic (P)</th>
+                    </tr>
+                </thead>
+                <tbody id="component-body">
+                    <!-- Rows injected by JS -->
+                </tbody>
+                <tfoot class="bg-gray-900 text-white font-bold">
+                    <tr id="totals-row">
+                        <td colspan="3" class="p-4 text-right uppercase tracking-widest text-xs">Total Project Days:
+                        </td>
+                        <td id="total-o" class="p-4 text-blue-300">0</td>
+                        <td id="total-n" class="p-4 text-green-300">0</td>
+                        <td id="total-p" class="p-4 text-red-300">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 1. The Data from your sheet
+        const components = [
+            { name: "Navigation (Global)", variants: 3, size: 'XL' },
+            { name: "Footer (Global)", variants: 1, size: 'M' },
+            { name: "Section Label", variants: 2, size: 'S' },
+            { name: "Page Intro", variants: 5, size: 'M' },
+            { name: "Page Headers", variants: 1, size: 'S' },
+            { name: "Full Tile - Mission", variants: 1, size: 'M' },
+            { name: "Full Tile - Video", variants: 1, size: 'M' },
+            { name: "Full Tile - Case Study", variants: 1, size: 'M' },
+            { name: "Full Tile - Stat", variants: 1, size: 'M' },
+            { name: "Full Tile - Article", variants: 1, size: 'M' },
+            { name: "Full Tile - List", variants: 1, size: 'M' },
+            { name: "Full Tile - Asset", variants: 1, size: 'M' },
+            { name: "Half Tile", variants: 1, size: 'M' },
+            { name: "Quarter Tile - Asset", variants: 1, size: 'S' },
+            { name: "Quarter Tile - Type", variants: 1, size: 'S' },
+            { name: "News Banner", variants: 3, size: 'M' },
+            { name: "Hero", variants: 4, size: 'L' },
+            { name: "Header w.Superscript", variants: 2, size: 'S' },
+            { name: "Header w.Links", variants: 1, size: 'S' },
+            { name: "Mixed Media", variants: 2, size: 'M' },
+            { name: "Text Only", variants: 2, size: 'S' },
+            { name: "Text & Icons", variants: 2, size: 'M' },
+            { name: "Image Only", variants: 4, size: 'S' },
+            { name: "Image with text in motion", variants: 1, size: 'XL' },
+            { name: "Numbered block", variants: 1, size: 'S' },
+            { name: "Carousel", variants: 1, size: 'L' },
+            { name: "Project carousel + CTA", variants: 1, size: 'L' },
+            { name: "Multiple column list", variants: 1, size: 'M' },
+            { name: "3-col List", variants: 2, size: 'M' },
+            { name: "List w/ Icon", variants: 1, size: 'S' },
+            { name: "List w/ Asset", variants: 1, size: 'S' },
+            { name: "Chyron", variants: 1, size: 'S' },
+            { name: "Paragraph Block", variants: 3, size: 'S' },
+            { name: "Contact Form", variants: 1, size: 'XL' }
+        ];
+
+        // 2. Initialize or Load from LocalStorage
+        let userEstimates = JSON.parse(localStorage.getItem('hugeEstimates')) || {};
+
+        function renderTable() {
+            const tbody = document.getElementById('component-body');
+            tbody.innerHTML = '';
+
+            components.forEach((comp, index) => {
+                const savedSize = userEstimates[comp.name] || comp.size;
+                const row = document.createElement('tr');
+                row.className = "border-b border-gray-100 hover:bg-gray-50 transition";
+                row.innerHTML = `
+                    <td class="p-4 font-medium">${comp.name}</td>
+                    <td class="p-4 text-gray-500">${comp.variants}</td>
+                    <td class="p-4">
+                        <select onchange="updateSize('${comp.name}', this.value)" class="border rounded p-1 text-sm">
+                            <option value="S" ${savedSize === 'S' ? 'selected' : ''}>S</option>
+                            <option value="M" ${savedSize === 'M' ? 'selected' : ''}>M</option>
+                            <option value="L" ${savedSize === 'L' ? 'selected' : ''}>L</option>
+                            <option value="XL" ${savedSize === 'XL' ? 'selected' : ''}>XL</option>
+                        </select>
+                    </td>
+                    <td class="p-4 font-mono text-blue-600" id="opt-${index}">0</td>
+                    <td class="p-4 font-mono text-green-600 font-bold" id="neu-${index}">0</td>
+                    <td class="p-4 font-mono text-red-600" id="pes-${index}">0</td>
+                `;
+                tbody.appendChild(row);
+            });
+            calculateAll();
+        }
+
+        function updateSize(name, size) {
+            userEstimates[name] = size;
+            localStorage.setItem('hugeEstimates', JSON.stringify(userEstimates));
+            calculateAll();
+        }
+
+        function calculateAll() {
+            const base = {
+                S: parseFloat(document.getElementById('base-s').value),
+                M: parseFloat(document.getElementById('base-m').value),
+                L: parseFloat(document.getElementById('base-l').value),
+                XL: parseFloat(document.getElementById('base-xl').value)
+            };
+            const varMult = parseFloat(document.getElementById('var-mult').value) / 100;
+
+            let totalO = 0, totalN = 0, totalP = 0;
+
+            components.forEach((comp, index) => {
+                const sizeKey = userEstimates[comp.name] || comp.size;
+                const baseDays = base[sizeKey];
+
+                // Formula: Base + (30% of base * additional variants)
+                const neutral = baseDays + (baseDays * varMult * (comp.variants - 1));
+                const optimistic = neutral * 0.8;
+                const pessimistic = neutral * 1.5; // Accounting for "Unknowns"
+
+                document.getElementById(`opt-${index}`).innerText = optimistic.toFixed(1);
+                document.getElementById(`neu-${index}`).innerText = neutral.toFixed(1);
+                document.getElementById(`pes-${index}`).innerText = pessimistic.toFixed(1);
+
+                totalO += optimistic;
+                totalN += neutral;
+                totalP += pessimistic;
+            });
+
+            document.getElementById('total-o').innerText = totalO.toFixed(1) + " Days";
+            document.getElementById('total-n').innerText = totalN.toFixed(1) + " Days";
+            document.getElementById('total-p').innerText = totalP.toFixed(1) + " Days";
+        }
+
+        function exportToCSV() {
+            let csv = "Component,Complexity,Optimistic,Neutral,Pessimistic\n";
+            components.forEach((comp, index) => {
+                const n = document.getElementById(`neu-${index}`).innerText;
+                const o = document.getElementById(`opt-${index}`).innerText;
+                const p = document.getElementById(`pes-${index}`).innerText;
+                csv += `${comp.name},${userEstimates[comp.name] || comp.size},${o},${n},${p}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'huge-inc-2026-estimates.csv');
+            a.click();
+        }
+
+        function resetData() {
+            if (confirm("Clear all custom sizes?")) {
+                localStorage.removeItem('hugeEstimates');
+                userEstimates = {};
+                renderTable();
+            }
+        }
+
+        renderTable();
+    </script>
+</body>
+
+</html>
