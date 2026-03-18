@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Weekly Progress | HugeInc</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --card-bg: #16161a;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --spike: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding: 2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: left;
+            margin-bottom: 3rem;
+            border-left: 4px solid var(--accent);
+            padding-left: 1.5rem;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #2d2d35;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #2d2d35;
+            padding-bottom: 1rem;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), var(--spike));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .role-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin: 1.2rem 0 0.8rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #cbd5e1;
+        }
+
+        .task-item::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .status-tag {
+            font-size: 0.7rem;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        .done {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .wip {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .spike {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--spike);
+        }
+
+        /* Highlight Lead Section */
+        .lead-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #16161a 0%, #1e1e26 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        /* Staggered animation delay */
+        .card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <p>Sprint Sync Portfolio</p>
+            <h1>Weekly Team Update</h1>
+            <p>March 09 – March 15 | HugeInc Project</p>
+        </header>
+
+        <div class="dashboard-grid">
+
+            <!-- VINCENT (LEAD) -->
+            <div class="card lead-card">
+                <div class="card-header">
+                    <div class="avatar">VN</div>
+                    <div>
+                        <h3>Vincent Nguyen</h3>
+                        <span class="role-badge">Technical Lead</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="section-title"><i class="fas fa-trophy"></i> Key Accomplishments</div>
+                        <ul class="task-list">
+                            <li class="task-item">Led cross-functional alignment with <strong>Product & Dev teams</strong> to define Homepage Tile component structure</li>
+                            <li class="task-item">Migrated tech docs to <strong>CODA</strong> (SSoT)</li>
+                            <li class="task-item">Integrated GitHub repo with <strong>Jira</strong> workflow</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="section-title"><i class="fas fa-rocket"></i> Next Priorities</div>
+                        <ul class="task-list">
+                            <li class="task-item">Define base content types for Homepage</li>
+                            <li class="task-item">Component block module architecture sync</li>
+                            <li class="task-item">Sprint 1 task coordination & execution</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-val">100%</div>
+                        <div class="stat-label">CODA Migration</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">Sprint 1</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">0</div>
+                        <div class="stat-label">Blockers</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">Active</div>
+                        <div class="stat-label">Code Reviews</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STERLING -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="avatar" style="background: #ec4899;">SH</div>
+                    <div>
+                        <h3>Sterling Huynh</h3>
+                        <span class="role-badge">CMS Developer</span>
+                    </div>
+                </div>
+                <div class="section-title"><i class="fas fa-check-circle"></i> Completed</div>
+                <ul class="task-list">
+                    <li class="task-item">Contentstack Data Cleanup & Naming <span class="status-tag spike">SPIKE</span>
+                    </li>
+                    <li class="task-item">Modular Blocks: Case Study, Mission, Video</li>
+                    <li class="task-item">Developed custom <strong>Icon Selector App</strong></li>
+                </ul>
+                <div class="section-title"><i class="fas fa-spinner"></i> In Progress</div>
+                <ul class="task-list">
+                    <li class="task-item">Contentstack Assets & Next.js Image Opt. <span
+                            class="status-tag wip">WIP</span></li>
+                </ul>
+            </div>
+
+            <!-- KARIM -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="avatar" style="background: #10b981;">KD</div>
+                    <div>
+                        <h3>Karim Doan</h3>
+                        <span class="role-badge">Frontend Architect</span>
+                    </div>
+                </div>
+                <div class="section-title"><i class="fas fa-check-circle"></i> Completed</div>
+                <ul class="task-list">
+                    <li class="task-item">Env switching script & CMS component tools</li>
+                    <li class="task-item">Storybook/Foundations Review</li>
+                    <li class="task-item">Atom UI definitions for reuse</li>
+                </ul>
+                <div class="section-title"><i class="fas fa-spinner"></i> In Progress</div>
+                <ul class="task-list">
+                    <li class="task-item">Full Tile Component Architecture <span class="status-tag wip">60%</span></li>
+                    <li class="task-item">Homepage template structure sync</li>
+                </ul>
+            </div>
+
+            <!-- DAXTON -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="avatar" style="background: #f59e0b;">DT</div>
+                    <div>
+                        <h3>Daxton Truong</h3>
+                        <span class="role-badge">UI Engineer</span>
+                    </div>
+                </div>
+                <div class="section-title"><i class="fas fa-check-circle"></i> Completed</div>
+                <ul class="task-list">
+                    <li class="task-item">Foundations - CTA States <span class="status-tag spike">SPIKE</span></li>
+                    <li class="task-item">Storybook feedback resolution</li>
+                    <li class="task-item">CTA implementation to Contentstack</li>
+                    <li class="task-item">All foundation component reviews</li>
+                </ul>
+                <div class="section-title"><i class="fas fa-calendar-alt"></i> Next Week</div>
+                <ul class="task-list">
+                    <li class="task-item">Homepage Block tickets review</li>
+                    <li class="task-item">Input Text Field component</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <footer>
+            Built by Vincent Nguyen | Tech Lead Dashboard v1.0
+        </footer>
+    </div>
+
+    <script>
+        // Adding a subtle hover effect that follows the mouse for the lead card
+        const leadCard = document.querySelector('.lead-card');
+        leadCard.addEventListener('mousemove', (e) => {
+            const rect = leadCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            leadCard.style.setProperty('--x', `${x}px`);
+            leadCard.style.setProperty('--y', `${y}px`);
+        });
+    </script>
+</body>
+
+</html>
