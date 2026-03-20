@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Guide: FullTile System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .grid-bg {
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        code {
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+    <!-- Header -->
+    <header class="bg-black text-white p-10">
+        <h1 class="text-4xl font-bold mb-2">FullTile System</h1>
+        <p class="text-gray-400">A composable layout pattern for high-impact grid items.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-10">
+
+        <!-- Section 1: The Anatomy -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold border-b-2 border-black pb-2 mb-6">1. Component Anatomy</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div
+                    class="relative bg-neutral-800 aspect-video rounded-lg border-2 border-dashed border-blue-500 p-6 flex flex-col justify-between">
+                    <div class="flex justify-between">
+                        <div class="bg-blue-500 text-white text-[10px] px-2 py-1 rounded">Slot: topLeft</div>
+                        <div class="bg-blue-500 text-white text-[10px] px-2 py-1 rounded">Slot: topRight</div>
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span class="text-neutral-500 font-bold uppercase tracking-widest">Main Content
+                            {children}</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="inline-block bg-blue-500 text-white text-[10px] px-2 py-1 rounded">Variant Specific
+                            UI</div>
+                    </div>
+                </div>
+                <div>
+                    <p class="mb-4">The <code>TileWrapper</code> acts as a <strong>layout stage</strong>. It handles:
+                    </p>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li><strong>The Shell:</strong> Overflow hidden, Border Radius, Aspect Ratio.</li>
+                        <li><strong>The UI Layer:</strong> Absolute positioning for metadata (Top Left/Right).</li>
+                        <li><strong>Z-Index Management:</strong> Ensuring background media stays behind text.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Implementation Rule -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold border-b-2 border-black pb-2 mb-6">2. Usage Rules</h2>
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <h3 class="font-bold text-lg mb-4 text-green-600">✅ DO:</h3>
+                <ul class="list-disc ml-6 mb-8 space-y-1">
+                    <li>Use the <code>isFocused</code> prop to trigger the high-contrast state.</li>
+                    <li>Keep metadata (Top Left) limited to short strings (e.g., "Work — Category").</li>
+                    <li>Ensure all background images have an <code>object-cover</code> class.</li>
+                </ul>
+
+                <h3 class="font-bold text-lg mb-4 text-red-600">❌ DON'T:</h3>
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Don't put interactive buttons in the <code>topLeft</code> slot.</li>
+                    <li>Don't override the padding in variants; keep the <code>p-4</code> or <code>p-8</code> consistent
+                        across the system.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 3: Visual Examples -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold border-b-2 border-black pb-2 mb-6">3. Visual Variants</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Stat Card Example -->
+                <div
+                    class="bg-[#7B5CFF] text-white aspect-square rounded-md p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex justify-between text-[10px] font-mono uppercase opacity-80">
+                        <span>00 — 00</span>
+                        <span>Lorem Ipsum</span>
+                    </div>
+                    <div class="mt-10">
+                        <p class="text-xs leading-tight opacity-90">00% lorem ipsum dolor sit amet, consectetur
+                            adipiscing elit.</p>
+                        <div class="text-right text-sm mt-2">View ↗</div>
+                    </div>
+                    <div class="text-[80px] font-light leading-none self-end mt-auto flex items-baseline">
+                        <span class="text-2xl mr-1">↑</span>00%
+                    </div>
+                </div>
+
+                <!-- Mission Card Example -->
+                <div class="bg-black text-white aspect-square rounded-md p-8 flex flex-col justify-between relative">
+                    <div class="text-pink-500 text-xl">🌐</div>
+                    <div class="text-xl font-medium leading-tight">
+                        Huge is a design and technology <span class="text-pink-500">company that creates</span>
+                        innovative products.
+                    </div>
+                </div>
+
+                <!-- Case Study Example -->
+                <div
+                    class="bg-neutral-900 text-white aspect-square rounded-md p-6 flex flex-col justify-between relative grid-bg">
+                    <div class="flex justify-between text-[10px] uppercase tracking-widest z-10">
+                        <span>Work — Category</span>
+                        <span>View ↗</span>
+                    </div>
+                    <div class="z-10 mt-auto">
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-green-400 text-black px-1 text-[8px] font-bold">LOREM</span>
+                            <span class="bg-green-400 text-black px-1 text-[8px] font-bold">IPSUM</span>
+                        </div>
+                        <h4 class="font-bold">Project Name</h4>
+                        <p class="text-[10px] opacity-60">Body copy recommended character count maximum is 120.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-200 p-10 text-center text-sm text-gray-600">
+        Internal Design System Documentation • v1.0.0
+    </footer>
+
+</body>
+
+</html>
