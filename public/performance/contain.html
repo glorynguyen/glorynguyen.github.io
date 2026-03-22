@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS contain — Performance Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0c0f;
+            --surface: #14141a;
+            --border: #2a2a38;
+            --accent: #7effa0;
+            --accent2: #ff6b6b;
+            --accent3: #69b8ff;
+            --text: #e8e8f0;
+            --muted: #7878a0;
+            --card-h: 180px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 48px 24px 80px;
+        }
+
+        /* ── Header ── */
+        header {
+            max-width: 900px;
+            margin: 0 auto 56px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 32px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: clamp(28px, 5vw, 48px);
+            line-height: 1.1;
+            color: var(--text);
+        }
+
+        h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            max-width: 580px;
+        }
+
+        /* ── Section titles ── */
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .1em;
+            padding: 3px 8px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+
+        .tag-good {
+            background: #0d2a18;
+            color: var(--accent);
+            border: 1px solid #1a4a2a;
+        }
+
+        .tag-bad {
+            background: #2a0d0d;
+            color: var(--accent2);
+            border: 1px solid #4a1a1a;
+        }
+
+        /* ── Two-column comparison wrapper ── */
+        .compare {
+            max-width: 900px;
+            margin: 0 auto 64px;
+        }
+
+        .cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Panel ── */
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .panel-head {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .panel-head .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .dot-green {
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        .dot-red {
+            background: var(--accent2);
+            box-shadow: 0 0 6px var(--accent2);
+        }
+
+        .panel-body {
+            padding: 18px;
+        }
+
+        /* Code block */
+        pre {
+            background: #0a0a0e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 14px 16px;
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            color: #b8b8d8;
+        }
+
+        .kw {
+            color: var(--accent3);
+        }
+
+        .prop {
+            color: var(--accent);
+        }
+
+        .val {
+            color: #ffcc88;
+        }
+
+        .cmt {
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* ── Live demo areas ── */
+        .demo-area {
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #0a0a0e;
+            height: var(--card-h);
+            overflow: hidden;
+            /* clip label */
+            margin-bottom: 14px;
+        }
+
+        /* Paint demo */
+        .demo-paint-box {
+            width: 80px;
+            height: 80px;
+            background: #2a2a40;
+            border-radius: 6px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overflow-text {
+            white-space: nowrap;
+            font-size: 13px;
+            color: var(--accent);
+            animation: slide 4s linear infinite;
+        }
+
+        @keyframes slide {
+            from {
+                transform: translateX(-100%)
+            }
+
+            to {
+                transform: translateX(200%)
+            }
+        }
+
+        .clipped .demo-paint-box {
+            contain: paint;
+        }
+
+        /* Layout demo */
+        .demo-layout-area {
+            position: relative;
+            height: var(--card-h);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #0a0a0e;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .layout-card {
+            position: relative;
+            width: 70%;
+            height: 60px;
+            background: #1e1e2e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin: 18px auto;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .float-el {
+            float: left;
+            width: 36px;
+            height: 36px;
+            background: #ff6b6b44;
+            border: 1px solid var(--accent2);
+            border-radius: 4px;
+            margin: 4px;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent2);
+        }
+
+        .layout-card.isolated {
+            contain: layout;
+        }
+
+        .layout-sibling {
+            position: relative;
+            width: 70%;
+            height: 36px;
+            background: #1e2a1e;
+            border: 1px solid #1a4a2a;
+            border-radius: 6px;
+            margin: 0 auto;
+            font-size: 11px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+        }
+
+        /* Size demo */
+        .demo-size-area {
+            position: relative;
+            height: var(--card-h);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #0a0a0e;
+            overflow: hidden;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .size-box {
+            background: #1e1e2e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            width: 110px;
+        }
+
+        .size-box p {
+            color: var(--text);
+            font-size: 10px;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .size-box.contained {
+            contain: size;
+            width: 110px;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .size-badge {
+            display: block;
+            font-size: 9px;
+            margin-top: 4px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .badge-green {
+            background: #0d2a18;
+            color: var(--accent);
+        }
+
+        .badge-red {
+            background: #2a0d0d;
+            color: var(--accent2);
+        }
+
+        /* ── Metrics row ── */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .metric {
+            background: #0a0a0e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        .metric .val-big {
+            font-size: 20px;
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            display: block;
+        }
+
+        .metric .val-label {
+            font-size: 9px;
+            color: var(--muted);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        /* ── Explanation pills ── */
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .pill {
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .pill.active {
+            border-color: var(--accent3);
+            color: var(--accent3);
+            background: #0d1a2a;
+        }
+
+        /* ── Toggle experiment ── */
+        .toggle-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            letter-spacing: .06em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        .toggle-btn.on {
+            background: #0d1a2a;
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        /* ── Live experiment ── */
+        #experiment {
+            max-width: 900px;
+            margin: 0 auto 64px;
+        }
+
+        .exp-stage {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            padding: 24px;
+            margin-top: 24px;
+            min-height: 340px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+        }
+
+        .live-card {
+            background: #0a0a0e;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            position: relative;
+            font-size: 11px;
+            overflow: visible;
+            transition: border-color .2s;
+        }
+
+        .live-card:hover {
+            border-color: var(--muted);
+        }
+
+        .live-card.contained-card {
+            contain: layout paint style;
+        }
+
+        .live-card .card-title {
+            color: var(--accent3);
+            margin-bottom: 8px;
+            font-size: 10px;
+            letter-spacing: .06em;
+        }
+
+        .live-card .card-body {
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 10px;
+        }
+
+        .live-card .card-counter::before {
+            counter-increment: demo-counter;
+            content: "Item #" counter(demo-counter);
+            color: var(--accent);
+            font-size: 10px;
+        }
+
+        #experiment.use-contain .card-grid {
+            counter-reset: demo-counter;
+        }
+
+        #experiment:not(.use-contain) .card-grid {
+            counter-reset: demo-counter;
+        }
+
+        #experiment.use-contain .live-card.contained-card .card-counter::before {
+            counter-increment: demo-counter;
+            content: "Item #" counter(demo-counter);
+        }
+
+        .spillover {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 107, .15);
+            border: 1px dashed var(--accent2);
+            border-radius: 4px;
+            font-size: 9px;
+            color: var(--accent2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity .3s;
+        }
+
+        #experiment.use-contain .spillover {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #experiment:not(.use-contain) .spillover {
+            opacity: 1;
+        }
+
+        .exp-legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            font-size: 10px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* ── Summary table ── */
+        .summary {
+            max-width: 900px;
+            margin: 0 auto 64px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1a1a26;
+            color: var(--text);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #14141e;
+        }
+
+        .yes {
+            color: var(--accent);
+        }
+
+        .no {
+            color: var(--accent2);
+        }
+
+        td code {
+            background: #0a0a0e;
+            border: 1px solid var(--border);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: var(--accent3);
+        }
+
+        /* ── footer ── */
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+            border-top: 1px solid var(--border);
+            padding-top: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════ HEADER ══════════ -->
+    <header>
+        <p class="eyebrow">CSS Performance</p>
+        <h1>The <em>contain</em> Property</h1>
+        <p class="subtitle">Isolate DOM subtrees so the browser skips unnecessary layout, paint, and style
+            recalculations — improving rendering performance in complex UIs.</p>
+    </header>
+
+    <!-- ══════════ SECTION 1: Paint ══════════ -->
+    <div class="compare">
+        <p class="section-title">01 &nbsp; Paint Containment</p>
+        <div class="cols">
+
+            <!-- WITHOUT -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-red"></span>Without</span>
+                    <span class="tag tag-bad">repaints spill</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="cmt">/* no containment */</span>
+  <span class="prop">width</span>: <span class="val">80px</span>;
+  <span class="prop">height</span>: <span class="val">80px</span>;
+}</pre>
+                    <div class="demo-area">
+                        <div class="demo-paint-box">
+                            <span class="overflow-text">→ overflowing content leaks →</span>
+                        </div>
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);line-height:1.6">The browser must check the entire page
+                        for repaint regions. Animating children can trigger costly full-page compositing.</p>
+                </div>
+            </div>
+
+            <!-- WITH -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-green"></span>With</span>
+                    <span class="tag tag-good">paint isolated</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="prop">contain</span>: <span class="val">paint</span>;
+  <span class="prop">width</span>: <span class="val">80px</span>;
+  <span class="prop">height</span>: <span class="val">80px</span>;
+}</pre>
+                    <div class="demo-area clipped">
+                        <div class="demo-paint-box">
+                            <span class="overflow-text">→ overflowing content leaks →</span>
+                        </div>
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);line-height:1.6">Content is clipped to the element. The
+                        browser skips painting descendants when the box is offscreen, and limits repaint to this
+                        subtree.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 2: Layout ══════════ -->
+    <div class="compare">
+        <p class="section-title">02 &nbsp; Layout Containment</p>
+        <div class="cols">
+
+            <!-- WITHOUT -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-red"></span>Without</span>
+                    <span class="tag tag-bad">layout leaks</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="cmt">/* floats &amp; fixed escape */</span>
+}</pre>
+                    <div class="demo-layout-area">
+                        <div class="layout-card">
+                            Card A
+                            <div class="float-el">flt</div>
+                        </div>
+                        <div class="layout-sibling" style="margin-top:-4px;opacity:.5">Sibling shifted by float ↑</div>
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);line-height:1.6">A float or absolutely-positioned child
+                        can affect siblings and ancestors, forcing the browser to recalculate layout across the whole
+                        page.</p>
+                </div>
+            </div>
+
+            <!-- WITH -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-green"></span>With</span>
+                    <span class="tag tag-good">layout isolated</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="prop">contain</span>: <span class="val">layout</span>;
+  <span class="cmt">/* floats &amp; fixed stay inside */</span>
+}</pre>
+                    <div class="demo-layout-area">
+                        <div class="layout-card isolated">
+                            Card A
+                            <div class="float-el">flt</div>
+                        </div>
+                        <div class="layout-sibling">Sibling is unaffected ✓</div>
+                    </div>
+                    <p style="font-size:11px;color:var(--muted);line-height:1.6">Layout changes stay within the
+                        container. Floats, absolute, and fixed children use the card as their containing block —
+                        siblings are not impacted.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════ SECTION 3: Size ══════════ -->
+    <div class="compare">
+        <p class="section-title">03 &nbsp; Size Containment</p>
+        <div class="cols">
+
+            <!-- WITHOUT -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-red"></span>Without</span>
+                    <span class="tag tag-bad">children affect size</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="cmt">/* size depends on children */</span>
+}</pre>
+                    <div class="demo-size-area">
+                        <div class="size-box">
+                            <span class="size-badge badge-red">no contain</span>
+                            <p>This box grows to fit all its child content, triggering ancestor relayout when children
+                                change.</p>
+                        </div>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric"><span class="val-big" style="color:var(--accent2)">∞</span><span
+                                class="val-label">relayout scope</span></div>
+                        <div class="metric"><span class="val-big" style="color:var(--accent2)">slow</span><span
+                                class="val-label">dynamic load</span></div>
+                        <div class="metric"><span class="val-big" style="color:var(--accent2)">high</span><span
+                                class="val-label">reflow cost</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WITH -->
+            <div class="panel">
+                <div class="panel-head">
+                    <span><span class="dot dot-green"></span>With</span>
+                    <span class="tag tag-good">size computed alone</span>
+                </div>
+                <div class="panel-body">
+                    <pre><span class="kw">.card</span> {
+  <span class="prop">contain</span>: <span class="val">size</span>;
+  <span class="prop">width</span>: <span class="val">110px</span>;
+  <span class="prop">height</span>: <span class="val">80px</span>;
+}</pre>
+                    <div class="demo-size-area">
+                        <div class="size-box contained">
+                            <span class="size-badge badge-green">contain: size</span>
+                            <p>Children cannot influence this element's size. Layout is predictable and skippable from
+                                the outside.</p>
+                        </div>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric"><span class="val-big" style="color:var(--accent)">local</span><span
+                                class="val-label">relayout scope</span></div>
+                        <div class="metric"><span class="val-big" style="color:var(--accent)">fast</span><span
+                                class="val-label">dynamic load</span></div>
+                        <div class="metric"><span class="val-big" style="color:var(--accent)">low</span><span
+                                class="val-label">reflow cost</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════ LIVE EXPERIMENT ══════════ -->
+    <div id="experiment">
+        <p class="section-title" style="max-width:900px;margin:0 auto 0">04 &nbsp; Live Experiment</p>
+
+        <div class="exp-stage">
+            <div class="toggle-bar">
+                <button class="toggle-btn" id="btn-contain" onclick="toggleContain()">Toggle contain: layout paint
+                    style</button>
+                <button class="toggle-btn on" id="btn-spill" onclick="toggleSpill()">Show paint spillover
+                    indicators</button>
+            </div>
+
+            <div class="card-grid" id="card-grid"></div>
+
+            <div class="exp-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background:var(--accent2);box-shadow:0 0 5px var(--accent2)"></div>
+                    Paint spillover (no contain)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background:var(--accent);box-shadow:0 0 5px var(--accent)"></div>
+                    Isolated subtree (with contain)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ SUMMARY TABLE ══════════ -->
+    <div class="summary">
+        <p class="section-title">05 &nbsp; Quick Reference</p>
+        <div class="panel">
+            <div class="panel-body" style="padding:0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Value</th>
+                            <th>What it skips</th>
+                            <th>Creates</th>
+                            <th>Best for</th>
+                            <th>Browser</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>paint</code></td>
+                            <td>Off-screen paint of descendants; clips overflow</td>
+                            <td>New stacking ctx, BFC, containing block</td>
+                            <td>Carousels, infinite lists, off-canvas panels</td>
+                            <td><span class="yes">✓ Chrome 52+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>layout</code></td>
+                            <td>Cross-element layout recalc; float/position leaks</td>
+                            <td>New BFC, containing block for fixed/abs</td>
+                            <td>Card grids, repeating components, widgets</td>
+                            <td><span class="yes">✓ Chrome 52+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>size</code></td>
+                            <td>Size recalc from children; intrinsic-size queries</td>
+                            <td>—</td>
+                            <td>Fixed-size slots, lazy-loaded content areas</td>
+                            <td><span class="yes">✓ Chrome 52+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>style</code></td>
+                            <td>Counter &amp; quote scope leaking outside</td>
+                            <td>Scoped counters &amp; CSS quotes</td>
+                            <td>Component libraries, scoped numbering</td>
+                            <td><span class="yes">✓ Firefox 103+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>strict</code></td>
+                            <td>All of the above (size + layout + paint + style)</td>
+                            <td>All of the above</td>
+                            <td>Third-party widgets, fully isolated components</td>
+                            <td><span class="yes">✓ Chrome 52+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>content</code></td>
+                            <td>layout + paint + style (no size)</td>
+                            <td>New stacking ctx, BFC, containing block</td>
+                            <td>Dynamic content, chat feeds, comment sections</td>
+                            <td><span class="yes">✓ Chrome 52+</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>inline-size</code></td>
+                            <td>Inline-axis size from children only</td>
+                            <td>—</td>
+                            <td>Container queries, responsive components</td>
+                            <td><span class="yes">✓ Chrome 105+</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>CSS Containment Module Level 2 · Baseline widely available since March 2022</p>
+        <p style="margin-top:8px">Pair with <code
+                style="font-family:inherit;background:#14141a;border:1px solid var(--border);padding:2px 6px;border-radius:3px;font-size:10px;color:var(--accent3)">content-visibility: auto</code>
+            for even larger gains on long pages.</p>
+    </footer>
+
+    <script>
+        const topics = [
+            { title: "Dashboard Widget", body: "Real-time chart updating every 500ms." },
+            { title: "Feed Card", body: "User-generated content with dynamic images." },
+            { title: "Comment Thread", body: "Nested replies with counter annotations." },
+            { title: "Ad Unit", body: "Third-party iframe with unknown side effects." },
+            { title: "Notification", body: "Animated badge that updates frequently." },
+            { title: "Product Card", body: "E-commerce tile in a 4-column grid." },
+            { title: "Map Tile", body: "GeoJSON overlay with live data updates." },
+            { title: "Code Block", body: "Syntax-highlighted snippet, long content." },
+            { title: "Avatar Stack", body: "Overflow avatars with tooltip on hover." },
+        ];
+
+        const grid = document.getElementById('card-grid');
+        const exp = document.getElementById('experiment');
+
+        topics.forEach((t, i) => {
+            const card = document.createElement('div');
+            card.className = 'live-card contained-card';
+            card.innerHTML = `
+      <div class="card-title">${t.title}</div>
+      <div class="card-body">${t.body}</div>
+      <div class="card-counter"></div>
+      <div class="spillover">leak</div>
+    `;
+            grid.appendChild(card);
+        });
+
+        let containOn = false;
+        let spillOn = true;
+
+        function toggleContain() {
+            containOn = !containOn;
+            exp.classList.toggle('use-contain', containOn);
+            document.getElementById('btn-contain').classList.toggle('on', containOn);
+            document.querySelectorAll('.live-card').forEach(c => {
+                c.classList.toggle('contained-card', containOn);
+            });
+        }
+
+        function toggleSpill() {
+            spillOn = !spillOn;
+            document.getElementById('btn-spill').classList.toggle('on', spillOn);
+            document.querySelectorAll('.spillover').forEach(s => {
+                s.style.display = spillOn ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+
+</html>
