@@ -4,31 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huge Inc 2026 Redesign | TL Estimation Workbench</title>
+    <title>TL Estimation Workbench</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <style>
-        .variant-tag {
-            font-size: 0.7rem;
-        }
-
-        input[type="number"] {
-            width: 60px;
-        }
+        .variant-tag { font-size: 0.7rem; }
+        input[type="number"] { width: 60px; }
+        .modal-overlay { background: rgba(0,0,0,0.5); }
+        .drop-zone { border: 2px dashed #d1d5db; transition: all 0.2s; }
+        .drop-zone.dragover { border-color: #2563eb; background: #eff6ff; }
+        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 700; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #6b7280; }
+        .fade-in { animation: fadeIn 0.2s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-900 p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="mb-8 flex justify-between items-end">
+        <!-- Header -->
+        <header class="mb-8 flex justify-between items-end flex-wrap gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-black">Huge Inc 2026 Redesign</h1>
-                <p class="text-gray-500">Technical Lead Estimation Workbench</p>
+                <input type="text" id="project-name"
+                    class="text-3xl font-bold text-black bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none transition px-1 py-0.5 w-full max-w-md"
+                    value="My Project" placeholder="Project Name">
+                <p class="text-gray-500 mt-1">TL Estimation Workbench</p>
             </div>
-            <div class="flex gap-4">
-                <button onclick="exportToCSV()"
-                    class="bg-black text-white px-4 py-2 rounded text-sm font-bold hover:bg-gray-800">Export
-                    CSV</button>
+            <div class="flex gap-3 flex-wrap">
+                <button onclick="openImportModal()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Import XLSX
+                </button>
+                <button onclick="exportToXLSX()"
+                    class="bg-black text-white px-4 py-2 rounded text-sm font-bold hover:bg-gray-800 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export XLSX
+                </button>
                 <button onclick="resetData()"
                     class="border border-red-500 text-red-500 px-4 py-2 rounded text-sm hover:bg-red-50">Reset</button>
             </div>
@@ -40,27 +53,27 @@
             <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <div>
                     <label class="block text-xs mb-1 font-bold">Simple (S)</label>
-                    <input type="number" id="base-s" value="1" onchange="calculateAll()"
+                    <input type="number" id="base-s" value="1" onchange="saveConfigAndCalculate()"
                         class="border p-2 w-full rounded">
                 </div>
                 <div>
                     <label class="block text-xs mb-1 font-bold">Medium (M)</label>
-                    <input type="number" id="base-m" value="3" onchange="calculateAll()"
+                    <input type="number" id="base-m" value="3" onchange="saveConfigAndCalculate()"
                         class="border p-2 w-full rounded">
                 </div>
                 <div>
                     <label class="block text-xs mb-1 font-bold">Large (L)</label>
-                    <input type="number" id="base-l" value="6" onchange="calculateAll()"
+                    <input type="number" id="base-l" value="6" onchange="saveConfigAndCalculate()"
                         class="border p-2 w-full rounded">
                 </div>
                 <div>
                     <label class="block text-xs mb-1 font-bold">X-Large (XL)</label>
-                    <input type="number" id="base-xl" value="12" onchange="calculateAll()"
+                    <input type="number" id="base-xl" value="12" onchange="saveConfigAndCalculate()"
                         class="border p-2 w-full rounded">
                 </div>
                 <div>
                     <label class="block text-xs mb-1 font-bold">Variant Multiplier (%)</label>
-                    <input type="number" id="var-mult" value="30" onchange="calculateAll()"
+                    <input type="number" id="var-mult" value="30" onchange="saveConfigAndCalculate()"
                         class="border p-2 w-full rounded">
                 </div>
             </div>
@@ -71,12 +84,14 @@
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-100 border-b border-gray-200">
                     <tr>
+                        <th class="p-4 text-xs font-bold uppercase w-8">#</th>
                         <th class="p-4 text-xs font-bold uppercase">Component</th>
                         <th class="p-4 text-xs font-bold uppercase">Variants</th>
                         <th class="p-4 text-xs font-bold uppercase">Complexity</th>
                         <th class="p-4 text-xs font-bold uppercase bg-blue-50 text-blue-700">Optimistic (O)</th>
                         <th class="p-4 text-xs font-bold uppercase bg-green-50 text-green-700">Neutral (N)</th>
                         <th class="p-4 text-xs font-bold uppercase bg-red-50 text-red-700">Pessimistic (P)</th>
+                        <th class="p-4 text-xs font-bold uppercase w-12"></th>
                     </tr>
                 </thead>
                 <tbody id="component-body">
@@ -84,62 +99,189 @@
                 </tbody>
                 <tfoot class="bg-gray-900 text-white font-bold">
                     <tr id="totals-row">
-                        <td colspan="3" class="p-4 text-right uppercase tracking-widest text-xs">Total Project Days:
-                        </td>
+                        <td colspan="4" class="p-4 text-right uppercase tracking-widest text-xs">Total Project Days:</td>
                         <td id="total-o" class="p-4 text-blue-300">0</td>
                         <td id="total-n" class="p-4 text-green-300">0</td>
                         <td id="total-p" class="p-4 text-red-300">0</td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden p-12 text-center text-gray-400">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <p class="text-lg font-medium mb-2">No components yet</p>
+                <p class="text-sm mb-4">Import an XLSX file or add components manually to get started.</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="openImportModal()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700">Import XLSX</button>
+                    <button onclick="addRow()" class="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-bold hover:bg-gray-50">Add Row</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Row Button -->
+        <div class="mt-4 flex justify-start">
+            <button onclick="addRow()"
+                class="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-blue-600 border border-dashed border-gray-300 hover:border-blue-400 px-4 py-2 rounded transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Add Component
+            </button>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto fade-in">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 class="text-xl font-bold">Import XLSX</h3>
+                <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b px-6">
+                <button onclick="switchImportTab('planning')" id="tab-planning" class="px-4 py-3 text-sm tab-active">
+                    Import Component List
+                </button>
+                <button onclick="switchImportTab('results')" id="tab-results" class="px-4 py-3 text-sm tab-inactive">
+                    Import Estimation Results
+                </button>
+            </div>
+
+            <!-- Tab Descriptions -->
+            <div class="px-6 pt-4">
+                <p id="tab-desc-planning" class="text-sm text-gray-500">
+                    Upload a component inventory from design/PM. Expected columns: <strong>Component/Name</strong>, <strong>Variants</strong>, <strong>Complexity/Size</strong>. The tool will calculate estimation values.
+                </p>
+                <p id="tab-desc-results" class="text-sm text-gray-500 hidden">
+                    Re-import a previously exported estimation file to continue editing. Expected columns: <strong>Component</strong>, <strong>Variants</strong>, <strong>Complexity</strong>.
+                </p>
+            </div>
+
+            <!-- Drop Zone -->
+            <div class="p-6">
+                <div id="drop-zone" class="drop-zone rounded-xl p-8 text-center cursor-pointer"
+                     onclick="document.getElementById('file-input').click()"
+                     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    <p class="text-gray-500 font-medium">Drop your .xlsx file here or <span class="text-blue-600 underline">browse</span></p>
+                    <p class="text-xs text-gray-400 mt-1">Supports .xlsx and .xls files</p>
+                    <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- File Info -->
+                <div id="file-info" class="hidden mt-3 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="file-name" class="text-sm font-medium"></span>
+                    </div>
+                    <button onclick="clearFile()" class="text-gray-400 hover:text-red-500 text-sm">Remove</button>
+                </div>
+            </div>
+
+            <!-- Column Mapping (shown if auto-detect fails) -->
+            <div id="mapping-section" class="hidden px-6 pb-4">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-yellow-800 font-medium">Column headers not auto-detected. Please map your columns:</p>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-1">Component Name</label>
+                        <select id="map-component" class="border rounded p-2 w-full text-sm"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">Variants</label>
+                        <select id="map-variants" class="border rounded p-2 w-full text-sm"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1">Complexity</label>
+                        <select id="map-complexity" class="border rounded p-2 w-full text-sm"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div id="preview-section" class="hidden px-6 pb-4">
+                <h4 class="text-sm font-bold mb-2 text-gray-600">Preview (first 5 rows)</h4>
+                <div class="border rounded-lg overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-2 text-left text-xs font-bold">Component</th>
+                                <th class="p-2 text-left text-xs font-bold">Variants</th>
+                                <th class="p-2 text-left text-xs font-bold">Complexity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preview-body"></tbody>
+                    </table>
+                </div>
+                <p id="preview-count" class="text-xs text-gray-400 mt-2"></p>
+            </div>
+
+            <!-- Warning + Actions -->
+            <div class="px-6 pb-6">
+                <div id="import-warning" class="hidden bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-orange-800">
+                        <strong>Warning:</strong> This will replace all current components. This action cannot be undone.
+                    </p>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button id="btn-confirm-import" onclick="confirmImport()" disabled
+                        class="bg-blue-600 text-white px-6 py-2 rounded text-sm font-bold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                        Import
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const components = [
-            { name: "Navigation (Global)", variants: 3, size: 'XL' },
-            { name: "Footer (Global)", variants: 1, size: 'M' },
-            { name: "Section Label", variants: 2, size: 'S' },
-            { name: "Page Intro", variants: 5, size: 'M' },
-            { name: "Page Headers", variants: 1, size: 'S' },
-            { name: "Full Tile - Mission", variants: 1, size: 'M' },
-            { name: "Full Tile - Video", variants: 1, size: 'M' },
-            { name: "Full Tile - Case Study", variants: 1, size: 'M' },
-            { name: "Full Tile - Stat", variants: 1, size: 'M' },
-            { name: "Full Tile - Article", variants: 1, size: 'M' },
-            { name: "Full Tile - List", variants: 1, size: 'M' },
-            { name: "Full Tile - Asset", variants: 1, size: 'M' },
-            { name: "Half Tile", variants: 1, size: 'M' },
-            { name: "Quarter Tile - Asset", variants: 1, size: 'S' },
-            { name: "Quarter Tile - Type", variants: 1, size: 'S' },
-            { name: "News Banner", variants: 3, size: 'M' },
-            { name: "Hero", variants: 4, size: 'L' },
-            { name: "Header w.Superscript", variants: 2, size: 'S' },
-            { name: "Header w.Links", variants: 1, size: 'S' },
-            { name: "Mixed Media", variants: 2, size: 'M' },
-            { name: "Text Only", variants: 2, size: 'S' },
-            { name: "Text & Icons", variants: 2, size: 'M' },
-            { name: "Image Only", variants: 4, size: 'S' },
-            { name: "Image with text in motion", variants: 1, size: 'XL' },
-            { name: "Numbered block", variants: 1, size: 'S' },
-            { name: "Carousel", variants: 1, size: 'L' },
-            { name: "Project carousel + CTA", variants: 1, size: 'L' },
-            { name: "Multiple column list", variants: 1, size: 'M' },
-            { name: "3-col List", variants: 2, size: 'M' },
-            { name: "List w/ Icon", variants: 1, size: 'S' },
-            { name: "List w/ Asset", variants: 1, size: 'S' },
-            { name: "Chyron", variants: 1, size: 'S' },
-            { name: "Paragraph Block", variants: 3, size: 'S' },
-            { name: "Contact Form", variants: 1, size: 'XL' }
-        ];
+        // ── State ──────────────────────────────────────────────────────
+        const LS_COMPONENTS = 'estComponents';
+        const LS_CONFIG = 'estConfig';
+        const LS_PROJECT = 'estProjectName';
 
-        // 2. Initialize Logic & Component Data from LocalStorage
-        let userEstimates = JSON.parse(localStorage.getItem('hugeEstimates')) || {};
-        
-        // Load global config or use defaults
         const defaultConfig = { s: 1, m: 3, l: 6, xl: 12, mult: 30 };
-        let userConfig = JSON.parse(localStorage.getItem('hugeLogicConfig')) || defaultConfig;
 
+        let components = JSON.parse(localStorage.getItem(LS_COMPONENTS)) || [];
+        let userConfig = JSON.parse(localStorage.getItem(LS_CONFIG)) || { ...defaultConfig };
+        let projectName = localStorage.getItem(LS_PROJECT) || 'My Project';
+
+        // Import state
+        let importMode = 'planning'; // 'planning' | 'results'
+        let parsedRows = [];
+        let fileHeaders = [];
+        let columnMap = { component: null, variants: null, complexity: null };
+        let autoDetected = false;
+
+        // ── Persistence helpers ────────────────────────────────────────
+        function saveComponents() {
+            localStorage.setItem(LS_COMPONENTS, JSON.stringify(components));
+        }
+
+        function saveConfig() {
+            localStorage.setItem(LS_CONFIG, JSON.stringify(userConfig));
+        }
+
+        function saveProjectName() {
+            localStorage.setItem(LS_PROJECT, projectName);
+        }
+
+        // ── Project Name ───────────────────────────────────────────────
+        function initProjectName() {
+            const input = document.getElementById('project-name');
+            input.value = projectName;
+            input.addEventListener('input', () => {
+                projectName = input.value || 'My Project';
+                saveProjectName();
+            });
+        }
+
+        // ── Config ─────────────────────────────────────────────────────
         function initLogicInputs() {
             document.getElementById('base-s').value = userConfig.s;
             document.getElementById('base-m').value = userConfig.m;
@@ -148,108 +290,468 @@
             document.getElementById('var-mult').value = userConfig.mult;
         }
 
+        function saveConfigAndCalculate() {
+            userConfig = {
+                s: parseFloat(document.getElementById('base-s').value) || 1,
+                m: parseFloat(document.getElementById('base-m').value) || 3,
+                l: parseFloat(document.getElementById('base-l').value) || 6,
+                xl: parseFloat(document.getElementById('base-xl').value) || 12,
+                mult: parseFloat(document.getElementById('var-mult').value) || 30,
+            };
+            saveConfig();
+            calculateAll();
+        }
+
+        // ── Table Rendering ────────────────────────────────────────────
         function renderTable() {
             const tbody = document.getElementById('component-body');
+            const emptyState = document.getElementById('empty-state');
             tbody.innerHTML = '';
 
+            if (components.length === 0) {
+                emptyState.classList.remove('hidden');
+                document.getElementById('total-o').innerText = '0';
+                document.getElementById('total-n').innerText = '0';
+                document.getElementById('total-p').innerText = '0';
+                return;
+            }
+            emptyState.classList.add('hidden');
+
             components.forEach((comp, index) => {
-                const savedSize = userEstimates[comp.name] || comp.size;
                 const row = document.createElement('tr');
                 row.className = "border-b border-gray-100 hover:bg-gray-50 transition";
                 row.innerHTML = `
-                    <td class="p-4 font-medium">${comp.name}</td>
-                    <td class="p-4 text-gray-500">${comp.variants}</td>
-                    <td class="p-4">
-                        <select onchange="updateSize('${comp.name}', this.value)" class="border rounded p-1 text-sm">
-                            <option value="S" ${savedSize === 'S' ? 'selected' : ''}>S</option>
-                            <option value="M" ${savedSize === 'M' ? 'selected' : ''}>M</option>
-                            <option value="L" ${savedSize === 'L' ? 'selected' : ''}>L</option>
-                            <option value="XL" ${savedSize === 'XL' ? 'selected' : ''}>XL</option>
+                    <td class="p-4 text-gray-400 text-xs">${index + 1}</td>
+                    <td class="p-3">
+                        <input type="text" value="${escapeHtml(comp.name)}"
+                            onchange="updateField(${index}, 'name', this.value)"
+                            class="border-0 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent w-full font-medium p-1">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" value="${comp.variants}" min="1"
+                            onchange="updateField(${index}, 'variants', parseInt(this.value) || 1)"
+                            class="border rounded p-1 text-sm w-16 text-center">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="updateField(${index}, 'size', this.value)" class="border rounded p-1 text-sm">
+                            <option value="S" ${comp.size === 'S' ? 'selected' : ''}>S</option>
+                            <option value="M" ${comp.size === 'M' ? 'selected' : ''}>M</option>
+                            <option value="L" ${comp.size === 'L' ? 'selected' : ''}>L</option>
+                            <option value="XL" ${comp.size === 'XL' ? 'selected' : ''}>XL</option>
                         </select>
                     </td>
                     <td class="p-4 font-mono text-blue-600" id="opt-${index}">0</td>
                     <td class="p-4 font-mono text-green-600 font-bold" id="neu-${index}">0</td>
                     <td class="p-4 font-mono text-red-600" id="pes-${index}">0</td>
+                    <td class="p-3">
+                        <button onclick="deleteRow(${index})" class="text-gray-300 hover:text-red-500 transition" title="Remove">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
             calculateAll();
         }
 
-        function updateSize(name, size) {
-            userEstimates[name] = size;
-            localStorage.setItem('hugeEstimates', JSON.stringify(userEstimates));
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ── Row Operations ─────────────────────────────────────────────
+        function updateField(index, field, value) {
+            if (field === 'name') components[index].name = value;
+            else if (field === 'variants') components[index].variants = value;
+            else if (field === 'size') components[index].size = value;
+            saveComponents();
             calculateAll();
         }
 
+        function addRow() {
+            components.push({ name: 'New Component', variants: 1, size: 'M' });
+            saveComponents();
+            renderTable();
+            // Focus the new row's name input
+            const inputs = document.querySelectorAll('#component-body tr:last-child input[type="text"]');
+            if (inputs.length) {
+                inputs[0].focus();
+                inputs[0].select();
+            }
+        }
+
+        function deleteRow(index) {
+            components.splice(index, 1);
+            saveComponents();
+            renderTable();
+        }
+
+        // ── Calculation ────────────────────────────────────────────────
         function calculateAll() {
-            // Get current values from UI
-            const baseS = parseFloat(document.getElementById('base-s').value);
-            const baseM = parseFloat(document.getElementById('base-m').value);
-            const baseL = parseFloat(document.getElementById('base-l').value);
-            const baseXl = parseFloat(document.getElementById('base-xl').value);
-            const mult = parseFloat(document.getElementById('var-mult').value);
-
-            // Save these to localStorage
-            userConfig = { s: baseS, m: baseM, l: baseL, xl: baseXl, mult: mult };
-            localStorage.setItem('hugeLogicConfig', JSON.stringify(userConfig));
-
-            const base = { S: baseS, M: baseM, L: baseL, XL: baseXl };
-            const varMult = mult / 100;
+            const base = {
+                S: userConfig.s,
+                M: userConfig.m,
+                L: userConfig.l,
+                XL: userConfig.xl
+            };
+            const varMult = userConfig.mult / 100;
 
             let totalO = 0, totalN = 0, totalP = 0;
 
             components.forEach((comp, index) => {
-                const sizeKey = userEstimates[comp.name] || comp.size;
-                const baseDays = base[sizeKey];
-
+                const baseDays = base[comp.size] || base.M;
                 const neutral = baseDays + (baseDays * varMult * (comp.variants - 1));
                 const optimistic = neutral * 0.8;
                 const pessimistic = neutral * 1.5;
 
-                document.getElementById(`opt-${index}`).innerText = optimistic.toFixed(1);
-                document.getElementById(`neu-${index}`).innerText = neutral.toFixed(1);
-                document.getElementById(`pes-${index}`).innerText = pessimistic.toFixed(1);
+                const optEl = document.getElementById(`opt-${index}`);
+                const neuEl = document.getElementById(`neu-${index}`);
+                const pesEl = document.getElementById(`pes-${index}`);
+
+                if (optEl) optEl.innerText = optimistic.toFixed(1);
+                if (neuEl) neuEl.innerText = neutral.toFixed(1);
+                if (pesEl) pesEl.innerText = pessimistic.toFixed(1);
 
                 totalO += optimistic;
                 totalN += neutral;
                 totalP += pessimistic;
             });
 
-            document.getElementById('total-o').innerText = totalO.toFixed(1) + " Days";
-            document.getElementById('total-n').innerText = totalN.toFixed(1) + " Days";
-            document.getElementById('total-p').innerText = totalP.toFixed(1) + " Days";
+            document.getElementById('total-o').innerText = totalO.toFixed(1) + ' Days';
+            document.getElementById('total-n').innerText = totalN.toFixed(1) + ' Days';
+            document.getElementById('total-p').innerText = totalP.toFixed(1) + ' Days';
         }
 
-        function exportToCSV() {
-            let csv = "Component,Complexity,Optimistic,Neutral,Pessimistic\n";
-            components.forEach((comp, index) => {
-                const n = document.getElementById(`neu-${index}`).innerText;
-                const o = document.getElementById(`opt-${index}`).innerText;
-                const p = document.getElementById(`pes-${index}`).innerText;
-                csv += `${comp.name},${userEstimates[comp.name] || comp.size},${o},${n},${p}\n`;
+        // ── Export XLSX ────────────────────────────────────────────────
+        function exportToXLSX() {
+            if (components.length === 0) {
+                alert('No components to export. Add or import components first.');
+                return;
+            }
+
+            const base = { S: userConfig.s, M: userConfig.m, L: userConfig.l, XL: userConfig.xl };
+            const varMult = userConfig.mult / 100;
+
+            const data = components.map(comp => {
+                const baseDays = base[comp.size] || base.M;
+                const neutral = baseDays + (baseDays * varMult * (comp.variants - 1));
+                const optimistic = neutral * 0.8;
+                const pessimistic = neutral * 1.5;
+                return {
+                    Component: comp.name,
+                    Variants: comp.variants,
+                    Complexity: comp.size,
+                    Optimistic: Math.round(optimistic * 10) / 10,
+                    Neutral: Math.round(neutral * 10) / 10,
+                    Pessimistic: Math.round(pessimistic * 10) / 10,
+                };
             });
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'huge-inc-2026-estimates.csv');
-            a.click();
+            // Totals row
+            const totals = data.reduce((acc, r) => ({
+                Optimistic: acc.Optimistic + r.Optimistic,
+                Neutral: acc.Neutral + r.Neutral,
+                Pessimistic: acc.Pessimistic + r.Pessimistic,
+            }), { Optimistic: 0, Neutral: 0, Pessimistic: 0 });
+
+            data.push({
+                Component: 'TOTAL',
+                Variants: '',
+                Complexity: '',
+                Optimistic: Math.round(totals.Optimistic * 10) / 10,
+                Neutral: Math.round(totals.Neutral * 10) / 10,
+                Pessimistic: Math.round(totals.Pessimistic * 10) / 10,
+            });
+
+            const ws = XLSX.utils.json_to_sheet(data);
+
+            // Config sheet
+            const configData = [
+                { Setting: 'Simple (S) Base Days', Value: userConfig.s },
+                { Setting: 'Medium (M) Base Days', Value: userConfig.m },
+                { Setting: 'Large (L) Base Days', Value: userConfig.l },
+                { Setting: 'X-Large (XL) Base Days', Value: userConfig.xl },
+                { Setting: 'Variant Multiplier (%)', Value: userConfig.mult },
+                { Setting: 'Project Name', Value: projectName },
+            ];
+            const wsConfig = XLSX.utils.json_to_sheet(configData);
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Estimation');
+            XLSX.utils.book_append_sheet(wb, wsConfig, 'Config');
+
+            const safeName = projectName.replace(/[^a-zA-Z0-9-_ ]/g, '').trim() || 'estimation';
+            XLSX.writeFile(wb, `${safeName}-estimation.xlsx`);
         }
 
+        // ── Import Modal ───────────────────────────────────────────────
+        function openImportModal() {
+            document.getElementById('import-modal').classList.remove('hidden');
+            resetImportState();
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+            resetImportState();
+        }
+
+        function resetImportState() {
+            parsedRows = [];
+            fileHeaders = [];
+            columnMap = { component: null, variants: null, complexity: null };
+            autoDetected = false;
+            document.getElementById('file-input').value = '';
+            document.getElementById('file-info').classList.add('hidden');
+            document.getElementById('mapping-section').classList.add('hidden');
+            document.getElementById('preview-section').classList.add('hidden');
+            document.getElementById('import-warning').classList.add('hidden');
+            document.getElementById('btn-confirm-import').disabled = true;
+            document.getElementById('preview-body').innerHTML = '';
+        }
+
+        function switchImportTab(mode) {
+            importMode = mode;
+            document.getElementById('tab-planning').className = mode === 'planning' ? 'px-4 py-3 text-sm tab-active' : 'px-4 py-3 text-sm tab-inactive';
+            document.getElementById('tab-results').className = mode === 'results' ? 'px-4 py-3 text-sm tab-active' : 'px-4 py-3 text-sm tab-inactive';
+            document.getElementById('tab-desc-planning').classList.toggle('hidden', mode !== 'planning');
+            document.getElementById('tab-desc-results').classList.toggle('hidden', mode !== 'results');
+            // Re-process if we already have data
+            if (parsedRows.length > 0) processFileData();
+        }
+
+        // ── File Handling ──────────────────────────────────────────────
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('drop-zone').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            document.getElementById('drop-zone').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('drop-zone').classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) readFile(file);
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) readFile(file);
+        }
+
+        function clearFile() {
+            resetImportState();
+        }
+
+        function readFile(file) {
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-info').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Check for Config sheet and restore config if importing results
+                if (importMode === 'results') {
+                    const configSheet = workbook.Sheets['Config'];
+                    if (configSheet) {
+                        const configRows = XLSX.utils.sheet_to_json(configSheet);
+                        configRows.forEach(row => {
+                            const val = parseFloat(row.Value);
+                            if (isNaN(val) && row.Setting !== 'Project Name') return;
+                            if (row.Setting === 'Simple (S) Base Days') userConfig.s = val;
+                            else if (row.Setting === 'Medium (M) Base Days') userConfig.m = val;
+                            else if (row.Setting === 'Large (L) Base Days') userConfig.l = val;
+                            else if (row.Setting === 'X-Large (XL) Base Days') userConfig.xl = val;
+                            else if (row.Setting === 'Variant Multiplier (%)') userConfig.mult = val;
+                            else if (row.Setting === 'Project Name' && row.Value) {
+                                projectName = row.Value;
+                                document.getElementById('project-name').value = projectName;
+                                saveProjectName();
+                            }
+                        });
+                        saveConfig();
+                        initLogicInputs();
+                    }
+                }
+
+                // Read first sheet for component data
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+                if (json.length === 0) {
+                    alert('The file appears to be empty or has no data rows.');
+                    return;
+                }
+
+                fileHeaders = Object.keys(json[0]);
+                parsedRows = json;
+                processFileData();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ── Column Auto-Detection ──────────────────────────────────────
+        const COMPONENT_PATTERNS = /^(component|name|item|story|feature|task|module|element)$/i;
+        const VARIANT_PATTERNS = /^(variant|variants|count|quantity|qty|num)$/i;
+        const COMPLEXITY_PATTERNS = /^(complexity|size|t-shirt|tshirt|estimate|effort)$/i;
+
+        function autoDetectColumns() {
+            columnMap = { component: null, variants: null, complexity: null };
+
+            fileHeaders.forEach(h => {
+                const clean = h.trim();
+                if (COMPONENT_PATTERNS.test(clean)) columnMap.component = h;
+                else if (VARIANT_PATTERNS.test(clean)) columnMap.variants = h;
+                else if (COMPLEXITY_PATTERNS.test(clean)) columnMap.complexity = h;
+            });
+
+            autoDetected = columnMap.component !== null && columnMap.variants !== null && columnMap.complexity !== null;
+            return autoDetected;
+        }
+
+        function processFileData() {
+            const detected = autoDetectColumns();
+
+            if (!detected) {
+                showMappingUI();
+            } else {
+                document.getElementById('mapping-section').classList.add('hidden');
+            }
+
+            showPreview();
+        }
+
+        function showMappingUI() {
+            const section = document.getElementById('mapping-section');
+            section.classList.remove('hidden');
+
+            ['map-component', 'map-variants', 'map-complexity'].forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">-- Select --</option>';
+                fileHeaders.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h;
+                    opt.textContent = h;
+                    // Pre-select if auto-detected
+                    if (id === 'map-component' && columnMap.component === h) opt.selected = true;
+                    if (id === 'map-variants' && columnMap.variants === h) opt.selected = true;
+                    if (id === 'map-complexity' && columnMap.complexity === h) opt.selected = true;
+                    select.appendChild(opt);
+                });
+                select.onchange = () => {
+                    columnMap.component = document.getElementById('map-component').value || null;
+                    columnMap.variants = document.getElementById('map-variants').value || null;
+                    columnMap.complexity = document.getElementById('map-complexity').value || null;
+                    showPreview();
+                };
+            });
+        }
+
+        function showPreview() {
+            const previewSection = document.getElementById('preview-section');
+            const previewBody = document.getElementById('preview-body');
+            const previewCount = document.getElementById('preview-count');
+            const warning = document.getElementById('import-warning');
+            const confirmBtn = document.getElementById('btn-confirm-import');
+
+            if (!columnMap.component || !columnMap.variants || !columnMap.complexity) {
+                previewSection.classList.add('hidden');
+                warning.classList.add('hidden');
+                confirmBtn.disabled = true;
+                return;
+            }
+
+            previewSection.classList.remove('hidden');
+            previewBody.innerHTML = '';
+
+            // Filter out TOTAL row if re-importing results
+            const dataRows = parsedRows.filter(r => {
+                const name = String(r[columnMap.component] || '').trim();
+                return name !== '' && name.toUpperCase() !== 'TOTAL';
+            });
+
+            const preview = dataRows.slice(0, 5);
+            preview.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-t';
+                const name = String(row[columnMap.component] || '').trim();
+                const variants = parseInt(row[columnMap.variants]) || 1;
+                const size = normalizeSize(String(row[columnMap.complexity] || 'M').trim());
+                tr.innerHTML = `
+                    <td class="p-2 text-sm">${escapeHtml(name)}</td>
+                    <td class="p-2 text-sm">${variants}</td>
+                    <td class="p-2 text-sm">${size}</td>
+                `;
+                previewBody.appendChild(tr);
+            });
+
+            previewCount.textContent = `${dataRows.length} component${dataRows.length !== 1 ? 's' : ''} found in file`;
+
+            if (components.length > 0) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+
+            confirmBtn.disabled = dataRows.length === 0;
+        }
+
+        function normalizeSize(val) {
+            const upper = val.toUpperCase();
+            if (['S', 'SIMPLE', 'SMALL'].includes(upper)) return 'S';
+            if (['M', 'MEDIUM', 'MED'].includes(upper)) return 'M';
+            if (['L', 'LARGE', 'LG'].includes(upper)) return 'L';
+            if (['XL', 'X-LARGE', 'XLARGE', 'EXTRA LARGE', 'EXTRA-LARGE'].includes(upper)) return 'XL';
+            return 'M'; // default
+        }
+
+        // ── Confirm Import ─────────────────────────────────────────────
+        function confirmImport() {
+            if (!columnMap.component || !columnMap.variants || !columnMap.complexity) return;
+
+            const dataRows = parsedRows.filter(r => {
+                const name = String(r[columnMap.component] || '').trim();
+                return name !== '' && name.toUpperCase() !== 'TOTAL';
+            });
+
+            if (components.length > 0) {
+                if (!confirm('This will replace all current components. Continue?')) return;
+            }
+
+            components = dataRows.map(row => ({
+                name: String(row[columnMap.component] || 'Unnamed').trim(),
+                variants: parseInt(row[columnMap.variants]) || 1,
+                size: normalizeSize(String(row[columnMap.complexity] || 'M').trim()),
+            }));
+
+            saveComponents();
+            renderTable();
+            closeImportModal();
+        }
+
+        // ── Reset ──────────────────────────────────────────────────────
         function resetData() {
-            if (confirm("Clear all custom sizes and logic settings?")) {
-                localStorage.removeItem('hugeEstimates');
-                localStorage.removeItem('hugeLogicConfig');
-                userEstimates = {};
-                userConfig = defaultConfig;
+            if (confirm('Clear all components, settings, and project name? This cannot be undone.')) {
+                localStorage.removeItem(LS_COMPONENTS);
+                localStorage.removeItem(LS_CONFIG);
+                localStorage.removeItem(LS_PROJECT);
+                components = [];
+                userConfig = { ...defaultConfig };
+                projectName = 'My Project';
+                document.getElementById('project-name').value = projectName;
                 initLogicInputs();
                 renderTable();
             }
         }
 
-        // Initialize UI
+        // ── Initialize ─────────────────────────────────────────────────
+        initProjectName();
         initLogicInputs();
         renderTable();
     </script>
