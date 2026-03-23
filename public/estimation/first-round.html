@@ -49,8 +49,18 @@
 
         <!-- Global Logic Settings -->
         <section class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
-            <h2 class="text-sm font-bold uppercase tracking-widest mb-4 text-gray-400">Estimation Logic (Base Days)</h2>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <h2 class="text-sm font-bold uppercase tracking-widest mb-4 text-gray-400">Estimation Logic (Base <span id="header-unit">Days</span>)</h2>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-6">
+                <div>
+                    <label class="block text-xs mb-1 font-bold">Unit</label>
+                    <select id="unit-select" onchange="saveConfigAndCalculate()"
+                        class="border p-2 w-full rounded text-sm">
+                        <option value="Hours">Hours</option>
+                        <option value="Days" selected>Days</option>
+                        <option value="Weeks">Weeks</option>
+                        <option value="Story Points">Story Points</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs mb-1 font-bold">Simple (S)</label>
                     <input type="number" id="base-s" value="1" onchange="saveConfigAndCalculate()"
@@ -99,7 +109,7 @@
                 </tbody>
                 <tfoot class="bg-gray-900 text-white font-bold">
                     <tr id="totals-row">
-                        <td colspan="4" class="p-4 text-right uppercase tracking-widest text-xs">Total Project Days:</td>
+                        <td colspan="4" class="p-4 text-right uppercase tracking-widest text-xs">Total Project <span id="footer-unit">Days</span>:</td>
                         <td id="total-o" class="p-4 text-blue-300">0</td>
                         <td id="total-n" class="p-4 text-green-300">0</td>
                         <td id="total-p" class="p-4 text-red-300">0</td>
@@ -245,7 +255,7 @@
         const LS_CONFIG = 'estConfig';
         const LS_PROJECT = 'estProjectName';
 
-        const defaultConfig = { s: 1, m: 3, l: 6, xl: 12, mult: 30 };
+        const defaultConfig = { s: 1, m: 3, l: 6, xl: 12, mult: 30, unit: 'Days' };
 
         let components = JSON.parse(localStorage.getItem(LS_COMPONENTS)) || [];
         let userConfig = JSON.parse(localStorage.getItem(LS_CONFIG)) || { ...defaultConfig };
@@ -288,6 +298,14 @@
             document.getElementById('base-l').value = userConfig.l;
             document.getElementById('base-xl').value = userConfig.xl;
             document.getElementById('var-mult').value = userConfig.mult;
+            document.getElementById('unit-select').value = userConfig.unit || 'Days';
+            updateUnitLabels();
+        }
+
+        function updateUnitLabels() {
+            const unit = userConfig.unit || 'Days';
+            document.getElementById('header-unit').textContent = unit;
+            document.getElementById('footer-unit').textContent = unit;
         }
 
         function saveConfigAndCalculate() {
@@ -297,8 +315,10 @@
                 l: parseFloat(document.getElementById('base-l').value) || 6,
                 xl: parseFloat(document.getElementById('base-xl').value) || 12,
                 mult: parseFloat(document.getElementById('var-mult').value) || 30,
+                unit: document.getElementById('unit-select').value || 'Days',
             };
             saveConfig();
+            updateUnitLabels();
             calculateAll();
         }
 
@@ -310,9 +330,10 @@
 
             if (components.length === 0) {
                 emptyState.classList.remove('hidden');
-                document.getElementById('total-o').innerText = '0';
-                document.getElementById('total-n').innerText = '0';
-                document.getElementById('total-p').innerText = '0';
+                const unit = userConfig.unit || 'Days';
+                document.getElementById('total-o').innerText = '0 ' + unit;
+                document.getElementById('total-n').innerText = '0 ' + unit;
+                document.getElementById('total-p').innerText = '0 ' + unit;
                 return;
             }
             emptyState.classList.add('hidden');
@@ -418,9 +439,10 @@
                 totalP += pessimistic;
             });
 
-            document.getElementById('total-o').innerText = totalO.toFixed(1) + ' Days';
-            document.getElementById('total-n').innerText = totalN.toFixed(1) + ' Days';
-            document.getElementById('total-p').innerText = totalP.toFixed(1) + ' Days';
+            const unit = userConfig.unit || 'Days';
+            document.getElementById('total-o').innerText = totalO.toFixed(1) + ' ' + unit;
+            document.getElementById('total-n').innerText = totalN.toFixed(1) + ' ' + unit;
+            document.getElementById('total-p').innerText = totalP.toFixed(1) + ' ' + unit;
         }
 
         // ── Export XLSX ────────────────────────────────────────────────
@@ -467,11 +489,13 @@
             const ws = XLSX.utils.json_to_sheet(data);
 
             // Config sheet
+            const unit = userConfig.unit || 'Days';
             const configData = [
-                { Setting: 'Simple (S) Base Days', Value: userConfig.s },
-                { Setting: 'Medium (M) Base Days', Value: userConfig.m },
-                { Setting: 'Large (L) Base Days', Value: userConfig.l },
-                { Setting: 'X-Large (XL) Base Days', Value: userConfig.xl },
+                { Setting: 'Unit', Value: unit },
+                { Setting: `Simple (S) Base ${unit}`, Value: userConfig.s },
+                { Setting: `Medium (M) Base ${unit}`, Value: userConfig.m },
+                { Setting: `Large (L) Base ${unit}`, Value: userConfig.l },
+                { Setting: `X-Large (XL) Base ${unit}`, Value: userConfig.xl },
                 { Setting: 'Variant Multiplier (%)', Value: userConfig.mult },
                 { Setting: 'Project Name', Value: projectName },
             ];
@@ -562,16 +586,18 @@
                         const configRows = XLSX.utils.sheet_to_json(configSheet);
                         configRows.forEach(row => {
                             const val = parseFloat(row.Value);
-                            if (isNaN(val) && row.Setting !== 'Project Name') return;
-                            if (row.Setting === 'Simple (S) Base Days') userConfig.s = val;
-                            else if (row.Setting === 'Medium (M) Base Days') userConfig.m = val;
-                            else if (row.Setting === 'Large (L) Base Days') userConfig.l = val;
-                            else if (row.Setting === 'X-Large (XL) Base Days') userConfig.xl = val;
-                            else if (row.Setting === 'Variant Multiplier (%)') userConfig.mult = val;
-                            else if (row.Setting === 'Project Name' && row.Value) {
+                            if (row.Setting === 'Unit' && row.Value) {
+                                userConfig.unit = row.Value;
+                            } else if (row.Setting === 'Project Name' && row.Value) {
                                 projectName = row.Value;
                                 document.getElementById('project-name').value = projectName;
                                 saveProjectName();
+                            } else if (!isNaN(val)) {
+                                if (row.Setting.startsWith('Simple (S) Base')) userConfig.s = val;
+                                else if (row.Setting.startsWith('Medium (M) Base')) userConfig.m = val;
+                                else if (row.Setting.startsWith('Large (L) Base')) userConfig.l = val;
+                                else if (row.Setting.startsWith('X-Large (XL) Base')) userConfig.xl = val;
+                                else if (row.Setting === 'Variant Multiplier (%)') userConfig.mult = val;
                             }
                         });
                         saveConfig();
