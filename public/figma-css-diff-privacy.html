@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy – Figma CSS Diff</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #1a1a1a;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 60px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 48px 56px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 36px;
+        }
+
+        .updated {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 36px;
+        }
+
+        h2 {
+            font-size: 17px;
+            font-weight: 650;
+            color: #111;
+            margin-top: 36px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 15px;
+            color: #444;
+            margin-bottom: 14px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 14px;
+        }
+
+        li {
+            font-size: 15px;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .highlight-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: #1e3a8a;
+            font-weight: 500;
+        }
+
+        .permission-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 14px;
+        }
+
+        .permission-table th {
+            text-align: left;
+            background: #f4f4f4;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .permission-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #eeeeee;
+            color: #555;
+            vertical-align: top;
+        }
+
+        .permission-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .contact-box {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-top: 16px;
+        }
+
+        .contact-box p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #eeeeee;
+            font-size: 13px;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="badge">Chrome Extension</div>
+        <h1>Privacy Policy</h1>
+        <p class="subtitle">Figma CSS Diff</p>
+        <p class="updated">Last updated: March 29, 2026</p>
+
+        <div class="highlight-box">
+            <p>Figma CSS Diff does not collect, store, or transmit any personal user data to any external server. All
+                processing happens entirely within your browser.</p>
+        </div>
+
+        <h2>1. Overview</h2>
+        <p>
+            Figma CSS Diff is a Chrome DevTools extension that compares rendered browser CSS styles against Figma Dev
+            Mode specifications to help developers detect spacing, typography, and color discrepancies. This privacy
+            policy explains how the extension handles your data.
+        </p>
+
+        <h2>2. Data We Do NOT Collect</h2>
+        <p>We do not collect or transmit any of the following:</p>
+        <ul>
+            <li>Personally identifiable information (name, email, etc.)</li>
+            <li>Browsing history or visited URLs</li>
+            <li>Page content or website data beyond what is needed for local CSS inspection</li>
+            <li>Authentication credentials or API tokens</li>
+            <li>Analytics or usage statistics</li>
+        </ul>
+
+        <h2>3. Local Storage</h2>
+        <p>
+            The extension uses Chrome's built-in <code>storage</code> API exclusively to save your preferences locally
+            on your device (such as last-used settings). This data:
+        </p>
+        <ul>
+            <li>Never leaves your device</li>
+            <li>Is never shared with any third party</li>
+            <li>Can be cleared at any time by removing the extension</li>
+        </ul>
+
+        <h2>4. Permissions Explained</h2>
+        <table class="permission-table">
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Why it's needed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>activeTab</strong></td>
+                    <td>To inspect the computed CSS styles of the page you are currently viewing and testing.</td>
+                </tr>
+                <tr>
+                    <td><strong>tabs</strong></td>
+                    <td>To detect when the active tab changes so the DevTools panel can refresh its inspection context.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>storage</strong></td>
+                    <td>To save your preferences locally on your device. No data is sent externally.</td>
+                </tr>
+                <tr>
+                    <td><strong>Host permissions (&lt;all_urls&gt;)</strong></td>
+                    <td>Developers build on various local and production URLs. This permission allows the extension to
+                        inspect styles on any page the developer chooses to test.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>5. Third-Party Services</h2>
+        <p>
+            Figma CSS Diff does not integrate with, send data to, or rely on any third-party analytics, advertising, or
+            tracking services.
+        </p>
+        <p>
+            If you choose to paste Figma Dev Mode CSS snippets into the extension panel, that content is processed
+            locally in memory and is never transmitted.
+        </p>
+
+        <h2>6. Children's Privacy</h2>
+        <p>
+            This extension is intended for software developers and does not target or knowingly collect information from
+            children under the age of 13.
+        </p>
+
+        <h2>7. Changes to This Policy</h2>
+        <p>
+            If this privacy policy is updated, the "Last updated" date at the top of this page will be revised.
+            Continued use of the extension after changes constitutes acceptance of the updated policy.
+        </p>
+
+        <h2>8. Contact</h2>
+        <div class="contact-box">
+            <p>If you have any questions about this privacy policy, please open an issue on the project's GitHub
+                repository or contact the developer directly.</p>
+        </div>
+
+        <footer>
+            &copy; 2026 Figma CSS Diff. All rights reserved.
+        </footer>
+
+    </div>
+</body>
+
+</html>
