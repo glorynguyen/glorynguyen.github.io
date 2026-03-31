@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import SubscribeForm from '../../components/SubscribeForm.astro';
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog');
@@ -42,4 +43,6 @@ const sortedPosts = posts.sort((a, b) =>
             />
         ))}
     </div>
+
+    <SubscribeForm />
 </BlogLayout>
