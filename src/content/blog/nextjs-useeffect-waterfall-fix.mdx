@@ -96,7 +96,7 @@ If three components all fetch `/api/user`, you get three separate requests. No c
 ### 4. Bypasses React Suspense
 Modern React's Suspense model lets you coordinate loading states declaratively. `useEffect` opts you out of this entirely, forcing manual `isLoading` state management everywhere.
 
-## Three Modern Alternatives
+## Four Modern Alternatives
 
 Next.js gives you powerful built-in patterns to eliminate waterfalls. Here's when to use each.
 
@@ -222,6 +222,64 @@ export default Dashboard;
 
 ---
 
+### 4. Next.js 16: `cacheComponents` + `use cache`
+
+**Best for:** Apps that need fresh data by default, with selective caching for specific components or pages.
+
+Next.js 16 introduces a fundamental shift in how caching works. With the `cacheComponents` flag, the default flips: **nothing is cached unless you explicitly say so.** Instead of opting *out* of caching with `cache: 'no-store'`, you opt *in* with the `use cache` directive.
+
+First, enable it in your config:
+
+```typescript
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+};
+
+export default nextConfig;
+```
+
+Then use the `use cache` directive to mark what should be cached — at the page, component, or function level:
+
+```jsx
+// This component fetches fresh data on every request (the new default)
+async function LiveDashboard() {
+  const metrics = await fetch('https://api.example.com/metrics').then(r => r.json());
+  return <div>{/* always fresh */}</div>;
+}
+
+// This component is cached — add 'use cache' to opt in
+async function StaticSidebar() {
+  'use cache';
+  const links = await fetch('https://api.example.com/nav').then(r => r.json());
+  return <nav>{/* cached, fast */}</nav>;
+}
+
+// Fine-grained control with cacheLife and cacheTag
+async function ProductCatalog() {
+  'use cache';
+  cacheLife('hours'); // Revalidate every hour
+  cacheTag('products'); // Tag for on-demand revalidation
+
+  const products = await fetch('https://api.example.com/products').then(r => r.json());
+  return <div>{/* cached with hourly refresh */}</div>;
+}
+```
+
+**Why it works:**
+- **Dynamic by default** — no more accidentally serving stale data
+- **Granular opt-in** — cache at the page, component, or function level
+- **Simpler mental model** — you explicitly choose what to cache instead of guessing what's already cached
+- **Preserved navigation state** — Next.js uses React's `<Activity>` component to keep UI state (form inputs, scroll position) intact when navigating between routes
+
+<Callout type="info" title="The Future of Next.js Caching">
+  This is a significant mental model shift. Previous Next.js versions cached aggressively by default, which led to confusing stale data bugs. With `cacheComponents`, the philosophy becomes: **fresh by default, cached by choice.** If you're starting a new Next.js 16 project, this is the recommended approach.
+</Callout>
+
+---
+
 ## Quick Decision Guide
 
 | Scenario | Use This |
@@ -229,6 +287,7 @@ export default Dashboard;
 | SEO-critical, data at request time | Server Components + `Promise.all` |
 | Mixed fast/slow data sources | Suspense Boundaries |
 | Data changes hourly/daily | ISR with `revalidate` |
+| Fresh by default, selective caching | `cacheComponents` + `use cache` |
 | User interactions (clicks, forms) | Client Components with `'use client'` |
 
 ## Migration Playbook
@@ -297,6 +356,7 @@ Data fetching waterfalls from `useEffect` are one of the most common — and mos
 1. **Server Components** eliminate client-side fetching entirely
 2. **Suspense** lets fast content load without waiting for slow content
 3. **ISR** serves pre-built pages from the edge in milliseconds
+4. **`cacheComponents` + `use cache`** gives you fresh data by default with granular opt-in caching
 
 Stop the waterfall. Your users (and your Lighthouse scores) will thank you.
 
@@ -388,7 +448,7 @@ Nếu ba component cùng fetch `/api/user`, bạn có ba request riêng biệt. 
 ### 4. Bỏ Qua React Suspense
 Mô hình Suspense hiện đại của React cho phép bạn điều phối loading state một cách khai báo. `useEffect` khiến bạn bỏ qua hoàn toàn điều này, buộc phải quản lý `isLoading` thủ công ở khắp nơi.
 
-## Ba Giải Pháp Hiện Đại
+## Bốn Giải Pháp Hiện Đại
 
 Next.js cung cấp các pattern built-in mạnh mẽ để loại bỏ waterfall. Đây là khi nào nên dùng từng cái.
 
@@ -514,6 +574,64 @@ export default Dashboard;
 
 ---
 
+### 4. Next.js 16: `cacheComponents` + `use cache`
+
+**Phù hợp nhất cho:** Ứng dụng cần dữ liệu mới mặc định, với caching có chọn lọc cho từng component hoặc page cụ thể.
+
+Next.js 16 giới thiệu một thay đổi căn bản trong cách caching hoạt động. Với flag `cacheComponents`, mặc định bị đảo ngược: **không gì được cache trừ khi bạn chỉ định rõ ràng.** Thay vì opt *out* khỏi cache với `cache: 'no-store'`, bạn opt *in* bằng directive `use cache`.
+
+Đầu tiên, bật trong config:
+
+```typescript
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+};
+
+export default nextConfig;
+```
+
+Sau đó dùng directive `use cache` để đánh dấu những gì nên cache — ở cấp page, component, hoặc function:
+
+```jsx
+// Component này fetch dữ liệu mới mỗi request (mặc định mới)
+async function LiveDashboard() {
+  const metrics = await fetch('https://api.example.com/metrics').then(r => r.json());
+  return <div>{/* luôn mới */}</div>;
+}
+
+// Component này được cache — thêm 'use cache' để opt in
+async function StaticSidebar() {
+  'use cache';
+  const links = await fetch('https://api.example.com/nav').then(r => r.json());
+  return <nav>{/* đã cache, nhanh */}</nav>;
+}
+
+// Kiểm soát chi tiết với cacheLife và cacheTag
+async function ProductCatalog() {
+  'use cache';
+  cacheLife('hours'); // Revalidate mỗi giờ
+  cacheTag('products'); // Tag để revalidation theo yêu cầu
+
+  const products = await fetch('https://api.example.com/products').then(r => r.json());
+  return <div>{/* cache với refresh mỗi giờ */}</div>;
+}
+```
+
+**Tại sao hiệu quả:**
+- **Dynamic mặc định** — không còn vô tình phục vụ dữ liệu cũ
+- **Opt-in chi tiết** — cache ở cấp page, component, hoặc function
+- **Mental model đơn giản hơn** — bạn chọn rõ ràng cái gì cần cache thay vì đoán cái gì đã được cache
+- **Bảo toàn state khi điều hướng** — Next.js dùng component `<Activity>` của React để giữ UI state (input form, vị trí scroll) nguyên vẹn khi chuyển trang
+
+<Callout type="info" title="Tương Lai Của Next.js Caching">
+  Đây là thay đổi mental model quan trọng. Các phiên bản Next.js trước cache mạnh mẽ mặc định, dẫn đến bug dữ liệu cũ khó hiểu. Với `cacheComponents`, triết lý trở thành: **mới mặc định, cache theo lựa chọn.** Nếu bạn bắt đầu dự án Next.js 16 mới, đây là cách tiếp cận được khuyến nghị.
+</Callout>
+
+---
+
 ## Hướng Dẫn Chọn Nhanh
 
 | Tình huống | Dùng cái này |
@@ -521,6 +639,7 @@ export default Dashboard;
 | Quan trọng cho SEO, data tại thời điểm request | Server Components + `Promise.all` |
 | Nguồn dữ liệu nhanh/chậm khác nhau | Suspense Boundaries |
 | Dữ liệu thay đổi mỗi giờ/ngày | ISR với `revalidate` |
+| Mới mặc định, cache có chọn lọc | `cacheComponents` + `use cache` |
 | Tương tác người dùng (click, form) | Client Components với `'use client'` |
 
 ## Kế Hoạch Migration
@@ -589,6 +708,7 @@ Data fetching waterfall từ `useEffect` là một trong những vấn đề hi�
 1. **Server Components** loại bỏ hoàn toàn client-side fetching
 2. **Suspense** cho nội dung nhanh tải mà không cần đợi nội dung chậm
 3. **ISR** phục vụ trang pre-built từ edge trong vài mili giây
+4. **`cacheComponents` + `use cache`** cho dữ liệu mới mặc định với caching opt-in chi tiết
 
 Hãy dừng waterfall. Người dùng (và điểm Lighthouse) của bạn sẽ cảm ơn bạn.
 
