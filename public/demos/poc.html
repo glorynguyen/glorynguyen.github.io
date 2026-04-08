@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing Evolution: Authoring & Performance</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --card: #0a0a0a;
+            --huge-pink: #e84e8a;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --zinc-400: #a1a1aa;
+            --zinc-700: #3f3f46;
+            --zinc-800: #27272a;
+            --text: #ffffff;
+            --blue: #3b82f6;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            line-height: 1.4;
+        }
+
+        .header { text-align: center; margin-bottom: 3rem; }
+        h1 { font-size: 2.2rem; letter-spacing: -0.05em; margin: 0; }
+        .sub { color: var(--zinc-400); margin-top: 0.5rem; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--zinc-800);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            min-height: 750px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label { text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1.5rem; color: var(--zinc-400); font-weight: 800; }
+
+        /* Authoring Flow Section */
+        .authoring-zone {
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed var(--zinc-700);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.8rem;
+        }
+
+        .step-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Architectural Layers */
+        .layer {
+            border: 1px solid var(--zinc-800);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.01);
+            position: relative;
+            z-index: 5;
+        }
+
+        .code { font-family: monospace; font-size: 0.7rem; background: #000; padding: 8px; border-radius: 6px; margin-top: 8px; text-align: left; }
+        .pink { color: var(--huge-pink); }
+        .warn { color: var(--warning); }
+        .green { color: var(--success); }
+
+        /* Animation Nodes */
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: var(--huge-pink);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        /* --- OLD APPROACH ANIMATION --- */
+        .dot-old-1 { animation: old-query-1 5s infinite; }
+        .dot-old-2 { animation: old-query-2 5s infinite; background: var(--warning); box-shadow: 0 0 15px var(--warning); }
+
+        @keyframes old-query-1 {
+            0% { top: 38%; opacity: 0; }
+            5% { opacity: 1; }
+            20% { top: 90%; } 
+            35% { top: 52%; } 
+            40% { opacity: 1; }
+            41% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes old-query-2 {
+            0%, 40% { top: 52%; opacity: 0; }
+            45% { opacity: 1; }
+            65% { top: 90%; } 
+            85% { top: 72%; background: var(--success); }
+            95% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* --- NEW APPROACH ANIMATION --- */
+        .dot-new { animation: new-burst 4s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        .n1 { margin-left: -35px; }
+        .n2 { margin-left: 0px; }
+        .n3 { margin-left: 35px; }
+
+        @keyframes new-burst {
+            0% { top: 30%; opacity: 0; }
+            10% { opacity: 1; }
+            40% { top: 90%; } 
+            60% { top: 40%; background: var(--success); box-shadow: 0 0 15px var(--success); }
+            80% { top: 60%; opacity: 1; }
+            100% { top: 60%; opacity: 0; }
+        }
+
+        .n-plus-one-label {
+            position: absolute;
+            left: 10px;
+            top: 60%;
+            font-size: 0.65rem;
+            color: var(--warning);
+            font-weight: 800;
+            text-align: right;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .cache-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 4px 8px;
+            font-size: 0.6rem;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+
+        .connector { text-align: center; color: var(--zinc-700); margin: -10px 0 5px 0; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Architecture & Authoring Flow</h1>
+        <div class="sub">Reducing content overhead and technical waterfalls.</div>
+    </div>
+
+    <div class="container">
+        
+        <!-- OLD APPROACH -->
+        <div class="card">
+            <div class="label">Old Approach</div>
+            
+            <div class="authoring-zone">
+                <div style="color: var(--zinc-400); font-weight: 700; margin-bottom: 10px;">CMS Authoring (2 Steps)</div>
+                <div style="border: 1px solid var(--zinc-800); padding: 8px; border-radius: 6px;">
+                    <span class="step-pill" style="background: #444;">Step 1</span><br>
+                    Create <b>Route</b> Entry<br>
+                    <small style="color:var(--zinc-400)">Define URL: /blog/my-post</small>
+                </div>
+                <div class="connector">↓</div>
+                <div style="border: 1px solid var(--zinc-800); padding: 8px; border-radius: 6px;">
+                    <span class="step-pill" style="background: #444;">Step 2</span><br>
+                    Create <b>Article</b> Entry<br>
+                    <small style="color:var(--zinc-400)">Manually link Article to Route</small>
+                </div>
+            </div>
+
+            <div class="layer" style="border-color: var(--blue);">
+                [[...route]]/page.tsx
+                <div class="code">
+                    const route = await <span class="pink">getRoute(url)</span>;
+                </div>
+            </div>
+
+            <div class="n-plus-one-label">N+1 FETCH<br>REQUIRED →</div>
+
+            <div class="layer">
+                &lt;Reference /&gt; Resolver
+                <div class="code">
+                    const article = await <span class="warn">getArticleById()</span>;
+                </div>
+            </div>
+
+            <div class="layer layer-cms" style="margin-top: auto;">Contentstack Delivery API</div>
+
+            <div class="dot dot-old-1"></div>
+            <div class="dot dot-old-2"></div>
+        </div>
+
+        <!-- NEW APPROACH -->
+        <div class="card">
+            <div class="cache-badge">FORCE-CACHE ACTIVE</div>
+            <div class="label" style="color: var(--success);">New Approach</div>
+            
+            <div class="authoring-zone" style="border-color: var(--success);">
+                <div style="color: var(--success); font-weight: 700; margin-bottom: 10px;">CMS Authoring (1 Step)</div>
+                <div style="border: 1px solid var(--success); padding: 12px; border-radius: 6px; background: rgba(16, 185, 129, 0.05);">
+                    <span class="step-pill" style="background: var(--success); color: black;">Unified Step</span><br>
+                    Create <b>Article</b> Entry<br>
+                    <small style="color:var(--zinc-400)">Define URL directly in Article schema</small><br>
+                    <small class="green">"is_page": true</small>
+                </div>
+                <div style="height: 60px; display: flex; align-items: center; justify-content: center; color: var(--zinc-700); font-style: italic; font-size: 0.75rem;">
+                    No second entry needed.
+                </div>
+            </div>
+
+            <div class="layer" style="border-color: var(--blue);">
+                [[...route]]/page.tsx
+                <div class="code">
+                    const results = <span class="green">Promise.allSettled</span>([<br>
+                    &nbsp;&nbsp;getRoute(), getArticle(), getCaseStudy()<br>
+                    ]);
+                </div>
+            </div>
+
+            <div class="layer" style="border-color: var(--success);">
+                Unified Renderer
+                <div class="code">
+                    // Data available immediately<br>
+                    &lt;ArticlePage {...data} /&gt;
+                </div>
+            </div>
+
+            <div class="layer layer-cms" style="margin-top: auto;">Contentstack Delivery API</div>
+
+            <div class="dot dot-new n1"></div>
+            <div class="dot dot-new n2"></div>
+            <div class="dot dot-new n3"></div>
+        </div>
+
+    </div>
+
+    <div style="margin-top: 3rem; max-width: 900px; text-align: center; color: var(--zinc-400); font-size: 0.9rem; line-height: 1.6;">
+        <strong>Authoring Evolution:</strong> In the <b>Old Approach</b>, content was disconnected from its URL. Authors had to manage a separate "Route" entry just to map a URL to an Article. <br><br>
+        <strong>Technical Evolution:</strong> This created an <b>N+1 problem</b> where the frontend had to query the Route first, wait, and then query the Article. The <b>New Approach</b> flattens this entirely: the Article <i>is</i> the page. We use parallel discovery to find which content type matches the URL, resulting in a cleaner CMS experience and a faster site.
+    </div>
+
+</body>
+</html>
