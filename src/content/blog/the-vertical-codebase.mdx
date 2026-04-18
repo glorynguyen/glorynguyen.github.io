@@ -1,0 +1,95 @@
+---
+title: "Vertical Codebase: Organizing by Domain, Not by Type"
+titleVi: "Vertical Codebase: Tổ chức code theo Nghiệp vụ, thay vì Kỹ thuật"
+description: "Why the traditional components/hooks/utils structure is failing your project and how Vertical Slicing can save it."
+descriptionVi: "Tại sao cấu trúc components/hooks/utils truyền thống đang làm khó dự án của bạn và cách 'Cắt dọc' có thể cứu vãn nó."
+pubDate: 2026-04-18
+author: "Vinh Nguyen (Vincent)"
+tags: ["Architecture", "Clean Code", "Frontend"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+I bet most of us started our projects with a folder structure like this: `components/`, `hooks/`, `utils/`, and `services/`. It looks clean at first, but as the project grows, it becomes a "geographical nightmare."
+
+## The "Horizontal" Problem
+
+In a traditional horizontal structure, we group things by their **technical role**.
+- A `useUser` hook stays in `/hooks`.
+- A `UserAvatar` component stays in `/components`.
+- A `formatUserName` function stays in `/utils`.
+
+When you need to fix a bug in the "User Profile" feature, you find yourself jumping across four different top-level folders. This increases **Cognitive Load**—your brain has to maintain a mental map of scattered files just to understand one single feature.
+
+## Enter: The Vertical Structure (Vertical Slicing)
+
+The core idea is simple: **Code that changes together, should live together.** Instead of grouping by *what it is* (a hook, a component), we group by *what it does* (User, Billing, Dashboard).
+
+### How it looks:
+Instead of a flat, technical split, we create **Vertical Slices**:
+- `src/features/user-profile/`
+  - `UserProfile.tsx` (Component)
+  - `useUser.ts` (Hook)
+  - `user.utils.ts` (Util)
+  - `user.types.ts` (Type)
+
+## Why is this better?
+
+1. **High Cohesion:** Everything you need for a feature is in one place.
+2. **Easy Deletion:** Want to remove a feature? Just delete one folder. No more "dead code" hunting in `utils/` or `hooks/`.
+3. **Scalability:** It's much easier to manage 20 feature folders than a single `components/` folder with 200 messy files.
+
+<Callout type="success" title="The Golden Rule">
+  Keep code as local as possible. Only move it to a "Shared" or "Global" folder when it is truly reused by 3 or more different features.
+</Callout>
+
+## Final Thoughts
+
+The Vertical Codebase isn't just about file organization; it's about **Domain-Driven Design**. It forces you to think about the boundaries of your application. It might take more effort to decide "where this belongs" at first, but your future self (and your teammates) will thank you.
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Tôi cá là hầu hết chúng ta đều bắt đầu dự án với cấu trúc: `components/`, `hooks/`, `utils/`, và `services/`. Ban đầu nó có vẻ gọn gàng, nhưng khi dự án phình to, nó trở thành một "cơn ác mộng về địa lý".
+
+## Vấn đề của cấu trúc "Ngang" (Horizontal)
+
+Trong cấu trúc ngang truyền thống, chúng ta gom nhóm mọi thứ theo **vai trò kỹ thuật**.
+- Hook `useUser` nằm ở `/hooks`.
+- Component `UserAvatar` nằm ở `/components`.
+- Hàm `formatUserName` nằm ở `/utils`.
+
+Mỗi khi bạn cần sửa một lỗi ở tính năng "User Profile", bạn thấy mình phải nhảy qua lại giữa 4 folder cấp cao khác nhau. Điều này làm tăng **Cognitive Load** (Tải nhận thức) — não bộ của bạn phải duy trì một bản đồ tinh thần về các file rải rác chỉ để hiểu một tính năng duy nhất.
+
+## Giải pháp: Cấu trúc Dọc (Vertical Slicing)
+
+Ý tưởng cốt lõi rất đơn giản: **Những đoạn code thay đổi cùng nhau, nên được đặt cạnh nhau.** Thay vì gom nhóm theo *nó là cái gì* (hook, component), hãy gom nhóm theo *nó phục vụ cái gì* (User, Billing, Dashboard).
+
+### Cấu trúc thực tế:
+Thay vì chia theo lớp kỹ thuật, chúng ta tạo ra các **Lát cắt dọc (Vertical Slices)**:
+- `src/features/user-profile/`
+  - `UserProfile.tsx` (Component)
+  - `useUser.ts` (Hook)
+  - `user.utils.ts` (Util)
+  - `user.types.ts` (Type)
+
+## Tại sao hướng này lại tốt hơn?
+
+1. **Tính gắn kết cao (High Cohesion):** Mọi thứ bạn cần cho một tính năng đều nằm gọn một chỗ.
+2. **Dễ dàng xóa bỏ:** Bạn muốn bỏ một tính năng? Chỉ cần xóa đúng một folder. Không còn phải đi săn lùng "code rác" trong `utils/` hay `hooks/`.
+3. **Khả năng mở rộng:** Quản lý 20 folder tính năng dễ hơn nhiều so với việc quản lý một folder `components/` chứa 200 file hỗn độn.
+
+<Callout type="success" title="Quy tắc vàng">
+  Hãy giữ code "địa phương" nhất có thể. Chỉ chuyển nó vào folder "Shared" hoặc "Global" khi nó thực sự được tái sử dụng bởi từ 3 tính năng khác nhau trở lên.
+</Callout>
+
+## Lời kết
+
+Vertical Codebase không chỉ là về việc sắp xếp file; đó là về **Domain-Driven Design** (Thiết kế hướng nghiệp vụ). nó buộc bạn phải suy nghĩ về ranh giới của ứng dụng. Có thể ban đầu bạn sẽ tốn công hơn để quyết định "cái này thuộc về đâu", nhưng chính bạn (và đồng đội) trong tương lai sẽ thầm cảm ơn vì quyết định đó.
+
+</div>
