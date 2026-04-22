@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mix-blend-mode: difference — Interactive Demo</title>
+  <title>Text Contrast: Normal vs difference vs Auto Luminance</title>
   <style>
     * {
       box-sizing: border-box;
@@ -157,6 +157,7 @@
     }
 
     .panel-left .panel-bg { background: #ff0066; }
+    .panel-mid .panel-bg { background: #ff0066; }
     .panel-right .panel-bg { background: #ff0066; }
 
     .panel-label {
@@ -177,10 +178,17 @@
       color: #fff;
     }
 
-    .panel-right .panel-label {
-      right: 0.75rem;
+    .panel-mid .panel-label {
+      left: 50%;
+      transform: translateX(-50%);
       background: rgba(255,255,255,0.15);
       color: #fff;
+    }
+
+    .panel-right .panel-label {
+      right: 0.75rem;
+      background: rgba(16,185,129,0.3);
+      color: #6ee7b7;
     }
 
     .panel-text {
@@ -195,8 +203,12 @@
       user-select: none;
     }
 
-    .panel-right .panel-text {
+    .panel-mid .panel-text {
       mix-blend-mode: difference;
+    }
+
+    .panel-right .panel-text {
+      transition: color 0.25s ease;
     }
 
     .divider {
@@ -337,7 +349,7 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <h1><code>mix-blend-mode: difference</code></h1>
+    <h1>Text Contrast: <code>Normal</code> vs <code>difference</code> vs <code>Auto</code></h1>
 
     <div class="control-group">
       <label for="bgColor">BG</label>
@@ -372,20 +384,29 @@
     </div>
   </div>
 
-  <!-- Split preview -->
+  <!-- Split preview: 3 columns -->
   <div class="preview-container">
-    <!-- Left: Normal (no blend) -->
+    <!-- 1. Normal (no blend, always white text) -->
     <div class="panel panel-left">
-      <span class="panel-label">Normal</span>
+      <span class="panel-label">① Normal</span>
       <div class="panel-bg" id="bgLeft"></div>
       <div class="panel-text" id="textLeft">Hello World</div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Right: mix-blend-mode: difference -->
+    <!-- 2. mix-blend-mode: difference -->
+    <div class="panel panel-mid">
+      <span class="panel-label">② difference</span>
+      <div class="panel-bg" id="bgMid"></div>
+      <div class="panel-text" id="textMid">Hello World</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 3. Auto Luminance (JS picks black/white) -->
     <div class="panel panel-right">
-      <span class="panel-label">difference</span>
+      <span class="panel-label">③ Auto Luminance ✓</span>
       <div class="panel-bg" id="bgRight"></div>
       <div class="panel-text" id="textRight">Hello World</div>
     </div>
@@ -399,7 +420,20 @@
       Result: <span class="color-chip" id="resultChip" style="background:rgb(0,255,153)"></span>
       <span id="resultHex">#00ff99</span>
     </span>
-    <span style="margin-left:auto; color:#555">Try white bg — text disappears!</span>
+    <span style="margin-left:auto; color:#555">Try #808080 — compare all 3!</span>
+  </div>
+
+  <!-- Auto luminance info strip -->
+  <div class="info-strip" style="border-top:1px solid #1a3a2a; background:#0a1210">
+    <span style="color:#6ee7b7">③ Auto:</span>
+    <span class="formula" id="autoFormula" style="color:#6ee7b7; border-color:#1a3a2a">L = 0.299×255 + 0.587×0 + 0.114×102 = 87.8 → white</span>
+    <span class="result-preview">
+      Text: <span class="color-chip" id="autoChip" style="background:#fff"></span>
+      <span id="autoResult">white</span>
+    </span>
+    <span class="result-preview">
+      WCAG: <span id="autoWcag" class="formula" style="color:#6ee7b7; border-color:#1a3a2a">—</span>
+    </span>
   </div>
 
   <!-- Contrast warning -->
@@ -426,14 +460,20 @@
     const picker    = document.getElementById('bgColor');
     const hexDisp   = document.getElementById('hexDisplay');
     const bgLeft    = document.getElementById('bgLeft');
+    const bgMid     = document.getElementById('bgMid');
     const bgRight   = document.getElementById('bgRight');
     const textLeft  = document.getElementById('textLeft');
+    const textMid   = document.getElementById('textMid');
     const textRight = document.getElementById('textRight');
     const modeSelect = document.getElementById('bgMode');
     const customText = document.getElementById('customText');
     const formulaEl  = document.getElementById('formulaDisplay');
     const chipEl     = document.getElementById('resultChip');
     const resultHex  = document.getElementById('resultHex');
+    const autoFormulaEl = document.getElementById('autoFormula');
+    const autoChipEl    = document.getElementById('autoChip');
+    const autoResultEl  = document.getElementById('autoResult');
+    const autoWcagEl    = document.getElementById('autoWcag');
     const presetBtns = document.querySelectorAll('.preset-btn');
 
     function hexToRgb(hex) {
@@ -453,28 +493,24 @@
 
       const mode = modeSelect.value;
 
+      const allBgs = [bgLeft, bgMid, bgRight];
+
       if (mode === 'solid') {
-        bgLeft.classList.remove('gradient');
-        bgRight.classList.remove('gradient');
-        bgLeft.style.background = hex;
-        bgRight.style.background = hex;
+        allBgs.forEach(el => { el.classList.remove('gradient'); el.style.background = hex; });
       } else if (mode === 'gradient') {
-        bgLeft.classList.add('gradient');
-        bgRight.classList.add('gradient');
-        bgLeft.style.setProperty('--grad-start', hex);
-        bgLeft.style.setProperty('--grad-end', shiftHue(hex));
-        bgRight.style.setProperty('--grad-start', hex);
-        bgRight.style.setProperty('--grad-end', shiftHue(hex));
-        bgLeft.style.background = '';
-        bgRight.style.background = '';
+        allBgs.forEach(el => {
+          el.classList.add('gradient');
+          el.style.setProperty('--grad-start', hex);
+          el.style.setProperty('--grad-end', shiftHue(hex));
+          el.style.background = '';
+        });
       } else if (mode === 'image') {
         const imgBg = `url("data:image/svg+xml,${encodeURIComponent(generatePattern(hex))}")`;
-        bgLeft.classList.remove('gradient');
-        bgRight.classList.remove('gradient');
-        bgLeft.style.background = imgBg;
-        bgRight.style.background = imgBg;
-        bgLeft.style.backgroundSize = '60px 60px';
-        bgRight.style.backgroundSize = '60px 60px';
+        allBgs.forEach(el => {
+          el.classList.remove('gradient');
+          el.style.background = imgBg;
+          el.style.backgroundSize = '60px 60px';
+        });
       }
 
       // Update formula (white text = 255,255,255)
@@ -486,25 +522,42 @@
       chipEl.style.background = `rgb(${dr},${dg},${db})`;
       resultHex.textContent = rgbToHex(dr, dg, db);
 
+      // ── Panel 3: Auto Luminance ──
+      const perceivedL = 0.299 * bg.r + 0.587 * bg.g + 0.114 * bg.b;
+      const autoColor = perceivedL > 150 ? 'black' : 'white';
+      textRight.style.color = autoColor;
+      autoFormulaEl.textContent = `L = 0.299×${bg.r} + 0.587×${bg.g} + 0.114×${bg.b} = ${perceivedL.toFixed(1)} → ${autoColor}`;
+      autoChipEl.style.background = autoColor;
+      autoResultEl.textContent = autoColor;
+
       // Highlight active preset
       presetBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.color === hex);
       });
 
-      // Contrast warning
+      // ── Contrast warnings (WCAG) ──
       const contrastWarning = document.getElementById('contrastWarning');
-      const contrastRatio   = document.getElementById('contrastRatio');
-      const luminance = (c) => {
+      const contrastRatioEl = document.getElementById('contrastRatio');
+      const srgbLin = (c) => {
         const s = c / 255;
         return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
       };
-      const relLum = (r, g, b) => 0.2126 * luminance(r) + 0.7152 * luminance(g) + 0.0722 * luminance(b);
-      const bgLum     = relLum(bg.r, bg.g, bg.b);
-      const resultLum = relLum(dr, dg, db);
-      const ratio     = (Math.max(bgLum, resultLum) + 0.05) / (Math.min(bgLum, resultLum) + 0.05);
-      const ratioStr  = ratio.toFixed(2) + ':1';
-      contrastRatio.textContent = ratioStr;
-      contrastWarning.classList.toggle('visible', ratio < 3);
+      const relLum = (r, g, b) => 0.2126 * srgbLin(r) + 0.7152 * srgbLin(g) + 0.0722 * srgbLin(b);
+      const wcagRatio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+
+      const bgLum = relLum(bg.r, bg.g, bg.b);
+
+      // difference panel contrast
+      const diffLum = relLum(dr, dg, db);
+      const diffRatio = wcagRatio(bgLum, diffLum);
+      contrastRatioEl.textContent = diffRatio.toFixed(2) + ':1';
+      contrastWarning.classList.toggle('visible', diffRatio < 3);
+
+      // auto panel contrast
+      const autoLum = autoColor === 'white' ? 1 : 0;
+      const autoRatio = wcagRatio(bgLum, autoLum);
+      autoWcagEl.textContent = autoRatio.toFixed(2) + ':1';
+      autoWcagEl.style.color = autoRatio >= 4.5 ? '#6ee7b7' : autoRatio >= 3 ? '#fbbf24' : '#f87171';
     }
 
     function shiftHue(hex) {
@@ -532,6 +585,7 @@
     customText.addEventListener('input', (e) => {
       const val = e.target.value || 'Hello World';
       textLeft.textContent = val;
+      textMid.textContent = val;
       textRight.textContent = val;
     });
 
