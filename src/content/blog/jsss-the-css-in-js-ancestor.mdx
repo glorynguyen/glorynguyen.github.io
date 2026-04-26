@@ -1,0 +1,317 @@
+---
+title: "JSSS: The CSS-in-JS Ancestor That Was 30 Years Ahead of Its Time"
+titleVi: 'JSSS: "Tổ Tiên" Của CSS-in-JS Và Cú Đi Trước Thời Đại 30 Năm'
+description: "In 1996, Netscape engineers proposed styling the web with JavaScript instead of CSS. The idea failed — but its philosophy quietly conquered the modern frontend world."
+descriptionVi: "Năm 1996, các kỹ sư Netscape đề xuất dùng JavaScript thay CSS để định dạng web. Ý tưởng đó thất bại — nhưng triết lý của nó đã âm thầm chinh phục thế giới frontend hiện đại."
+pubDate: 2026-04-26
+author: "Vinh Nguyen (Vincent)"
+tags: ["CSS", "JavaScript", "Web History", "Frontend", "CSS-in-JS"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+Can you believe that in 1996, instead of writing `h1 { color: red; }`, we almost had to write `tags.H1.color = "red";` to style a web page?
+
+Today, let's travel back to the "stone age" of the internet and explore **JSSS (JavaScript-Based Style Sheets)** — a technology that failed spectacularly in the past, yet is living a second life in the form of modern libraries like React and Styled Components.
+
+## 1. What Was JSSS?
+
+In 1996, engineers at Netscape — led by Brendan Eich, the creator of JavaScript — made a bold proposition: why learn a new language like CSS when JavaScript is already powerful enough to do the job?
+
+Their answer was **JSSS**. Instead of declarative rules, JSSS treated every HTML element as a JavaScript object. Want to change a font color? Use an assignment. Want to calculate a size? Write a function.
+
+```js
+// JSSS syntax (1996)
+tags.H1.color = "red";
+tags.H1.fontSize = "2em";
+tags.P.marginLeft = "20px";
+
+// You could even use variables and logic
+with (tags.H1) {
+  color = "navy";
+  fontSize = "1.5em";
+  fontWeight = "bold";
+}
+```
+
+Compare that to the CSS we ended up with:
+
+```css
+/* CSS — the winner */
+h1 {
+  color: navy;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+```
+
+CSS won on readability, but JSSS had something CSS lacked entirely: **programming power built right into your styles**.
+
+<Callout type="info" title="Historical Context">
+  JSSS was submitted to the W3C as a formal proposal in 1996, the same year CSS 1 was released. The two specifications were in direct competition. The W3C chose CSS, and Netscape's idea was quietly abandoned — never making it past Netscape Navigator 4.
+</Callout>
+
+## 2. The "Crazy" Powers of JSSS
+
+If W3C had chosen JSSS over CSS, the web would look very different today.
+
+**Styles that could think:**
+
+```js
+// Automatically disable animations on low battery
+if (navigator.getBattery && navigator.getBattery().level < 0.2) {
+  tags.DIV.transition = "none";
+}
+```
+
+**Dynamic color palettes from a loop:**
+
+```js
+// Generate a rainbow list with 7 items in a few lines
+var colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+for (var i = 0; i < 7; i++) {
+  contextual(tags.LI.tags.SPAN, classes.item[i]).color = colors[i];
+}
+```
+
+**True logic-driven layouts:**
+
+```js
+// Adapt font size based on viewport
+tags.BODY.fontSize = (window.innerWidth > 1200) ? "18px" : "14px";
+```
+
+In essence, JSSS blurred the line between "how it runs" and "how it looks." For its time, this was genuinely visionary.
+
+## 3. Why a Brilliant Idea Failed
+
+Despite its power, JSSS lost to CSS for three critical reasons.
+
+**Too hard for newcomers.** CSS reads almost like natural language — `color: red` means exactly what it says. JSSS required programming thinking: objects, assignments, loops. The Web in 1996 was growing fast, and most of the people building it were not professional developers. CSS was the language non-programmers could pick up in an afternoon.
+
+**Performance was a killer.** In an era when a 200 MHz processor was cutting-edge, running a full JavaScript engine just to render a blue background was painfully slow. CSS was parsed directly by the rendering engine — much faster.
+
+**The philosophy of separation.** The emerging web standards community had a principle: HTML is structure, CSS is presentation, JavaScript is behavior. JSSS violated this by letting the behavior layer own presentation. Keeping concerns separated made codebases easier to maintain, hand off, and reason about.
+
+<Callout type="warning" title="The Irony">
+  The very argument that killed JSSS in 1996 — "don't mix logic and styles" — is the same argument that CSS-in-JS advocates would later overturn 20 years later with libraries like Styled Components, Emotion, and CSS Modules.
+</Callout>
+
+## 4. The Sweet Revenge, 30 Years Later
+
+History in software has a pattern: what is old becomes new again.
+
+After nearly three decades of building increasingly complex web applications, developers started running into the limits of global CSS: naming collisions, dead code that no one dares to delete, style leaks across component boundaries, and theme variables scattered across dozens of files.
+
+The industry's answer? **CSS-in-JS**.
+
+```jsx
+// Styled Components (2016) — JSSS's spiritual successor
+const Heading = styled.h1`
+  color: navy;
+  font-size: ${props => props.large ? "2em" : "1.5em"};
+  font-weight: bold;
+`;
+```
+
+```jsx
+// React inline styles — the most direct echo of JSSS
+function Button({ primary }) {
+  return (
+    <button style={{
+      backgroundColor: primary ? "#2563eb" : "#e5e7eb",
+      color: primary ? "#ffffff" : "#1f2937",
+      padding: "8px 16px",
+    }}>
+      Click me
+    </button>
+  );
+}
+```
+
+When you write styles in React or Vue today, you are realizing the unfinished dream of those Netscape engineers from 1996. The implementation is different, the tooling is better, and the context has shifted from global document styling to component-scoped UI systems — but the philosophy is the same: **let programming logic live inside your styles**.
+
+<Callout type="success" title="The Modern CSS-in-JS Ecosystem">
+  Today, the CSS-in-JS space is rich: **Styled Components**, **Emotion**, **CSS Modules**, **Vanilla Extract**, **Tailwind with JIT**, **PandaCSS**, and more. Each solves a different trade-off, but all share the JSSS insight that styles and logic benefit from sharing the same language.
+</Callout>
+
+## The Comparison: Then vs. Now
+
+| Aspect | JSSS (1996) | Modern CSS-in-JS |
+| :--- | :--- | :--- |
+| **Language** | Vanilla JS | JS/TS (with tooling) |
+| **Scope** | Global document | Component-scoped |
+| **Dynamic styles** | Native JS logic | Props, themes, tokens |
+| **Performance** | Runtime bottleneck | Build-time + runtime |
+| **Tooling** | None | Rich (TS, linting, devtools) |
+| **Adoption** | Failed (Navigator 4 only) | Mainstream |
+
+## What JSSS Teaches Us
+
+JSSS is proof that **no idea is truly wasted — it just might be waiting for the right context**.
+
+The concept was sound. The logic was correct. The problem was timing: the infrastructure, the hardware, the tooling, and the developer ecosystem were not ready for it in 1996.
+
+Thirty years later, with modern JavaScript engines, TypeScript, component architecture, and build pipelines, all the conditions JSSS needed finally exist. The idea didn't fail — it just arrived early.
+
+<Callout type="info" title="Final Thought">
+  Next time you write `color: theme.primary` in a styled component, remember: you're standing on the shoulders of an idea that was rejected before most frontend developers were born. History in software is longer than it looks.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Bạn có tin được không, vào năm 1996, thay vì viết `h1 { color: red; }`, chúng ta suýt chút nữa đã phải viết `tags.H1.color = "red";` để làm đẹp cho trang web?
+
+Hôm nay, hãy cùng ngược dòng thời gian về thời kỳ "đồ đá" của Internet để tìm hiểu về **JSSS (JavaScript-Based Style Sheets)** — một công nghệ đã thất bại thảm hại trong quá khứ nhưng lại đang "sống dậy" mạnh mẽ trong hình hài của những thư viện hiện đại như React hay Styled Components.
+
+## 1. JSSS là gì?
+
+Vào năm 1996, các kỹ sư tại Netscape — dẫn đầu bởi Brendan Eich, cha đẻ của JavaScript — đã đưa ra một đề xuất táo bạo: Tại sao phải học một ngôn ngữ mới như CSS khi chúng ta đã có JavaScript rất mạnh mẽ?
+
+Câu trả lời của họ là **JSSS**. Thay vì dùng các quy tắc tĩnh, JSSS biến mọi thẻ HTML thành các đối tượng (objects) JavaScript. Muốn đổi màu chữ? Dùng lệnh gán. Muốn tính toán kích thước? Viết hàm.
+
+```js
+// Cú pháp JSSS (1996)
+tags.H1.color = "red";
+tags.H1.fontSize = "2em";
+tags.P.marginLeft = "20px";
+
+// Thậm chí có thể dùng biến và logic
+with (tags.H1) {
+  color = "navy";
+  fontSize = "1.5em";
+  fontWeight = "bold";
+}
+```
+
+So sánh với CSS mà chúng ta vẫn dùng:
+
+```css
+/* CSS — kẻ chiến thắng */
+h1 {
+  color: navy;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+```
+
+CSS thắng về khả năng đọc, nhưng JSSS có thứ mà CSS hoàn toàn thiếu: **sức mạnh lập trình ngay trong style**.
+
+<Callout type="info" title="Bối cảnh lịch sử">
+  JSSS được đệ trình lên W3C như một đề xuất chính thức vào năm 1996, cùng năm CSS 1 ra mắt. Hai đặc tả này cạnh tranh trực tiếp với nhau. W3C chọn CSS, và ý tưởng của Netscape bị âm thầm bỏ lại — không bao giờ vượt qua được Netscape Navigator 4.
+</Callout>
+
+## 2. Sức mạnh "điên rồ" của JSSS
+
+Nếu W3C chọn JSSS thay vì CSS, web ngày nay sẽ rất khác.
+
+**Style biết suy nghĩ:**
+
+```js
+// Tự động tắt animation khi pin thấp
+if (navigator.getBattery && navigator.getBattery().level < 0.2) {
+  tags.DIV.transition = "none";
+}
+```
+
+**Bảng màu cầu vồng bằng vòng lặp:**
+
+```js
+// Tạo bảng màu cầu vồng cho danh sách 7 mục chỉ với vài dòng
+var colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+for (var i = 0; i < 7; i++) {
+  contextual(tags.LI.tags.SPAN, classes.item[i]).color = colors[i];
+}
+```
+
+**Layout thực sự dựa vào logic:**
+
+```js
+// Tự điều chỉnh cỡ chữ theo viewport
+tags.BODY.fontSize = (window.innerWidth > 1200) ? "18px" : "14px";
+```
+
+Về cơ bản, JSSS xóa nhòa ranh giới giữa "nó chạy thế nào" và "nó trông ra sao." Với thời điểm đó, đây thực sự là một tầm nhìn đi trước thời đại.
+
+## 3. Vì sao một ý tưởng thiên tài lại thất bại?
+
+Dù rất mạnh, JSSS đã thua CSS vì ba lý do "chí mạng".
+
+**Quá khó cho người mới.** CSS đọc gần như ngôn ngữ tự nhiên — `color: red` có nghĩa đúng như những gì nó nói. JSSS đòi hỏi tư duy lập trình: đối tượng, gán giá trị, vòng lặp. Web năm 1996 đang phát triển nhanh, và đa số những người xây dựng web không phải là lập trình viên chuyên nghiệp. CSS là thứ mà người không biết code vẫn học được trong một buổi chiều.
+
+**Hiệu năng là kẻ thù.** Trong kỷ nguyên mà CPU 200 MHz được xem là tân tiến, chạy một JavaScript engine chỉ để hiển thị nền màu xanh là cực kỳ chậm. CSS được trình duyệt xử lý trực tiếp — nhanh hơn rất nhiều.
+
+**Triết lý "tách biệt" (Separation of Concerns).** Cộng đồng chuẩn hóa web thời đó có nguyên tắc rõ ràng: HTML là xương sống, CSS là ngoại hình, JavaScript là hành vi. JSSS vi phạm điều này khi để tầng hành vi kiêm luôn nhiệm vụ trình bày. Tách biệt rõ ràng giúp codebase dễ bảo trì và dễ chuyển giao hơn.
+
+<Callout type="warning" title="Nghịch lý">
+  Chính lập luận đã giết chết JSSS năm 1996 — "đừng trộn lẫn logic và style" — lại là lập luận mà các tín đồ CSS-in-JS đã đảo ngược 20 năm sau với những thư viện như Styled Components, Emotion, và CSS Modules.
+</Callout>
+
+## 4. Cuộc "trả thù" ngọt ngào sau 30 năm
+
+Lịch sử ngành phần mềm có một quy luật: thứ gì cũ rồi cũng sẽ mới lại.
+
+Sau gần ba thập kỷ xây dựng những ứng dụng web ngày càng phức tạp, developer bắt đầu va phải giới hạn của CSS toàn cục: đặt tên lớp bị trùng, dead code không ai dám xóa, style bị rò rỉ giữa các component, biến theme nằm rải rác ở hàng chục file khác nhau.
+
+Câu trả lời của cả ngành? **CSS-in-JS**.
+
+```jsx
+// Styled Components (2016) — người kế thừa tinh thần của JSSS
+const Heading = styled.h1`
+  color: navy;
+  font-size: ${props => props.large ? "2em" : "1.5em"};
+  font-weight: bold;
+`;
+```
+
+```jsx
+// React inline styles — tiếng vang trực tiếp nhất từ JSSS
+function Button({ primary }) {
+  return (
+    <button style={{
+      backgroundColor: primary ? "#2563eb" : "#e5e7eb",
+      color: primary ? "#ffffff" : "#1f2937",
+      padding: "8px 16px",
+    }}>
+      Click me
+    </button>
+  );
+}
+```
+
+Khi bạn viết style trong React hay Vue ngày nay, thực chất bạn đang thực hiện hóa giấc mơ dang dở của những kỹ sư Netscape năm 1996. Cách triển khai khác, công cụ tốt hơn, ngữ cảnh đã chuyển từ style toàn trang sang UI có phạm vi component — nhưng triết lý vẫn như cũ: **để logic lập trình sống cùng với style của bạn**.
+
+<Callout type="success" title="Hệ sinh thái CSS-in-JS hiện đại">
+  Ngày nay, không gian CSS-in-JS vô cùng phong phú: **Styled Components**, **Emotion**, **CSS Modules**, **Vanilla Extract**, **Tailwind với JIT**, **PandaCSS** và nhiều hơn nữa. Mỗi cái giải quyết một sự đánh đổi khác nhau, nhưng tất cả đều chia sẻ cái nhìn của JSSS rằng style và logic được lợi khi dùng chung ngôn ngữ.
+</Callout>
+
+## So sánh: Ngày xưa và bây giờ
+
+| Khía cạnh | JSSS (1996) | CSS-in-JS hiện đại |
+| :--- | :--- | :--- |
+| **Ngôn ngữ** | Vanilla JS | JS/TS (với tooling) |
+| **Phạm vi** | Toàn trang | Phạm vi component |
+| **Style động** | Logic JS thuần | Props, themes, tokens |
+| **Hiệu năng** | Bottleneck runtime | Build-time + runtime |
+| **Tooling** | Không có | Phong phú (TS, lint, devtools) |
+| **Mức độ áp dụng** | Thất bại (chỉ Navigator 4) | Mainstream |
+
+## Bài học từ JSSS
+
+JSSS là bằng chứng rằng **không có ý tưởng nào thực sự vô nghĩa — nó chỉ đang chờ đúng thời điểm**.
+
+Khái niệm này hoàn toàn đúng đắn. Logic đằng sau nó chính xác. Vấn đề chỉ là thời điểm: cơ sở hạ tầng, phần cứng, công cụ và hệ sinh thái developer chưa sẵn sàng cho nó vào năm 1996.
+
+Ba mươi năm sau, với JavaScript engine hiện đại, TypeScript, kiến trúc component, và build pipeline, tất cả những điều kiện mà JSSS cần đã tồn tại. Ý tưởng đó không thất bại — nó chỉ đến sớm quá.
+
+<Callout type="info" title="Suy ngẫm cuối">
+  Lần sau khi bạn viết `color: theme.primary` trong một styled component, hãy nhớ: bạn đang đứng trên vai của một ý tưởng bị từ chối từ trước khi hầu hết frontend developer ngày nay ra đời. Lịch sử của phần mềm dài hơn chúng ta nghĩ.
+</Callout>
+
+</div>

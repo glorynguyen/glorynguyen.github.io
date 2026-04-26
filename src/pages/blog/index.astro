@@ -33,7 +33,7 @@ const sortedPosts = posts.sort((a, b) =>
     <div class="posts-list">
         {sortedPosts.map(post => (
             <PostCard
-                slug={post.slug}
+                slug={post.id}
                 pubDate={post.data.pubDate}
                 title={post.data.title}
                 titleVi={post.data.titleVi}
