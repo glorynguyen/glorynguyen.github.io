@@ -1,0 +1,185 @@
+---
+title: "Are We Using React Wrong?"
+titleVi: "Liệu Chúng Ta Có Đang Dùng Sai React?"
+description: "For nearly a decade, React has been everywhere. But as browser APIs mature and frameworks return to Web Standards, it's time to ask: have we been expecting too much from a UI library?"
+descriptionVi: "Gần một thập kỷ qua, React có mặt ở khắp nơi. Nhưng khi browser APIs ngày càng mạnh và các framework quay về Web Standards, đã đến lúc tự hỏi: chúng ta có đang kỳ vọng quá nhiều vào một UI library không?"
+pubDate: 2026-05-08
+author: "Vinh Nguyen (Vincent)"
+tags: ["React", "Frontend", "Web Standards", "Architecture"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+For nearly a decade, React has been the undisputed star of the frontend world. It shows up everywhere: web apps, mobile apps, desktop apps — even TV apps.
+
+But more and more developers are starting to ask themselves:
+
+> Have we been using React for too many things it was never designed to do?
+
+Looking back honestly, the answer seems to be: yes.
+
+## React Was Always Just a UI Library
+
+When React launched in 2013, its goal was remarkably simple:
+
+- Render UI from state
+- Break UI into components
+- Update UI efficiently
+
+React was never designed to handle routing, form processing, data fetching, complex global state management, or serve as a full-stack framework.
+
+But the community wanted React to do everything. And so React became a massive ecosystem where every new problem demanded another library: React Router for routing, React Query for data fetching, Redux or Zustand for state, Next.js for SSR, Formik or React Hook Form for forms.
+
+React got pulled out of its original role and became an **accidental framework**.
+
+<Callout type="warning" title="The Abstraction Trap">
+  Every extra layer of abstraction has a cost: more bundle size, more indirection, more things to learn, more things that can break. When the browser can already handle something natively, adding a library means you're paying that cost for free.
+</Callout>
+
+## Browser APIs Have Never Been Stronger
+
+In 2026, browsers natively support: `fetch`, `FormData`, `URLPattern`, the Navigation API, Web Streams, Web Components, and Service Workers.
+
+The things React once had to compensate for, browsers now handle better — more standardized, more performant, and with zero bundle cost.
+
+But let's be direct about one thing: **browsers are good at primitives**. A simple form, basic navigation, raw data fetching — the browser handles these. But multi-step forms with real-time validation, optimistic UI, or complex caching strategies? You still need the right tooling.
+
+The key insight isn't "throw out all your libraries." It's: **don't default to adding an abstraction when the browser is already enough**.
+
+## Remix, SvelteKit, and Astro Are Proving It
+
+A clear trend is emerging: modern frameworks are returning to Web Standards.
+
+Remix is the most compelling example — and the interesting part is that **Remix still uses React as its UI layer**. That's exactly the point: React handles UI, Web Standards handle everything else. Forms are native forms. Data loading uses `fetch`. Streaming uses Web Streams.
+
+It's not about abandoning React. It's about using React where it belongs.
+
+SvelteKit and Astro take similar stances — lean on what the platform provides, reach for abstractions only when the problem genuinely demands them.
+
+## So Have We Been Using React Wrong?
+
+Not exactly. React hasn't changed. We just expected too much from it.
+
+Web Standards have gotten strong enough that many abstractions we once needed are now unnecessary for the majority of use cases. A lot of the React ecosystem exists to solve problems the browser already solves — just with better ergonomics.
+
+React doesn't need to strain to be a framework anymore.
+
+<Callout type="info" title="The Shift in Thinking">
+  The question used to be: "What React library do I add for this?" The better question now is: "Does the browser already handle this?" If yes, stop there.
+</Callout>
+
+## Time to Return React to Its Rightful Role
+
+React is still excellent — but for the right job: **UI components, UI state, UI rendering, UI composition**.
+
+Routing, form submission, data loading, streaming — let the browser and Web Standards handle those, unless the complexity genuinely requires more.
+
+When you use the right tool for the right job:
+- **Less bundle weight** — fewer dependencies means faster load times
+- **Less indirection** — your team reads the platform, not a wrapper around the platform
+- **Fewer breaking changes** — browsers don't ship breaking changes the way npm packages do
+- **Less to maintain** — the browser ships security fixes; your `node_modules` doesn't
+
+## A Note on the Nuance
+
+This isn't a call to delete your `package.json`. Complex applications still benefit from well-designed abstractions. React Query is genuinely excellent at what it does. A state management library is often the right call for complex, high-frequency state.
+
+The point is intentionality. The default used to be "add a library." The better default is "start with the platform, add abstraction when the problem earns it."
+
+## Final Thoughts
+
+The web has matured. React is being returned to its proper role: a powerful UI library — not a full-stack framework.
+
+**Knowing when you don't need another React library is the mark of a developer who truly understands their tools.**
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Trong gần một thập kỷ, React đã trở thành "ngôi sao" không thể tranh cãi của thế giới frontend. Nó xuất hiện ở mọi nơi: web app, mobile app, desktop app — thậm chí cả TV app.
+
+Nhưng càng ngày, càng nhiều lập trình viên bắt đầu tự hỏi:
+
+> Có phải chúng ta đã dùng React cho quá nhiều thứ mà nó không sinh ra để làm?
+
+Nhìn lại một cách thành thật, câu trả lời có vẻ là: đúng vậy.
+
+## React Vốn Chỉ Là Một UI Library
+
+Khi React ra đời năm 2013, mục tiêu của nó rất đơn giản:
+
+- Render UI theo state
+- Tách UI thành component
+- Cập nhật UI hiệu quả
+
+React không được thiết kế để quản lý routing, xử lý form, fetch data, quản lý global state phức tạp, hay làm full-stack framework.
+
+Nhưng cộng đồng thì lại muốn React làm tất cả. Và thế là React trở thành một hệ sinh thái khổng lồ, nơi mỗi vấn đề đều cần thêm một thư viện: React Router cho routing, React Query cho data fetching, Redux/Zustand cho state, Next.js cho SSR, Formik/React Hook Form cho form.
+
+React bị kéo ra khỏi vai trò ban đầu và trở thành **"framework bất đắc dĩ"**.
+
+<Callout type="warning" title="Bẫy Abstraction">
+  Mỗi lớp abstraction đều có chi phí: bundle nặng hơn, code khó đọc hơn, nhiều thứ phải học hơn, nhiều thứ có thể hỏng hơn. Khi browser đã xử lý được một thứ natively, thêm library nghĩa là bạn đang trả chi phí đó mà không nhận được gì thêm.
+</Callout>
+
+## Browser APIs Đã Mạnh Hơn Bao Giờ Hết
+
+Năm 2026, trình duyệt đã hỗ trợ sẵn: `fetch`, `FormData`, `URLPattern`, Navigation API, Web Streams, Web Components, Service Workers.
+
+Những thứ mà trước đây React phải "gánh", giờ browser làm tốt hơn — chuẩn hóa hơn, nhanh hơn, và không tốn một byte bundle nào.
+
+Nhưng cần nói thẳng một điều: **browser tốt ở mức primitive**. Form đơn giản, navigation cơ bản, data fetching thô — browser xử lý được. Còn multi-step form với real-time validation, optimistic UI, hay caching phức tạp — bạn vẫn cần tooling phù hợp.
+
+Điểm mấu chốt không phải là "bỏ hết thư viện". Mà là: **đừng mặc định thêm abstraction khi browser đã đủ**.
+
+## Remix, SvelteKit và Astro Đang Chứng Minh Điều Này
+
+Một xu hướng rõ ràng đang diễn ra: framework hiện đại đang quay về Web Standards.
+
+Remix là ví dụ đáng chú ý nhất — và điều thú vị là **Remix vẫn dùng React như UI layer**. Đó chính xác là điểm mấu chốt: React lo UI, Web Standards lo phần còn lại. Form = native form. Data = `fetch`. Streaming = Web Streams.
+
+Không phải bỏ React. Mà là dùng React đúng chỗ.
+
+SvelteKit và Astro có cùng quan điểm — tận dụng những gì nền tảng cung cấp, chỉ thêm abstraction khi bài toán thực sự đòi hỏi.
+
+## Vậy Chúng Ta Có Đang Dùng Sai React Không?
+
+Không hẳn. React không hề thay đổi. Chúng ta chỉ kỳ vọng quá nhiều ở nó.
+
+Web Standards đã đủ mạnh đến mức nhiều abstraction trước đây trở nên không cần thiết cho phần lớn use case. Rất nhiều thứ trong React ecosystem tồn tại để giải quyết những vấn đề mà browser đã giải quyết được — chỉ là với ergonomics tốt hơn một chút.
+
+React không còn phải gồng mình làm framework nữa.
+
+<Callout type="info" title="Sự Thay Đổi Trong Cách Suy Nghĩ">
+  Câu hỏi trước đây là: "Tôi cần thêm React library nào cho việc này?" Câu hỏi tốt hơn bây giờ là: "Browser đã xử lý được chưa?" Nếu rồi, dừng lại ở đó.
+</Callout>
+
+## Đã Đến Lúc Trả React Về Đúng Vị Trí
+
+React vẫn tuyệt vời — nhưng cho đúng việc: **UI component, UI state, UI rendering, UI composition**.
+
+Routing, form submission, data loading, streaming — hãy để browser và Web Standards lo, trừ khi độ phức tạp thực sự đòi hỏi thêm.
+
+Khi dùng đúng công cụ cho đúng việc:
+- **Bundle nhẹ hơn** — ít dependency nghĩa là load nhanh hơn
+- **Code rõ ràng hơn** — team đọc platform thay vì đọc wrapper của platform
+- **Ít breaking changes** — browser không ship breaking changes như npm packages
+- **Ít maintenance** — browser tự vá lỗ hổng bảo mật; `node_modules` của bạn thì không
+
+## Một Lưu Ý Về Sự Tinh Tế
+
+Đây không phải lời kêu gọi xóa `package.json`. Những ứng dụng phức tạp vẫn hưởng lợi từ các abstraction được thiết kế tốt. React Query thực sự xuất sắc trong lĩnh vực của nó. State management library vẫn thường là lựa chọn đúng đắn cho state phức tạp, thay đổi liên tục.
+
+Vấn đề là **sự có chủ đích**. Default cũ là "thêm library". Default tốt hơn là "bắt đầu với platform, thêm abstraction khi bài toán thực sự cần đến nó".
+
+## Kết
+
+Thế giới web đã trưởng thành hơn. React đang được trả về đúng vai trò của nó: một UI library mạnh mẽ — không phải một framework full-stack.
+
+**Biết khi nào không cần thêm một React library nữa — đó mới là dấu hiệu của một developer thực sự hiểu công cụ mình đang dùng.**
+
+</div>
