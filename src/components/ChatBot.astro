@@ -1,0 +1,509 @@
+---
+// ChatBot.astro - Local LLM chatbot powered by WebLLM
+---
+
+<div id="chatbot" class="chatbot-container">
+  <div class="chatbot-header">
+    <h2>Local AI Chatbot</h2>
+    <p class="model-info" id="model-info">Initializing...</p>
+    <div class="chatbot-controls">
+      <button id="clear-btn" title="Clear conversation">🗑️</button>
+    </div>
+  </div>
+
+  <div class="chatbot-messages" id="messages"></div>
+
+  <div class="chatbot-warning" id="browser-warning" style="display: none;">
+    <strong>⚠️ WebGPU not supported</strong> in your browser. Please use Chrome 113+, Edge 113+, or Safari 18+.
+  </div>
+
+  <div class="chatbot-error" id="error-message" style="display: none;"></div>
+
+  <form class="chatbot-input-form" id="chat-form" style="display: none;">
+    <textarea
+      id="message-input"
+      placeholder="Ask me anything..."
+      class="message-input"
+      rows="1"
+      disabled
+    ></textarea>
+    <button type="submit" class="send-button" disabled id="send-btn">Send</button>
+    <button type="button" class="send-button" id="stop-btn" style="display:none;">Stop</button>
+    <button type="button" class="send-button" id="regen-btn" style="display:none;">Regenerate</button>
+  </form>
+</div>
+
+<script>
+  import * as webllm from "@mlc-ai/web-llm";
+
+  interface Message {
+    role: "user" | "assistant";
+    content: string;
+  }
+
+  class ChatBot {
+    private engine: webllm.MLCEngine | null = null;
+    private messages: Message[] = [];
+    private isLoading = false;
+    private isStreaming = false;
+    private abortController: AbortController | null = null;
+    private selectedModel = "Phi-3-mini-4k-instruct-q4f16_1-MLC";
+
+    async initialize() {
+      try {
+        // Check WebGPU support
+        if (!navigator.gpu) {
+          this.showBrowserWarning();
+          return;
+        }
+
+        this.updateStatus(`Loading model: ${this.selectedModel}...`);
+
+        // Create engine with progress callback
+        const engine = await webllm.CreateMLCEngine(this.selectedModel);
+        // Set progress callback for download/loading
+        engine.setInitProgressCallback((progress) => {
+          if (progress && typeof progress.progress === "number") {
+            const percent = (progress.progress * 100).toFixed(1);
+            this.updateStatus(`Loading model: ${this.selectedModel} (${percent}%)`);
+          } else if (progress && progress.text) {
+            this.updateStatus(progress.text);
+          }
+        });
+        this.engine = engine;
+
+        this.updateStatus("Ready!");
+        this.enableInput();
+        this.addSystemMessage(
+          "I'm a local AI running in your browser. What would you like to know?"
+        );
+      } catch (error) {
+        this.showError(
+          `Failed to initialize: ${error instanceof Error ? error.message : "Unknown error"}`
+        );
+        console.error(error);
+      }
+    }
+
+    async sendMessage(userMessage: string, isRegenerate = false) {
+      if (!this.engine || this.isLoading || !userMessage.trim()) return;
+
+      this.isLoading = true;
+      this.isStreaming = true;
+      this.disableInput();
+      this.toggleStopButton(true);
+      this.toggleRegenButton(false);
+      this.abortController = new AbortController();
+
+      if (!isRegenerate) {
+        this.messages.push({ role: "user", content: userMessage });
+        this.addUserMessage(userMessage);
+      } else {
+        // Remove last assistant message if regenerating
+        if (this.messages.length && this.messages[this.messages.length - 1].role === "assistant") {
+          this.messages.pop();
+          this.removeLastAssistantMessage();
+        }
+      }
+
+      try {
+        const conversationHistory = this.messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+
+        let response = "";
+        const completion = await this.engine.chat.completions.create({
+          messages: conversationHistory,
+          stream: true,
+        });
+        for await (const chunk of completion) {
+          if (this.abortController?.signal.aborted) break;
+          if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta && chunk.choices[0].delta.content) {
+            response += chunk.choices[0].delta.content;
+            this.updateAssistantMessage(response, true);
+          }
+        }
+        this.messages.push({ role: "assistant", content: response });
+        this.toggleRegenButton(true);
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          this.updateAssistantMessage("[Generation stopped]", true);
+        } else {
+          this.showError(
+            `Error: ${error instanceof Error ? error.message : "Failed to generate response"}`
+          );
+          console.error(error);
+        }
+      } finally {
+        this.isLoading = false;
+        this.isStreaming = false;
+        this.enableInput();
+        this.toggleStopButton(false);
+      }
+    }
+
+    stopGeneration() {
+      if (this.abortController) {
+        this.abortController.abort();
+      }
+      this.isStreaming = false;
+      this.toggleStopButton(false);
+      this.enableInput();
+    }
+
+    clearConversation() {
+      this.messages = [];
+      const messagesEl = document.getElementById("messages");
+      if (messagesEl) messagesEl.innerHTML = "";
+      this.toggleRegenButton(false);
+    }
+
+    private updateStatus(status: string) {
+      const el = document.getElementById("model-info");
+      if (el) el.textContent = status;
+    }
+
+    private showBrowserWarning() {
+      const warning = document.getElementById("browser-warning");
+      if (warning) warning.style.display = "block";
+      this.updateStatus("WebGPU not supported");
+    }
+
+    private showError(message: string) {
+      const errorEl = document.getElementById("error-message");
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.style.display = "block";
+      }
+    }
+
+    private addUserMessage(content: string) {
+      const messagesEl = document.getElementById("messages");
+      if (!messagesEl) return;
+      const div = document.createElement("div");
+      div.className = "message user-message";
+      div.innerHTML = `<span>${this.escapeHtml(content)}</span>`;
+      messagesEl.appendChild(div);
+      this.autoScroll();
+    }
+
+    private addSystemMessage(content: string) {
+      const messagesEl = document.getElementById("messages");
+      if (!messagesEl) return;
+      const div = document.createElement("div");
+      div.className = "message system-message";
+      div.textContent = content;
+      messagesEl.appendChild(div);
+      this.autoScroll();
+    }
+
+    private updateAssistantMessage(content: string, streaming = false) {
+      const messagesEl = document.getElementById("messages");
+      if (!messagesEl) return;
+      let assistantDiv = messagesEl.querySelector(".assistant-message.typing");
+      if (!assistantDiv) {
+        assistantDiv = document.createElement("div");
+        assistantDiv.className = "message assistant-message typing";
+        messagesEl.appendChild(assistantDiv);
+      }
+      assistantDiv.innerHTML = `<span>${this.escapeHtml(content)}</span> <button class="copy-btn" title="Copy">📋</button>`;
+      this.attachCopyHandler(assistantDiv, content);
+      this.autoScroll();
+    }
+
+    private removeLastAssistantMessage() {
+      const messagesEl = document.getElementById("messages");
+      if (!messagesEl) return;
+      const last = Array.from(messagesEl.querySelectorAll(".assistant-message")).pop();
+      if (last) messagesEl.removeChild(last);
+    }
+
+    private attachCopyHandler(div, content) {
+      const btn = div.querySelector(".copy-btn");
+      if (btn) {
+        btn.onclick = () => {
+          navigator.clipboard.writeText(content);
+          btn.textContent = "✅";
+          setTimeout(() => (btn.textContent = "📋"), 1200);
+        };
+      }
+    }
+
+    private autoScroll() {
+      const messagesEl = document.getElementById("messages");
+      if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    private escapeHtml(text: string) {
+      return text.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    }
+
+    private toggleStopButton(show: boolean) {
+      const btn = document.getElementById("stop-btn");
+      if (btn) btn.style.display = show ? "inline-block" : "none";
+    }
+
+    private toggleRegenButton(show: boolean) {
+      const btn = document.getElementById("regen-btn");
+      if (btn) btn.style.display = show ? "inline-block" : "none";
+    }
+
+    private enableInput() {
+      const input = document.getElementById("message-input") as HTMLInputElement;
+      const btn = document.getElementById("send-btn") as HTMLButtonElement;
+      if (input) {
+        input.disabled = false;
+        input.focus();
+      }
+      if (btn) btn.disabled = false;
+    }
+
+    private disableInput() {
+      const input = document.getElementById("message-input") as HTMLInputElement;
+      const btn = document.getElementById("send-btn") as HTMLButtonElement;
+      if (input) input.disabled = true;
+      if (btn) btn.disabled = true;
+    }
+  }
+
+  // Initialize on page load
+  const chatBot = new ChatBot();
+
+  // Show form when ready
+  const observer = new MutationObserver(() => {
+    const status = document.getElementById("model-info")?.textContent;
+    if (status === "Ready!") {
+      const form = document.getElementById("chat-form");
+      if (form) form.style.display = "flex";
+    }
+  });
+  observer.observe(document.getElementById("model-info")!, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+
+  // Multiline textarea: auto-resize and handle Enter/Shift+Enter
+  const textarea = document.getElementById("message-input");
+  if (textarea) {
+    textarea.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = Math.min(this.scrollHeight, 160) + "px";
+    });
+    textarea.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById("send-btn")?.click();
+      }
+    });
+  }
+
+  // Handle form submission
+  document.getElementById("chat-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = document.getElementById("message-input") as HTMLTextAreaElement;
+    const message = input.value.trim();
+    if (message) {
+      chatBot.sendMessage(message);
+      input.value = "";
+      input.style.height = "auto";
+    }
+  });
+
+  // Stop button
+  document.getElementById("stop-btn")?.addEventListener("click", () => {
+    chatBot.stopGeneration();
+  });
+
+  // Regenerate button
+  document.getElementById("regen-btn")?.addEventListener("click", () => {
+    // Regenerate last user message
+    const lastUser = chatBot.messages.slice().reverse().find(m => m.role === "user");
+    if (lastUser) {
+      chatBot.sendMessage(lastUser.content, true);
+    }
+  });
+
+  // Clear conversation
+  document.getElementById("clear-btn")?.addEventListener("click", () => {
+    chatBot.clearConversation();
+  });
+
+  // Start initialization
+  chatBot.initialize();
+</script>
+
+<style>
+  .chatbot-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .chatbot-header {
+    padding: 16px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+  }
+
+  .chatbot-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+  }
+
+  .model-info {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .chatbot-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 400px;
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--color-bg);
+  }
+
+  .message {
+    padding: 12px;
+    border-radius: var(--radius);
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+
+  .user-message {
+    align-self: flex-end;
+    max-width: 80%;
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .assistant-message {
+    align-self: flex-start;
+    max-width: 80%;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .system-message {
+    align-self: center;
+    background: transparent;
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .chatbot-input-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
+
+  .message-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .message-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .message-input:disabled {
+    background: var(--color-border);
+    cursor: not-allowed;
+  }
+
+  .send-button {
+    padding: 10px 16px;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .send-button:hover:not(:disabled) {
+    background: #059669;
+  }
+
+  .send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .chatbot-warning {
+    padding: 12px 16px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: var(--radius);
+    color: #92400e;
+    font-size: 0.875rem;
+  }
+
+  .chatbot-error {
+    padding: 12px 16px;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: var(--radius);
+    color: #991b1b;
+    font-size: 0.875rem;
+  }
+
+  /* Scrollbar styling */
+  .chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-track {
+    background: var(--color-bg-alt);
+  }
+
+  .chatbot-messages::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 3px;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-light);
+  }
+
+  @media (max-width: 768px) {
+    .chatbot-container {
+      max-width: 100%;
+      border-radius: 0;
+    }
+
+    .chatbot-messages {
+      height: 300px;
+    }
+
+    .user-message,
+    .assistant-message {
+      max-width: 90%;
+    }
+  }
+</style>

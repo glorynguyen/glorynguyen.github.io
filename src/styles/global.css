@@ -1,3 +1,54 @@
+/* ChatBot ChatGPT-like UI enhancements */
+.chatbot-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: auto;
+}
+.chatbot-controls button {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: white;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.chatbot-controls button:hover {
+    opacity: 1;
+}
+.chatbot-messages {
+    padding-bottom: 24px;
+}
+.chatbot-input-form {
+    align-items: flex-end;
+}
+.message-input {
+    min-height: 40px;
+    max-height: 160px;
+    resize: none;
+    overflow-y: auto;
+}
+.copy-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    margin-left: 8px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.copy-btn:hover {
+    opacity: 1;
+}
+.assistant-message.typing span {
+    border-right: 2px solid var(--color-primary);
+    animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+    0%, 100% { border-color: transparent; }
+    50% { border-color: var(--color-primary); }
+}
 /**
  * Global Styles
  * Shared CSS variables and reset
