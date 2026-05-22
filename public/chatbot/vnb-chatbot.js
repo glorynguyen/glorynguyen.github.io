@@ -32,7 +32,8 @@
     inference: {
       mode: "local",
       fallbackToRemote: true,
-      fallbackToLocal: false
+      fallbackToLocal: false,
+      fallbackToWasm: true
     },
     local: {
       moduleUrl: "https://esm.run/@mlc-ai/web-llm",
@@ -41,6 +42,17 @@
       stream: true,
       temperature: 0.2,
       topP: 0.95,
+      preloadOnInit: false
+    },
+    wasm: {
+      moduleUrl: "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2",
+      model: "onnx-community/Qwen2.5-0.5B-Instruct",
+      dtype: "q4",
+      device: "wasm",
+      stream: true,
+      temperature: 0.3,
+      topP: 0.9,
+      maxNewTokens: 256,
       preloadOnInit: false
     },
     transport: {
@@ -215,6 +227,10 @@
     this.abortController = null;
     this.localEngine = null;
     this.webllmModule = null;
+    this.wasmEngine = null;
+    this.wasmTokenizer = null;
+    this.transformersModule = null;
+    this._caps = null;
     this.nodes = {};
   }
 
@@ -235,12 +251,15 @@
     this.mount();
     this.restoreHistory();
 
-    if (this.config.inference.mode === "local") {
+    var initialBackend = (this.getBackendOrder()[0]) || this.config.inference.mode;
+    if (initialBackend === "local") {
       this.updateSubtitle("Runs locally in your browser");
-    } else if (this.config.inference.mode === "remote") {
+    } else if (initialBackend === "wasm") {
+      this.updateSubtitle("Local Lite · Private");
+    } else if (initialBackend === "remote") {
       this.updateSubtitle("Remote mode");
     } else {
-      this.updateSubtitle("Auto mode");
+      this.updateSubtitle(this.config.subtitle || "Online");
     }
 
     if (this.config.welcomeMessage && this.history.length === 0) {
@@ -581,12 +600,17 @@
       var backend = order[i];
       try {
         if (backend === "local") {
-          return this.getLocalResponse(messages, botEl);
+          return await this.getLocalResponse(messages, botEl);
+        }
+
+        if (backend === "wasm") {
+          this.updateSubtitle("Local Lite · Private");
+          return await this.getWasmResponse(messages, botEl);
         }
 
         if (backend === "remote") {
           this.updateSubtitle("Remote mode");
-          return this.getRemoteResponse(messages, botEl);
+          return await this.getRemoteResponse(messages, botEl);
         }
       } catch (err) {
         errors.push(backend + ": " + (err && err.message ? err.message : "Unknown error"));
@@ -607,20 +631,35 @@
 
   Chatbot.prototype.getBackendOrder = function () {
     var mode = this.config.inference.mode;
+    var inf = this.config.inference;
+    var canLocal = this.supportsLocalInference();
+    var canWasm = this.supportsWasmInference();
+    var hasRemote = this.hasRemoteTransport();
+
+    if (mode === "wasm") {
+      return canWasm ? ["wasm"] : (hasRemote && inf.fallbackToRemote ? ["remote"] : []);
+    }
 
     if (mode === "local") {
-      return this.config.inference.fallbackToRemote ? ["local", "remote"] : ["local"];
+      var localOrder = canLocal ? ["local"] : [];
+      if (canWasm && inf.fallbackToWasm) localOrder.push("wasm");
+      if (hasRemote && inf.fallbackToRemote) localOrder.push("remote");
+      return localOrder;
     }
 
     if (mode === "remote") {
-      return this.config.inference.fallbackToLocal ? ["remote", "local"] : ["remote"];
+      var remoteOrder = hasRemote ? ["remote"] : [];
+      if (inf.fallbackToLocal && canLocal) remoteOrder.push("local");
+      if (inf.fallbackToLocal && canWasm) remoteOrder.push("wasm");
+      return remoteOrder;
     }
 
-    if (this.supportsLocalInference()) {
-      return ["local", "remote"];
-    }
-
-    return ["remote", "local"];
+    // "auto" — privacy-first cascade: WebGPU → WASM → remote
+    var order = [];
+    if (canLocal) order.push("local");
+    if (canWasm && inf.fallbackToWasm) order.push("wasm");
+    if (hasRemote && inf.fallbackToRemote) order.push("remote");
+    return order;
   };
 
   Chatbot.prototype.shouldUseLocalFirst = function () {
@@ -628,8 +667,61 @@
     return order.length > 0 && order[0] === "local";
   };
 
+  Chatbot.prototype.detectCapabilities = function () {
+    if (this._caps) return this._caps;
+
+    var nav = typeof navigator !== "undefined" ? navigator : {};
+    var ua = nav.userAgent || "";
+    var caps = {
+      webgpu: Boolean(nav.gpu),
+      webgpuAdapter: false,
+      webgpuProbed: false,
+      wasm: typeof WebAssembly === "object",
+      sharedArrayBuffer: typeof SharedArrayBuffer === "function",
+      crossOriginIsolated: typeof crossOriginIsolated !== "undefined" && crossOriginIsolated,
+      deviceMemory: nav.deviceMemory || 0,
+      hardwareConcurrency: nav.hardwareConcurrency || 1,
+      isMobile: /Mobi|Android|iPhone|iPad|iPod/i.test(ua),
+      isIOS: /iPhone|iPad|iPod/i.test(ua)
+    };
+
+    this._caps = caps;
+    return caps;
+  };
+
+  Chatbot.prototype.probeWebGPUAdapter = async function () {
+    var caps = this.detectCapabilities();
+    if (caps.webgpuProbed) return caps.webgpuAdapter;
+    if (!caps.webgpu) {
+      caps.webgpuProbed = true;
+      return false;
+    }
+    try {
+      var adapter = await navigator.gpu.requestAdapter();
+      caps.webgpuAdapter = Boolean(adapter);
+    } catch (_) {
+      caps.webgpuAdapter = false;
+    }
+    caps.webgpuProbed = true;
+    return caps.webgpuAdapter;
+  };
+
   Chatbot.prototype.supportsLocalInference = function () {
-    return typeof navigator !== "undefined" && Boolean(navigator.gpu);
+    var c = this.detectCapabilities();
+    if (!c.webgpu) return false;
+    // Llama 3.2 1B q4 needs ~1.2GB GPU memory. Skip on low-RAM mobile.
+    if (c.isMobile && c.deviceMemory && c.deviceMemory < 4) return false;
+    // iOS Safari: WebGPU is behind a flag and unreliable; let WASM path take over.
+    if (c.isIOS) return false;
+    return true;
+  };
+
+  Chatbot.prototype.supportsWasmInference = function () {
+    var c = this.detectCapabilities();
+    if (!c.wasm) return false;
+    // Tiny model (~500MB). Need a baseline of memory headroom.
+    if (c.deviceMemory && c.deviceMemory < 2) return false;
+    return true;
   };
 
   Chatbot.prototype.hasRemoteTransport = function () {
@@ -826,6 +918,112 @@
     var text = result && result.choices && result.choices[0] && result.choices[0].message
       ? result.choices[0].message.content
       : "";
+    return normalizeText(text);
+  };
+
+  Chatbot.prototype.ensureWasmEngine = async function () {
+    if (this.wasmEngine && this.wasmTokenizer) {
+      return { generator: this.wasmEngine, tokenizer: this.wasmTokenizer };
+    }
+
+    if (!this.supportsWasmInference()) {
+      throw new Error("WASM inference is not supported on this device.");
+    }
+
+    this.showLoadingProgress(true);
+    this.updateSubtitle("Loading lite model...");
+
+    if (!this.transformersModule) {
+      this.transformersModule = await import(this.config.wasm.moduleUrl);
+    }
+
+    var mod = this.transformersModule;
+    if (mod && mod.env) {
+      mod.env.allowLocalModels = false;
+      mod.env.useBrowserCache = true;
+    }
+
+    var self = this;
+    var progressCallback = function (info) {
+      if (!info) return;
+      if (info.status === "progress" && typeof info.progress === "number") {
+        var percent = Math.round(info.progress);
+        self.setProgress(percent);
+        if (percent < 100) {
+          self.updateSubtitle("Loading lite... " + percent + "%");
+        } else {
+          self.updateSubtitle("Initializing lite...");
+        }
+      } else if (info.status === "ready") {
+        self.updateSubtitle("Lite model ready ✓");
+      }
+    };
+
+    var pipelineOpts = {
+      dtype: this.config.wasm.dtype || "q4",
+      device: this.config.wasm.device || "wasm",
+      progress_callback: progressCallback
+    };
+
+    try {
+      this.wasmEngine = await mod.pipeline("text-generation", this.config.wasm.model, pipelineOpts);
+      this.wasmTokenizer = this.wasmEngine.tokenizer;
+    } catch (err) {
+      this.showLoadingProgress(false);
+      this.updateSubtitle("Lite load failed");
+      throw err;
+    }
+
+    this.showLoadingProgress(false);
+    this.updateSubtitle("Local Lite · Ready ✓");
+    return { generator: this.wasmEngine, tokenizer: this.wasmTokenizer };
+  };
+
+  Chatbot.prototype.getWasmResponse = async function (messages, botEl) {
+    var ctx = await this.ensureWasmEngine();
+    var generator = ctx.generator;
+    var tokenizer = ctx.tokenizer;
+    var stream = Boolean(this.config.wasm.stream);
+
+    var generateOpts = {
+      max_new_tokens: this.config.wasm.maxNewTokens || 256,
+      temperature: this.config.wasm.temperature,
+      top_p: this.config.wasm.topP,
+      do_sample: true,
+      return_full_text: false
+    };
+
+    if (stream && this.transformersModule && this.transformersModule.TextStreamer) {
+      var responseText = "";
+      var streamEl = this.replaceWithBotMessage(botEl, "");
+      var self = this;
+      var streamer = new this.transformersModule.TextStreamer(tokenizer, {
+        skip_prompt: true,
+        skip_special_tokens: true,
+        callback_function: function (chunk) {
+          if (!chunk) return;
+          responseText += chunk;
+          streamEl.textContent = responseText;
+          self.nodes.body.scrollTop = self.nodes.body.scrollHeight;
+        }
+      });
+      generateOpts.streamer = streamer;
+      await generator(messages, generateOpts);
+      return normalizeText(responseText);
+    }
+
+    var out = await generator(messages, generateOpts);
+    var text = "";
+    if (Array.isArray(out) && out.length > 0) {
+      var item = out[0];
+      if (typeof item.generated_text === "string") {
+        text = item.generated_text;
+      } else if (Array.isArray(item.generated_text)) {
+        // Chat-template output — last message is the assistant turn
+        var last = item.generated_text[item.generated_text.length - 1];
+        text = last && last.content ? last.content : "";
+      }
+    }
     return normalizeText(text);
   };
 

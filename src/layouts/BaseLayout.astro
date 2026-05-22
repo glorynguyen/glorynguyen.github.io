@@ -109,8 +109,9 @@ const {
           welcomeMessage: "Hey! I'm Vincent — a Front-End Technical Lead with 10+ years of experience. Ask me about my work, skills, or projects. Everything runs locally in your browser!",
           systemPrompt: window.__vnbVincentContext,
           inference: {
-            mode: "local",
-            fallbackToRemote: false
+            mode: "auto",
+            fallbackToRemote: false,
+            fallbackToWasm: true
           },
           local: {
             model: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
@@ -119,6 +120,17 @@ const {
             stream: true,
             temperature: 0.3,
             topP: 0.9,
+            preloadOnInit: false
+          },
+          wasm: {
+            model: "onnx-community/Qwen2.5-0.5B-Instruct",
+            moduleUrl: "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2",
+            dtype: "q4",
+            device: "wasm",
+            stream: true,
+            temperature: 0.3,
+            topP: 0.9,
+            maxNewTokens: 256,
             preloadOnInit: false
           },
           maxHistoryMessages: 10,
@@ -140,6 +152,18 @@ const {
         }).then(function(bot) {
           window.__vnbChatInstances = window.__vnbChatInstances || {};
           window.__vnbChatInstances["chat-with-vincent-global"] = bot;
+
+          // Reflect the chosen backend in the subtitle for transparency.
+          if (typeof bot.getBackendOrder === "function" && typeof bot.updateSubtitle === "function") {
+            var first = bot.getBackendOrder()[0];
+            if (first === "wasm") {
+              bot.updateSubtitle("Local Lite · Private");
+            } else if (first === "local") {
+              bot.updateSubtitle("Local AI · Private");
+            } else if (!first) {
+              bot.updateSubtitle("Chat unavailable on this device");
+            }
+          }
         }).catch(function(err) {
           console.warn("Chat widget init failed:", err.message);
         });
