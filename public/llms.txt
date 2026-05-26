@@ -1,0 +1,81 @@
+# Vinh Nguyen (Vincent)
+
+> Front-End Technical Lead with 10+ years of experience architecting enterprise web platforms and leading engineering teams for Fortune 500 companies.
+
+## About
+
+Vinh Nguyen (also known as Vincent) is a Front-End Technical Lead based in Vietnam. He specializes in building high-performance, accessible, and scalable web applications. He has led engineering teams across global enterprise projects, mentored 50+ engineers, and built platforms serving 200+ international markets.
+
+- Portfolio: https://vinhnguyenba.dev
+- Blog: https://vinhnguyenba.dev/blog
+- LinkedIn: https://www.linkedin.com/in/vinh-nguyen-479781130
+- GitHub: https://github.com/glorynguyen
+
+## Current Role
+
+**Frontend Technical Lead at Huge** (August 2025 – Present)
+Working on PepsiCo's Global Platform for 200+ markets.
+- Architecting core front-end systems: Global Search (OpenSearch), build-time redirect framework
+- Led migration to Next.js 15 and React 19 with Core Web Vitals optimization
+- Established engineering standards for TypeScript, component modularity, and CI/CD
+- Stack: Next.js 15, React 19, Sitecore JSS, GraphQL, TypeScript, OpenSearch
+
+## Career History
+
+- **Front-End Lead at Astek Vietnam – Decathlon E-commerce** (Aug 2023 – Aug 2025): Led front-end for Decathlon's e-commerce platform scaling from Singapore to APAC. Next.js, React, TypeScript.
+- **Full Stack Leader at Syntrino Solutions** (Feb 2020 – Aug 2023): Led a team for a Malaysian company. Built attendance tracking, shift scheduler, and voice detection systems. Next.js, React Native, .NET Core.
+- **Senior Application Developer at PERSOL** (Apr 2019 – Feb 2020): R&D team focused on AI chatbots and PWA. Integrated Azure QnA Maker and TensorFlow.
+- **Senior Front-End Developer at Appable** (Aug 2017 – Apr 2019): Early-stage startup. Best employee of the year. Pioneered React adoption.
+- **Front-End Developer at Seldat Distribution** (Aug 2016 – Aug 2017): AngularJS enterprise applications.
+- **Software Engineer at Global CyberSoft** (Oct 2014 – Aug 2016): Started career in R&D Big Data.
+
+## Technical Skills
+
+- **Leadership**: Technical Architecture, Team Mentoring, Sprint Planning, Code Reviews, Stakeholder Communication
+- **Frontend**: React, Next.js, Angular, React Native, Vue.js, Astro, PWA
+- **Languages**: TypeScript, JavaScript, HTML5, CSS3, GraphQL
+- **Performance**: Core Web Vitals, ISR, SSG, SSR, WebAssembly, WebGPU
+- **CMS**: Sitecore XP/JSS, ContentStack, Headless CMS, Bynder DAM
+- **DevOps**: CI/CD, Git, Azure, Docker
+- **AI**: MCP Servers, Azure QnA Maker, TensorFlow, AI Chatbots
+
+## Side Projects
+
+- **GitSage MCP Server** – MCP server for AI-powered Git analysis and code review: https://vinhnguyenba.dev/gitsage
+- **Ollama Code Review** – VS Code extension for local AI code review using Ollama: https://vinhnguyenba.dev/ollama-code-review
+- **GSAP Master MCP** – MCP server that generates production-ready GSAP animations from natural language: https://vinhnguyenba.dev/gsap-mcp
+- **Confluence MCP Server** – MCP server for AI to read and write Confluence documentation: https://vinhnguyenba.dev/confluence-mcp
+- **Figma CSS Diff** – Chrome extension for comparing Figma design specs to live CSS
+- **TL Estimation Workbench** – Internal tool for tech lead project estimation workflows
+
+## Blog Posts
+
+Vinh writes about AI, frontend architecture, engineering leadership, and web standards.
+
+- AI Won't Replace Developers - Empty Encouragement or the Truth? https://vinhnguyenba.dev/blog/posts/ai-will-not-replace-developers
+- AI 2026: Capable Coworker or a Crutch That Weakens Us? https://vinhnguyenba.dev/blog/posts/ai-2026-coworker-or-crutch
+- Warning: Don't Turn Your Computer Into a "Haunted House" Because of AI Agents https://vinhnguyenba.dev/blog/posts/ai-agent-security-warning
+- AI Is Not the Next Abstraction Layer — It's a Risky Role Reversal https://vinhnguyenba.dev/blog/posts/ai-not-next-abstraction-risky-role-reversal
+- What Problem Was AI Built to Solve — and What New Problems Is It Creating? https://vinhnguyenba.dev/blog/posts/ai-what-problems-does-it-solve-and-create
+- In the AI Era: Questioning Is Power, But Is It Everything? https://vinhnguyenba.dev/blog/posts/ai-questioning-power-is-it-everything
+- The Battle of Brains and Nervous Systems: Why Open Standards Will Define AI's Future https://vinhnguyenba.dev/blog/posts/battle-of-brains-open-standards-ai
+- MCP: Bridging AI and Real-World Data https://vinhnguyenba.dev/blog/posts/mcp-ai-real-world-data
+- GSAP Master MCP: Giving Your AI Surgical Precision Over Animations https://vinhnguyenba.dev/blog/posts/gsap-mcp-animation-tool
+- The Shift of Human Value: From Execution to Direction & Oversight https://vinhnguyenba.dev/blog/posts/human-value-shift-ai-era
+- When Code Becomes a Commodity: Trust Is the New Asset https://vinhnguyenba.dev/blog/posts/when-code-becomes-commodity
+- Are We Using React Wrong? https://vinhnguyenba.dev/blog/posts/are-we-using-react-wrong
+- React Context: Teleporting State Without Prop Drilling https://vinhnguyenba.dev/blog/posts/mastering-react-context
+- Stop the Waterfall: Why useEffect Data Fetching Kills Your Next.js Performance https://vinhnguyenba.dev/blog/posts/nextjs-useeffect-waterfall-fix
+- The Teleporting HTML: Decoding the Magic of React Streaming https://vinhnguyenba.dev/blog/posts/react-streaming-rsc-magic
+- Island Architecture: The Pattern Shaping the Future of the Modern Web https://vinhnguyenba.dev/blog/posts/island-architecture
+- Vertical Codebase: Organizing by Domain, Not by Type https://vinhnguyenba.dev/blog/posts/the-vertical-codebase
+- The Web's Full Circle: From Server-First to SPA and Back Again https://vinhnguyenba.dev/blog/posts/web-architecture-full-circle
+- Navigation API: The Discovery That Ushers in a New Era for Modern Web Apps https://vinhnguyenba.dev/blog/posts/navigation-api-new-era
+- Navigating Complexity: Strategic Lessons in Headless Transitions https://vinhnguyenba.dev/blog/posts/headless-architecture-distributed-teams
+- The Great Cleanup: Why "e18e" is my North Star for Frontend Leadership in 2026 https://vinhnguyenba.dev/blog/posts/e18e-frontend-leadership-2026
+- When "Execution" Becomes Free: The Rise of the PM & Tech Lead Duo https://vinhnguyenba.dev/blog/posts/pm-tech-lead-duo
+- Meet CrUX Vis: Google's Secret Weapon for Seeing Your Site Through Your Users' Eyes https://vinhnguyenba.dev/blog/posts/crux-vis-google-field-data
+- HTTPS: The Invisible Handshake Securing Every Web Request https://vinhnguyenba.dev/blog/posts/how-https-works
+- Beyond NVM: Why Volta Is the Future of Node.js Version Management https://vinhnguyenba.dev/blog/posts/beyond-nvm-volta-future-nodejs
+- JSSS: The CSS-in-JS Ancestor That Was 30 Years Ahead of Its Time https://vinhnguyenba.dev/blog/posts/jsss-the-css-in-js-ancestor
+- The Tinkerer's Path - How Curiosity Accidentally Led Me to Programming https://vinhnguyenba.dev/blog/posts/the-tinkerers-path
