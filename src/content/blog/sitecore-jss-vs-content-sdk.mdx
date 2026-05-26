@@ -1,0 +1,211 @@
+---
+title: "Sitecore JSS vs. Content SDK: The Architectural Shift You Need to Understand"
+titleVi: "Sitecore JSS vs. Content SDK: Bước Chuyển Kiến Trúc Bạn Cần Nắm Rõ"
+description: "A clear-eyed breakdown of what changed between Sitecore JSS and the new Content SDK—component mapping, data fetching, bundle size, and why it matters for XM Cloud teams."
+descriptionVi: "Phân tích rõ ràng về những thay đổi giữa Sitecore JSS và Content SDK mới—ánh xạ component, lấy dữ liệu, kích thước bundle, và tại sao điều này quan trọng với các đội nhóm XM Cloud."
+pubDate: 2026-05-26
+author: "Vinh Nguyen (Vincent)"
+tags: ["Sitecore", "XM Cloud", "Next.js", "Architecture", "Headless CMS"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+If you're working on a Sitecore XM Cloud project, you've likely encountered both **Sitecore JSS** and the newer **Sitecore Content SDK**. On the surface, they both wire up a Next.js frontend to a Sitecore backend. But under the hood, they represent a meaningful architectural rethink — one that has real consequences for your team's day-to-day workflow.
+
+Here's what actually changed, and why it matters.
+
+## The 30-Second Summary
+
+Sitecore JSS is the original JavaScript SDK, supporting Sitecore XP, XM, and XM Cloud. The Content SDK is its successor, built **exclusively for XM Cloud**. It's not a minor version bump — it reflects lessons learned from years of JSS usage and a deliberate move toward lighter, more explicit, and more modern patterns.
+
+| Feature | Sitecore JSS | Sitecore Content SDK |
+|---|---|---|
+| Platform Target | XP, XM, XM Cloud | XM Cloud only |
+| Next.js Architecture | Pages Router | App Router (RSC) |
+| Component Mapping | Implicit auto-scan | Explicit `component-map.ts` |
+| Data Fetching | Layout Service | `SitecoreClient` + Edge GraphQL |
+| Visual Editor | Experience Editor + Pages Chrome | XM Cloud Pages (metadata) |
+| App Footprint | Heavier baseline | ~49% smaller bundle, ~81% fewer files |
+
+## 1. Pages Router Out, App Router In
+
+The most consequential change is the shift from Next.js **Pages Router** to the **App Router** with React Server Components (RSC).
+
+JSS was built around the Pages Router — a centralized rendering model where `getStaticProps` or `getServerSideProps` fetched the full page data from the Layout Service before a single pixel rendered. It works, but it's fundamentally a single-pass, monolithic fetch.
+
+The Content SDK embraces the App Router. Components can now fetch their own data at the server level, in parallel, without waiting on a central orchestrator. A slow personalization query no longer blocks the rest of your layout from rendering.
+
+This isn't just a framework upgrade. It's a mental model shift: from page-level rendering to component-level rendering.
+
+<Callout type="info" title="What this means in practice">
+  If you're migrating from JSS to Content SDK, expect to refactor how data flows into your components. The "fetch everything at the top, pass props down" pattern doesn't map cleanly to the RSC model.
+</Callout>
+
+## 2. The Component Map: From Magic to Explicit
+
+This is the change that surprises teams the most.
+
+In JSS, component registration was largely invisible. A background script scanned the fixed `src/components` directory during builds and auto-generated a component factory. It worked until it didn't — the rigid directory structure, opaque generation step, and lack of exclusion rules became friction points on real projects.
+
+The Content SDK moves to a declared `.sitecore/component-map.ts`, controlled via `sitecore.cli.config.ts`. You define exactly which components are registered, from which paths, and with which rules:
+
+```typescript
+// sitecore.cli.config.ts (simplified)
+componentMap: {
+  paths: ['src/components', 'src/features'],
+  exclude: ['src/components/ui-kit'],
+  clientComponentMap: true,
+}
+```
+
+The benefits are practical:
+- **Custom folder structures** — your codebase organization is no longer dictated by Sitecore's conventions
+- **Exclusion rules** — ignore UI kit components, internal utilities, or test fixtures
+- **Lazy loading** — first-class support for `dynamic()` imports, enabling better code splitting
+
+<Callout type="warning" title="Migration gotcha">
+  If you have components spread across non-standard directories in JSS, the migration to Content SDK's explicit map is an audit opportunity — and sometimes an unpleasant surprise. Plan time for it.
+</Callout>
+
+## 3. Layout Service Out, Edge GraphQL In
+
+JSS's Layout Service returns a heavy, pre-composed JSON payload representing the entire page tree: every component, every field value, every rendering parameter. It's convenient, but it's also a large, undifferentiated blob.
+
+The Content SDK introduces `SitecoreClient`, a lightweight client that queries Sitecore's Edge GraphQL layer. Each component fetches only the fields it needs. Less data over the wire, faster time to first byte, and dramatically better compatibility with Next.js's streaming and per-segment caching.
+
+The payload reduction depends on your page structure, but official figures cite 30–70% smaller queries compared to equivalent Layout Service responses.
+
+## 4. Smaller, Leaner by Default
+
+The headline performance numbers are striking: **~49% smaller bundles** and **~81% fewer files** compared to JSS starter templates.
+
+This isn't incidental — it reflects deliberate choices. The Content SDK ships without the abstraction layers JSS needed to support multiple Sitecore platforms. When your target is exclusively XM Cloud's Edge delivery, you can strip out a lot of fallback logic, compatibility shims, and middleware that JSS carried for legacy reasons.
+
+For teams managing long-lived projects, this leaner baseline means faster CI builds, easier dependency audits, and less "where is this even coming from?" when debugging.
+
+## 5. Visual Editor: A Narrower but Cleaner Integration
+
+JSS supported both the classic Experience Editor (with its inline Chrome decorations) and the newer XM Cloud Pages. The Content SDK drops Experience Editor support entirely — it integrates exclusively with XM Cloud Pages using a metadata-based approach rather than the older Chrome model.
+
+If your editorial team is already on XM Cloud Pages, this is a non-issue and arguably an improvement. If your organization still relies on the Experience Editor for in-context editing workflows, this is a hard prerequisite to resolve before migrating.
+
+## Should You Migrate?
+
+If you're **starting a new XM Cloud project**, use the Content SDK. The JSS starter templates are still available but represent a legacy path. Sitecore's official guidance and new tooling investments are squarely behind Content SDK.
+
+If you're **maintaining an existing JSS project on XM Cloud**, the official migration guide exists and the patterns are well-documented. The biggest work is the component map audit and refactoring data-fetching patterns for App Router. It's not trivial, but it's tractable — and the end state is a measurably lighter, more maintainable codebase.
+
+If you're **on Sitecore XP or XM (not Cloud)**, the Content SDK is not an option. JSS remains the correct tool.
+
+<Callout type="info" title="The bigger picture">
+  The Content SDK isn't just a technical upgrade — it's Sitecore signaling the direction of their platform. XM Cloud + Edge delivery + RSC-first architecture is where new investment is going. Understanding this shift now is how you stay ahead of it on your next project.
+</Callout>
+
+<Callout type="warning" title="Disclaimer">
+  The views expressed here are my own and do not necessarily reflect the views of my current or former employers.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Nếu bạn đang làm việc trên một dự án Sitecore XM Cloud, hẳn bạn đã từng tiếp xúc với cả **Sitecore JSS** lẫn **Sitecore Content SDK** — phiên bản mới hơn. Nhìn qua, cả hai đều làm cùng một việc: kết nối một frontend Next.js với một backend Sitecore. Nhưng bên dưới bề mặt đó, chúng đại diện cho một sự tái cấu trúc tư duy kiến trúc sâu sắc — với những hệ quả thực tế đến quy trình làm việc hàng ngày của đội nhóm bạn.
+
+Hãy cùng mổ xẻ những gì thực sự đã thay đổi, và tại sao điều đó lại quan trọng.
+
+## Tóm tắt trong 30 giây
+
+Sitecore JSS là bộ SDK JavaScript gốc, hỗ trợ Sitecore XP, XM và XM Cloud. Content SDK là người kế nhiệm của nó, được xây dựng **độc quyền cho XM Cloud**. Đây không phải một bản nâng cấp nhỏ — nó phản ánh những bài học rút ra từ nhiều năm sử dụng JSS và một quyết tâm chuyển dịch có chủ đích sang các mẫu thiết kế nhẹ hơn, tường minh hơn và hiện đại hơn.
+
+| Tính năng | Sitecore JSS | Sitecore Content SDK |
+|---|---|---|
+| Nền tảng mục tiêu | XP, XM, XM Cloud | Chỉ XM Cloud |
+| Kiến trúc Next.js | Pages Router | App Router (RSC) |
+| Ánh xạ Component | Tự động quét (implicit) | Khai báo tường minh `component-map.ts` |
+| Lấy dữ liệu | Layout Service | `SitecoreClient` + Edge GraphQL |
+| Visual Editor | Experience Editor + Pages Chrome | XM Cloud Pages (metadata) |
+| Kích thước ứng dụng | Nặng hơn | Bundle nhỏ hơn ~49%, ít file hơn ~81% |
+
+## 1. Pages Router ra đi, App Router tiếp quản
+
+Thay đổi có ảnh hưởng lớn nhất là việc chuyển từ **Pages Router** sang **App Router** của Next.js với React Server Components (RSC).
+
+JSS được xây dựng xung quanh Pages Router — một mô hình render tập trung, nơi `getStaticProps` hoặc `getServerSideProps` lấy toàn bộ dữ liệu trang từ Layout Service trước khi một pixel nào được vẽ ra. Cách này hoạt động được, nhưng về bản chất đây là một quy trình fetch đơn lẻ, nguyên khối.
+
+Content SDK đón nhận App Router. Giờ đây, các component có thể tự lấy dữ liệu của mình ở tầng server, song song với nhau, mà không cần chờ một orchestrator trung tâm. Một truy vấn cá nhân hóa (personalization) chậm chạp không còn chặn (block) phần còn lại của layout khỏi việc render nữa.
+
+Đây không chỉ đơn thuần là nâng cấp framework. Đây là sự thay đổi mô hình tư duy: từ render ở cấp độ trang (page-level) sang render ở cấp độ component (component-level).
+
+<Callout type="info" title="Điều này có nghĩa gì trong thực tế">
+  Nếu bạn đang di chuyển từ JSS sang Content SDK, hãy chuẩn bị tinh thần để tái cấu trúc cách dữ liệu chảy vào các component của bạn. Mẫu "fetch tất cả ở trên, truyền props xuống" không ánh xạ gọn gàng sang mô hình RSC.
+</Callout>
+
+## 2. Component Map: Từ Ma thuật đến Tường minh
+
+Đây là thay đổi khiến các đội nhóm bất ngờ nhất.
+
+Trong JSS, việc đăng ký component phần lớn là vô hình. Một script chạy nền sẽ quét thư mục `src/components` cố định trong quá trình build và tự động tạo ra một component factory. Nó hoạt động — cho đến khi không còn hoạt động nữa. Cấu trúc thư mục cứng nhắc, bước tạo mã không minh bạch, và thiếu quy tắc loại trừ đã trở thành những điểm ma sát trên các dự án thực tế.
+
+Content SDK chuyển sang một file `.sitecore/component-map.ts` được khai báo tường minh, được điều khiển qua `sitecore.cli.config.ts`. Bạn định nghĩa chính xác những component nào được đăng ký, từ những đường dẫn nào, và với những quy tắc nào:
+
+```typescript
+// sitecore.cli.config.ts (phiên bản đơn giản hóa)
+componentMap: {
+  paths: ['src/components', 'src/features'],
+  exclude: ['src/components/ui-kit'],
+  clientComponentMap: true,
+}
+```
+
+Những lợi ích mang lại rất thiết thực:
+- **Cấu trúc thư mục tùy chỉnh** — cách tổ chức codebase của bạn không còn bị dictate bởi các quy ước của Sitecore
+- **Quy tắc loại trừ** — bỏ qua các component UI kit, tiện ích nội bộ, hoặc test fixture
+- **Lazy loading** — hỗ trợ first-class cho `dynamic()` imports, giúp phân tách code (code splitting) hiệu quả hơn
+
+<Callout type="warning" title="Cạm bẫy khi di chuyển">
+  Nếu bạn có các component rải rác khắp các thư mục không theo chuẩn trong JSS, việc di chuyển sang component map tường minh của Content SDK chính là một cơ hội kiểm kê (audit) — đôi khi là một sự bất ngờ không mấy dễ chịu. Hãy lên kế hoạch dành thời gian cho việc này.
+</Callout>
+
+## 3. Layout Service ra đi, Edge GraphQL tiếp quản
+
+Layout Service của JSS trả về một payload JSON nặng nề, được soạn sẵn, đại diện cho toàn bộ cây trang: mọi component, mọi giá trị field, mọi tham số rendering. Tiện lợi, nhưng đây cũng là một khối dữ liệu lớn, không phân biệt.
+
+Content SDK giới thiệu `SitecoreClient` — một client nhẹ nhàng truy vấn tầng Edge GraphQL của Sitecore. Mỗi component chỉ lấy đúng những field mà nó cần. Ít dữ liệu hơn được truyền qua mạng, thời gian đến byte đầu tiên (time to first byte) nhanh hơn, và khả năng tương thích với streaming và per-segment caching của Next.js được cải thiện đáng kể.
+
+Mức độ giảm tải dữ liệu tùy thuộc vào cấu trúc trang của bạn, nhưng con số chính thức ghi nhận mức giảm 30–70% kích thước truy vấn so với Layout Service Response tương đương.
+
+## 4. Nhẹ hơn, Tinh gọn hơn theo Mặc định
+
+Các con số về hiệu suất là ấn tượng: **bundle nhỏ hơn ~49%** và **ít file hơn ~81%** so với starter template của JSS.
+
+Điều này không phải ngẫu nhiên — nó phản ánh những lựa chọn có chủ đích. Content SDK được xuất xưởng mà không có những tầng trừu tượng (abstraction layer) mà JSS cần để hỗ trợ nhiều nền tảng Sitecore. Khi mục tiêu của bạn là độc quyền Edge delivery của XM Cloud, bạn có thể loại bỏ rất nhiều logic dự phòng (fallback logic), shim tương thích, và middleware mà JSS đã gánh chịu vì lý do di sản.
+
+Với các đội nhóm quản lý dự án lâu dài, baseline tinh gọn hơn này có nghĩa là build CI nhanh hơn, kiểm tra dependency dễ dàng hơn, và ít những lúc "cái này từ đâu ra vậy?" khi debug.
+
+## 5. Visual Editor: Tích hợp Hẹp hơn nhưng Sạch hơn
+
+JSS hỗ trợ cả Experience Editor cổ điển (với Chrome decorations inline) lẫn XM Cloud Pages mới hơn. Content SDK loại bỏ hoàn toàn hỗ trợ Experience Editor — nó tích hợp độc quyền với XM Cloud Pages theo phương pháp dựa trên metadata thay vì mô hình Chrome cũ.
+
+Nếu đội biên tập nội dung (editorial team) của bạn đã dùng XM Cloud Pages, đây không phải vấn đề gì và trên thực tế có thể là sự cải tiến. Nếu tổ chức của bạn vẫn còn phụ thuộc vào Experience Editor cho các quy trình chỉnh sửa in-context, đây là điều kiện tiên quyết cứng nhắc cần giải quyết trước khi di chuyển.
+
+## Bạn có nên Di chuyển không?
+
+Nếu bạn **đang bắt đầu một dự án XM Cloud mới**, hãy dùng Content SDK. Các starter template của JSS vẫn còn đó nhưng đại diện cho một con đường di sản. Hướng dẫn chính thức và các khoản đầu tư công cụ mới của Sitecore đều đang tập trung hoàn toàn vào Content SDK.
+
+Nếu bạn **đang duy trì một dự án JSS hiện có trên XM Cloud**, hướng dẫn migration chính thức đã có, và các pattern đều được tài liệu hóa rõ ràng. Công việc lớn nhất là kiểm kê component map và tái cấu trúc các pattern lấy dữ liệu cho App Router. Không hề đơn giản, nhưng hoàn toàn có thể làm được — và trạng thái cuối cùng là một codebase nhẹ hơn và dễ bảo trì hơn một cách đo lường được.
+
+Nếu bạn **đang ở trên Sitecore XP hoặc XM (không phải Cloud)**, Content SDK không phải là một lựa chọn. JSS vẫn là công cụ phù hợp.
+
+<Callout type="info" title="Bức tranh toàn cảnh">
+  Content SDK không chỉ là một nâng cấp kỹ thuật — đó là Sitecore đang phát đi tín hiệu về hướng đi của nền tảng. XM Cloud + Edge delivery + kiến trúc ưu tiên RSC là nơi các khoản đầu tư mới đang đổ vào. Hiểu được sự chuyển dịch này ngay bây giờ chính là cách bạn đi trước một bước trong dự án tiếp theo của mình.
+</Callout>
+
+<Callout type="warning" title="Lưu ý">
+  Những quan điểm trong bài viết này là của cá nhân tôi và không nhất thiết phản ánh quan điểm của các tổ chức tôi đang hoặc đã từng làm việc.
+</Callout>
+
+</div>
