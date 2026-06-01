@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sitecore Content SDK — Route Data Flow</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 40px 24px 80px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #f0f6fc;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6e7681;
+      margin-bottom: 48px;
+    }
+
+    .flow {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── STEP ─────────────────────────────────── */
+    .step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 0 16px;
+      position: relative;
+    }
+
+    /* Vertical connector line */
+    .step:not(:last-child) .step-line::after {
+      content: '';
+      position: absolute;
+      left: 25px;
+      top: 52px;
+      bottom: 0;
+      width: 2px;
+      background: #21262d;
+    }
+
+    .step-line {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 14px;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      z-index: 1;
+      border: 2px solid;
+    }
+
+    .step-body {
+      padding: 12px 0 32px;
+    }
+
+    .step-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 4px;
+    }
+
+    .step-file {
+      font-size: 0.72rem;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: #79c0ff;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 0.875rem;
+      color: #8b949e;
+      margin-bottom: 12px;
+    }
+
+    /* Code snippets */
+    .code-block {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin-bottom: 10px;
+    }
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cm  { color: #6e7681; font-style: italic; }
+    .var { color: #ffa657; }
+    .hl  { background: #1f2937; border-radius: 3px; padding: 0 4px; }
+
+    /* Badges */
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 12px;
+      border: 1px solid;
+    }
+    .badge-server  { color: #3fb950; border-color: #238636; background: #0d2010; }
+    .badge-client  { color: #79c0ff; border-color: #1f6feb; background: #051d40; }
+    .badge-graphql { color: #d2a8ff; border-color: #6e40c9; background: #1a0a2e; }
+    .badge-next    { color: #ffa657; border-color: #da6820; background: #2a1500; }
+
+    /* Colour themes per step */
+    .s1 .step-num { color: #79c0ff; border-color: #1f6feb; background: #051d40; }
+    .s2 .step-num { color: #ffa657; border-color: #da6820; background: #2a1500; }
+    .s3 .step-num { color: #d2a8ff; border-color: #6e40c9; background: #1a0a2e; }
+    .s4 .step-num { color: #3fb950; border-color: #238636; background: #0d2010; }
+    .s5 .step-num { color: #f85149; border-color: #da3633; background: #2a0a0a; }
+    .s6 .step-num { color: #58a6ff; border-color: #1f6feb; background: #051d40; }
+    .s7 .step-num { color: #56d364; border-color: #3fb950; background: #0d2010; }
+
+    /* Arrow connector between major sections */
+    .arrow-down {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #30363d;
+      margin: -20px 0 -20px 68px;
+      user-select: none;
+    }
+
+    /* Decision box */
+    .decision {
+      background: #161b22;
+      border: 1px dashed #30363d;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 0 0 10px;
+    }
+    .decision-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ffa657;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .decision-branch {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .branch {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+    .branch-cond {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 0.72rem;
+      padding: 1px 8px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+    .cond-yes { background: #0d2010; border: 1px solid #238636; color: #3fb950; }
+    .cond-no  { background: #2a0a0a; border: 1px solid #da3633; color: #f85149; }
+
+    /* Data shape */
+    .data-shape {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 8px 0;
+    }
+    .data-shape-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6e7681;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    /* Placeholder grid */
+    .placeholders {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .ph-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+    }
+    .ph-name {
+      font-family: 'SF Mono', Consolas, monospace;
+      color: #79c0ff;
+      font-size: 0.72rem;
+      margin-bottom: 4px;
+    }
+    .ph-desc { color: #8b949e; font-size: 0.75rem; }
+
+    /* Legend */
+    .legend {
+      max-width: 860px;
+      margin: 48px auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid #21262d;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sitecore Content SDK — Route Data Flow</h1>
+<p class="subtitle">What happens when you navigate to <code style="background:#161b22;padding:2px 6px;border-radius:4px;color:#79c0ff">localhost:3000/{site}/{locale}/vincent</code></p>
+
+<div class="flow">
+
+  <!-- ── STEP 1 ── Browser Request -->
+  <div class="step s1">
+    <div class="step-line">
+      <div class="step-num">1</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Browser Request</div>
+      <div class="step-file">Browser → Next.js Server</div>
+      <div class="step-desc">
+        The browser issues a GET request. Next.js App Router matches the URL to the
+        file-system route structure. There is <strong>no middleware.ts</strong> in this project —
+        routing is handled entirely by the dynamic segment structure.
+      </div>
+      <div class="code-block">
+<span class="cm">// URL segments map to these dynamic segments:</span>
+localhost:3000/<span class="var">mysite</span>/<span class="var">en</span>/<span class="var">vincent</span>
+                  ↓         ↓        ↓
+              [site]   [locale]  [[...path]]
+      </div>
+      <div class="code-block">
+<span class="cm">// Matched file:</span>
+src/app/<span class="str">[site]</span>/<span class="str">[locale]</span>/<span class="str">[[...path]]</span>/page.tsx
+      </div>
+      <div class="badges">
+        <span class="badge badge-next">Next.js App Router</span>
+        <span class="badge badge-server">Server</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2 ── Nested Layouts -->
+  <div class="step s2">
+    <div class="step-line">
+      <div class="step-num">2</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Nested Layouts Execute (outside-in)</div>
+      <div class="step-file">app/layout.tsx → app/[site]/layout.tsx → app/[site]/[locale]/[[...path]]/layout.tsx</div>
+      <div class="step-desc">
+        Next.js runs layouts from outermost to innermost before the page. Each layout
+        wraps the children from the next level.
+      </div>
+      <div class="code-block">
+<span class="cm">// 1. app/layout.tsx — root HTML shell</span>
+<span class="kw">return</span> &lt;html&gt;&lt;body&gt;{children}&lt;/body&gt;&lt;/html&gt;
+
+<span class="cm">// 2. app/[site]/layout.tsx — Bootstrap (client analytics)</span>
+<span class="kw">const</span> { isEnabled } = <span class="kw">await</span> <span class="fn">draftMode</span>()
+<span class="kw">return</span> &lt;&gt;
+  &lt;<span class="fn">Bootstrap</span> siteName={site} isPreviewMode={isEnabled} /&gt;
+  {children}
+&lt;/&gt;
+
+<span class="cm">// 3. app/[site]/[locale]/[[...path]]/layout.tsx — cache params</span>
+<span class="fn">setCachedPageParams</span>({ locale, site })  <span class="cm">// used by notFound() pages</span>
+<span class="kw">return</span> &lt;&gt;{children}&lt;/&gt;
+      </div>
+      <div class="badges">
+        <span class="badge badge-server">Server Components</span>
+        <span class="badge badge-client">Bootstrap = Client</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3 ── Page Component & Draft Mode Check -->
+  <div class="step s3">
+    <div class="step-line">
+      <div class="step-num">3</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Page Component — Draft Mode Check</div>
+      <div class="step-file">src/app/[site]/[locale]/[[...path]]/page.tsx</div>
+      <div class="step-desc">
+        The async page component receives params. It checks Next.js Draft Mode to decide
+        which <code>SitecoreClient</code> method to call.
+      </div>
+      <div class="code-block">
+<span class="kw">const</span> { site, locale, path } = <span class="kw">await</span> params
+<span class="fn">setRequestLocale</span>(`${site}_${locale}`)   <span class="cm">// for next-intl</span>
+
+<span class="kw">const</span> draft = <span class="kw">await</span> <span class="fn">draftMode</span>()
+      </div>
+      <div class="decision">
+        <div class="decision-title">Decision — Is Draft Mode enabled?</div>
+        <div class="decision-branch">
+          <div class="branch">
+            <span class="branch-cond cond-no">Normal</span>
+            <span>
+              <code>draft.isEnabled = false</code> — normal production render.<br/>
+              Calls <code>client.getPage(["vincent"], { site, locale })</code>
+            </span>
+          </div>
+          <div class="branch">
+            <span class="branch-cond cond-yes">Preview</span>
+            <span>
+              <code>draft.isEnabled = true</code> — editing or Design Studio.<br/>
+              Reads preview cookies via <code>client.getPreviewData(headers)</code>,
+              then calls <code>client.getPreview()</code> or <code>client.getDesignLibraryData()</code>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge badge-server">Server</span>
+        <span class="badge badge-next">Next.js Draft Mode</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4 ── SitecoreClient.getPage() -->
+  <div class="step s4">
+    <div class="step-line">
+      <div class="step-num">4</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">SitecoreClient.getPage()</div>
+      <div class="step-file">src/lib/sitecore-client.ts → @sitecore-content-sdk/nextjs/client</div>
+      <div class="step-desc">
+        <code>SitecoreClient</code> is a singleton initialised once with <code>sitecore.config.ts</code>.
+        <code>getPage()</code> uses the internal <code>LayoutService</code> to issue a
+        <strong>GraphQL query</strong> to the Sitecore Edge API.
+      </div>
+      <div class="code-block">
+<span class="cm">// src/lib/sitecore-client.ts</span>
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SitecoreClient</span>({
+  ...scConfig   <span class="cm">// api.edge.contextId, defaultSite, defaultLanguage, etc.</span>
+})
+
+<span class="cm">// Called from page.tsx (normal mode):</span>
+<span class="kw">const</span> page = <span class="kw">await</span> client.<span class="fn">getPage</span>(
+  [<span class="str">"vincent"</span>],           <span class="cm">// path segments</span>
+  { site, locale }      <span class="cm">// PageOptions</span>
+)
+      </div>
+      <div class="code-block">
+<span class="cm">// Internally, LayoutService issues a GraphQL query to:</span>
+<span class="str">https://edge-platform.sitecorecloud.io/v1/content/api/graphql/v1
+  ?sitecoreContextId=</span><span class="var">{SITECORE_EDGE_CONTEXT_ID}</span>
+
+<span class="cm">// The query retrieves:</span>
+<span class="cm">//  - Route layout definition (placeholders + renderings hierarchy)</span>
+<span class="cm">//  - Component fields (Text, Image, Link, RichText, ...)</span>
+<span class="cm">//  - Context data (language, site, pageState)</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-server">Server</span>
+        <span class="badge badge-graphql">GraphQL / Sitecore Edge</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5 ── 404 or Page object returned -->
+  <div class="step s5">
+    <div class="step-line">
+      <div class="step-num">5</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Page Found or 404</div>
+      <div class="step-file">page.tsx — post-fetch guard</div>
+      <div class="step-desc">
+        If the Sitecore content tree has no item at <code>/vincent</code> for the
+        requested site + locale, <code>getPage()</code> returns <code>null</code>
+        and Next.js renders the not-found page.
+      </div>
+      <div class="decision">
+        <div class="decision-title">Decision — Did Sitecore return a page?</div>
+        <div class="decision-branch">
+          <div class="branch">
+            <span class="branch-cond cond-no">null</span>
+            <span>No content item found at <code>/vincent</code> — calls <code>notFound()</code> → renders <code>app/not-found.tsx</code></span>
+          </div>
+          <div class="branch">
+            <span class="branch-cond cond-yes">Page</span>
+            <span>Returns a <code>Page</code> object containing <code>layout</code> + <code>mode</code> — rendering continues</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-shape">
+        <div class="data-shape-title">Page object shape</div>
+        <div class="code-block" style="margin:0">
+{
+  layout: {
+    sitecore: {
+      context: { site, language, ... },
+      route: {                   <span class="cm">// root rendering node</span>
+        name: <span class="str">"vincent"</span>,
+        placeholders: {
+          <span class="str">"headless-header"</span>: [ ...renderings ],
+          <span class="str">"headless-main"</span>:   [ ...renderings ],
+          <span class="str">"headless-footer"</span>: [ ...renderings ]
+        }
+      }
+    }
+  },
+  mode: {
+    isNormal:        <span class="kw">true</span>,
+    isEditing:       <span class="kw">false</span>,
+    isPreview:       <span class="kw">false</span>,
+    isDesignLibrary: <span class="kw">false</span>
+  }
+}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 6 ── Providers wrap -->
+  <div class="step s6">
+    <div class="step-line">
+      <div class="step-num">6</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Providers — Client Context Setup</div>
+      <div class="step-file">src/Providers.tsx + src/app/[site]/[locale]/[[...path]]/page.tsx</div>
+      <div class="step-desc">
+        The page wraps the layout in two providers before rendering. Both are Client Components
+        that hydrate on the browser side.
+      </div>
+      <div class="code-block">
+<span class="cm">// page.tsx return value:</span>
+&lt;<span class="fn">NextIntlClientProvider</span>&gt;        <span class="cm">// i18n dictionary for client components</span>
+  &lt;<span class="fn">Providers</span> page={page}&gt;         <span class="cm">// SitecoreProvider (client map, import map)</span>
+    &lt;<span class="fn">Layout</span> page={page} /&gt;
+  &lt;/Providers&gt;
+&lt;/NextIntlClientProvider&gt;
+
+<span class="cm">// Providers.tsx (client component):</span>
+&lt;<span class="fn">SitecoreProvider</span>
+  api={scConfig.api}
+  componentMap={components}          <span class="cm">// .sitecore/component-map.client.ts</span>
+  page={page}
+  loadImportMap={() =&gt; <span class="kw">import</span>(<span class="str">'.sitecore/import-map.client'</span>)}
+&gt;
+  {children}
+&lt;/SitecoreProvider&gt;
+      </div>
+      <div class="badges">
+        <span class="badge badge-client">Client Components</span>
+        <span class="badge badge-server">Server renders shell</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 7 ── Layout renders -->
+  <div class="step s7">
+    <div class="step-line">
+      <div class="step-num">7</div>
+    </div>
+    <div class="step-body">
+      <div class="step-title">Layout — AppPlaceholder renders components</div>
+      <div class="step-file">src/Layout.tsx</div>
+      <div class="step-desc">
+        <code>Layout</code> is a Server Component. It extracts <code>route</code> and <code>mode</code>
+        from the <code>Page</code> object. For a normal production visit
+        (<code>mode.isDesignLibrary = false</code>) it renders the three placeholder slots.
+        <code>AppPlaceholder</code> walks the route's rendering tree and resolves each
+        Sitecore rendering name against <code>componentMap</code>.
+      </div>
+      <div class="code-block">
+<span class="kw">const</span> { layout, mode } = page
+<span class="kw">const</span> { route } = layout.sitecore
+
+<span class="cm">// mode.isDesignLibrary = false → normal page render</span>
+&lt;header&gt;
+  &lt;<span class="fn">AppPlaceholder</span> name=<span class="str">"headless-header"</span> page={page}
+    componentMap={componentMap} rendering={route} /&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;<span class="fn">AppPlaceholder</span> name=<span class="str">"headless-main"</span> page={page}
+    componentMap={componentMap} rendering={route} /&gt;
+&lt;/main&gt;
+&lt;footer&gt;
+  &lt;<span class="fn">AppPlaceholder</span> name=<span class="str">"headless-footer"</span> page={page}
+    componentMap={componentMap} rendering={route} /&gt;
+&lt;/footer&gt;
+      </div>
+
+      <div class="placeholders">
+        <div class="ph-box">
+          <div class="ph-name">headless-header</div>
+          <div class="ph-desc">Renderings authored in Sitecore for the header region</div>
+        </div>
+        <div class="ph-box">
+          <div class="ph-name">headless-main</div>
+          <div class="ph-desc">Page body renderings (hero, content, etc.)</div>
+        </div>
+        <div class="ph-box">
+          <div class="ph-name">headless-footer</div>
+          <div class="ph-desc">Footer renderings (Footer component from componentMap)</div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="step-desc" style="margin-top:10px">
+        <strong style="color:#f0f6fc">componentMap resolution:</strong><br/>
+        <code>AppPlaceholder</code> reads each rendering's <code>componentName</code> from the
+        layout JSON and looks it up in <code>componentMap</code>.
+        Server components use <code>component-map.ts</code>; client components use
+        <code>component-map.client.ts</code>.
+      </div>
+      <div class="code-block">
+<span class="cm">// .sitecore/component-map.ts (registered components)</span>
+<span class="kw">new</span> <span class="fn">Map</span>([
+  [<span class="str">'BYOCWrapper'</span>,                       BYOCServerWrapper],
+  [<span class="str">'FEaaSWrapper'</span>,                      FEaaSServerWrapper],
+  [<span class="str">'Form'</span>,               { ...Form, componentType: <span class="str">'client'</span> }],
+  [<span class="str">'PartialDesignDynamicPlaceholder'</span>,   { ...PartialDesignDynamicPlaceholder }],
+  [<span class="str">'Footer'</span>,                            { ...Footer }],
+])
+<span class="cm">// Any rendering name not found → MissingComponent (silent in prod)</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-server">Server Components (default)</span>
+        <span class="badge badge-client">Client Components (marked 'use client')</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div style="font-size:0.75rem;color:#6e7681;width:100%;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Legend</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> Server Component / server-side execution</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#79c0ff"></div> Client Component / browser hydration</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d2a8ff"></div> GraphQL call to Sitecore Edge API</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ffa657"></div> Next.js built-in feature (Draft Mode, draftMode())</div>
+</div>
+
+</body>
+</html>
