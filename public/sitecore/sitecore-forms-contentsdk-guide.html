@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sitecore Forms + Content SDK — Setup Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161820;
+    --bg3: #1d1f2b;
+    --border: rgba(255,255,255,0.07);
+    --border-hi: rgba(255,255,255,0.14);
+    --text: #e8e6df;
+    --muted: #8a8880;
+    --accent: #6c8fff;
+    --accent2: #3dffc0;
+    --accent3: #ffb347;
+    --accent4: #ff6b9d;
+    --danger: #ff5f5f;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Sora', sans-serif;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LAYOUT ─────────────────────────────────── */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── HERO ────────────────────────────────────── */
+  .hero {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 52px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border: 1px solid rgba(61,255,192,.22);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+  .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); display: block; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 18px;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 540px;
+    line-height: 1.65;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .meta-pill svg { opacity: .6; }
+
+  /* ── PATH CHOOSER ────────────────────────────── */
+  .path-chooser {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 56px;
+  }
+  .path-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 22px 20px;
+    background: var(--bg2);
+    transition: border-color .2s;
+  }
+  .path-card:hover { border-color: var(--border-hi); }
+  .path-card.recommended { border-color: rgba(108,143,255,.35); }
+  .path-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .path-card.recommended .path-label { color: var(--accent); }
+  .path-card:not(.recommended) .path-label { color: var(--muted); }
+  .path-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .path-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .path-tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: rgba(108,143,255,.1);
+    color: var(--accent);
+    border: 1px solid rgba(108,143,255,.2);
+  }
+  .path-card:not(.recommended) .path-tag { background: rgba(255,255,255,.04); color: var(--muted); border-color: var(--border); }
+
+  /* ── SECTION HEADERS ─────────────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-number {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(108,143,255,.15);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--mono);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+  .section-subtitle { font-size: 13px; color: var(--muted); }
+
+  section { margin-bottom: 60px; }
+
+  /* ── STEP BLOCKS ─────────────────────────────── */
+  .steps { display: flex; flex-direction: column; gap: 20px; }
+  .step {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0 18px;
+    position: relative;
+  }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-hi);
+    background: var(--bg3);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--mono);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .steps .step:not(:last-child) .step-dot::after {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: calc(100% + 20px);
+    background: var(--border);
+  }
+  .step-body { padding-bottom: 4px; }
+  .step-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding-top: 4px; }
+  .step-desc { font-size: 13.5px; color: #aaa8a2; line-height: 1.65; margin-bottom: 10px; }
+
+  /* ── CODE BLOCKS ─────────────────────────────── */
+  .code-block {
+    background: #0a0b10;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    background: rgba(255,255,255,.03);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .code-copy {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 9px;
+    transition: all .15s;
+    color: var(--muted);
+  }
+  .code-copy:hover { border-color: var(--border-hi); color: var(--text); }
+  .code-copy.copied { color: var(--accent2); border-color: rgba(61,255,192,.25); }
+  pre {
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.65;
+    font-family: var(--mono);
+  }
+  code { font-family: var(--mono); }
+  .kw  { color: #c792ea; }
+  .fn  { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .var { color: #ffcb6b; }
+  .op  { color: var(--muted); }
+  .num { color: #f78c6c; }
+  .tag { color: #f07178; }
+  .att { color: #ffcb6b; }
+  .val { color: #c3e88d; }
+  .ts  { color: #89ddff; }
+
+  /* ── INLINE CODE ─────────────────────────────── */
+  p code, li code, td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: rgba(255,255,255,.07);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: #c3e88d;
+  }
+
+  /* ── CALLOUT BOXES ───────────────────────────── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 14px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    display: flex;
+    gap: 12px;
+  }
+  .callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .callout.warning { background: rgba(255,179,71,.08); border: 1px solid rgba(255,179,71,.2); color: #e8c88a; }
+  .callout.info    { background: rgba(108,143,255,.08); border: 1px solid rgba(108,143,255,.2); color: #a0b5ff; }
+  .callout.success { background: rgba(61,255,192,.07); border: 1px solid rgba(61,255,192,.18); color: #8bf5d5; }
+  .callout.danger  { background: rgba(255,95,95,.08); border: 1px solid rgba(255,95,95,.2); color: #ffaaaa; }
+  .callout strong { font-weight: 600; }
+
+  /* ── TABLES ──────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 14px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: rgba(255,255,255,.04); }
+  th { padding: 11px 14px; font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #c8c5be; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── ENV VAR TABLE ───────────────────────────── */
+  .env-key { font-family: var(--mono); font-size: 12px; color: #ffcb6b; }
+  .env-val { font-family: var(--mono); font-size: 12px; color: var(--muted); font-style: italic; }
+
+  /* ── COMPONENT MAP ───────────────────────────── */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 18px 0;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+  .flow-box {
+    background: var(--bg3);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .flow-box-title { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .flow-box-sub { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 3px; }
+  .flow-arrow {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+  }
+  .flow-box.hi { border-color: rgba(108,143,255,.4); background: rgba(108,143,255,.07); }
+  .flow-box.hi .flow-box-title { color: var(--accent); }
+
+  /* ── CHECKLIST ───────────────────────────────── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: #aaa8a2; }
+  .check-icon { flex-shrink: 0; margin-top: 2px; }
+  .check-icon.ok  { color: var(--accent2); }
+  .check-icon.req { color: var(--accent3); }
+
+  /* ── PHASE TABS ──────────────────────────────── */
+  .phase-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .phase-tab {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 8px 8px 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -1px;
+    transition: all .15s;
+    background: none;
+    font-family: var(--sans);
+  }
+  .phase-tab.active {
+    color: var(--text);
+    background: var(--bg2);
+    border-color: var(--border);
+    border-bottom-color: var(--bg2);
+  }
+  .phase-content { display: none; }
+  .phase-content.active { display: block; }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  footer p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+  .footer-links a {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1px;
+    transition: color .15s, border-color .15s;
+  }
+  .footer-links a:hover { color: var(--accent); border-color: rgba(108,143,255,.4); }
+
+  /* ── INLINE UTILITY ──────────────────────────── */
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .pill.new  { background: rgba(61,255,192,.12); color: var(--accent2); border: 1px solid rgba(61,255,192,.2); }
+  .pill.req  { background: rgba(255,95,95,.1); color: #ff8888; border: 1px solid rgba(255,95,95,.2); }
+  .pill.note { background: rgba(255,179,71,.1); color: var(--accent3); border: 1px solid rgba(255,179,71,.2); }
+
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin: 10px 0 14px; }
+  ul li, ol li { margin-bottom: 6px; color: #aaa8a2; font-size: 14px; }
+
+  @media (max-width: 640px) {
+    .path-chooser { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .flow-diagram { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <div class="hero-badge"><span></span> Developer Guide</div>
+    <h1>Sitecore Forms +<br><em>Content SDK</em> Setup</h1>
+    <p class="hero-sub">
+      A complete reference for integrating Sitecore AI Forms with a Next.js
+      application using the Content SDK — from CMS authoring through to frontend
+      component registration.
+    </p>
+    <div class="hero-meta">
+      <span class="meta-pill">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        @sitecore-content-sdk/nextjs
+      </span>
+      <span class="meta-pill">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        JSS 21.6+ / Content SDK 1.x
+      </span>
+      <span class="meta-pill">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Source: doc.sitecore.com
+      </span>
+    </div>
+  </header>
+
+  <!-- ── OVERVIEW ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">0</div>
+      <div>
+        <div class="section-title">Which path are you on?</div>
+        <div class="section-subtitle">The integration model differs by Sitecore platform</div>
+      </div>
+    </div>
+
+    <div class="path-chooser">
+      <div class="path-card recommended">
+        <div class="path-label">✦ Recommended</div>
+        <div class="path-name">XM Cloud / Sitecore AI</div>
+        <div class="path-desc">
+          Use the built-in <code>Form</code> component from the Content SDK.
+          Forms are authored in the AI Forms Builder and delivered via webhook.
+          No session cookies required.
+        </div>
+        <span class="path-tag">@sitecore-content-sdk/nextjs</span>
+      </div>
+      <div class="path-card">
+        <div class="path-label">Legacy</div>
+        <div class="path-name">Sitecore XP + JSS 22.x</div>
+        <div class="path-desc">
+          Uses the <code>sitecore-jss-react-forms</code> package. Requires REST
+          Layout Service, active SSL, and SSR on every route that shows a form.
+        </div>
+        <span class="path-tag">@sitecore-jss/sitecore-jss-react-forms</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ</span>
+      <span>This guide focuses on the <strong>Content SDK + XM Cloud path</strong>, which is the current recommended approach for all new projects. The XP/JSS path is covered separately in Section 6.</span>
+    </div>
+  </section>
+
+  <!-- ── PREREQUISITES ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div>
+        <div class="section-title">Prerequisites</div>
+        <div class="section-subtitle">Verify your environment before starting</div>
+      </div>
+    </div>
+
+    <ul class="checklist">
+      <li><span class="check-icon req">▸</span> Node.js LTS installed on your machine</li>
+      <li><span class="check-icon req">▸</span> Access to a Sitecore AI / XM Cloud environment (project + environment created via Deploy app)</li>
+      <li><span class="check-icon req">▸</span> JSS version <strong>21.6.0 or later</strong> — this is when XM Cloud Forms support via BYOC was added</li>
+      <li><span class="check-icon req">▸</span> Content SDK <strong>1.0+</strong> (or JSS 22.6+ if still on JSS)</li>
+      <li><span class="check-icon req">▸</span> <strong>Advanced User</strong> or <strong>Admin</strong> role in Sitecore AI to create and edit forms</li>
+      <li><span class="check-icon ok">✓</span> Your Next.js app bootstrapped from a Content SDK starter template</li>
+      <li><span class="check-icon ok">✓</span> <code>SITECORE_EDGE_CONTEXT_ID</code> set in your <code>.env.local</code></li>
+    </ul>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠</span>
+      <span><strong>Forms on Pages requires JSS 21.6+.</strong> If your app is on an older version, you must upgrade before following this guide. See the Sitecore upgrade guide for step-by-step instructions.</span>
+    </div>
+  </section>
+
+  <!-- ── ENVIRONMENT SETUP ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div>
+        <div class="section-title">Environment Variables</div>
+        <div class="section-subtitle">Connect your Next.js app to Sitecore AI</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:#aaa8a2;margin-bottom:16px;">
+      In the Deploy app, open your environment → <strong>Developer settings</strong> tab → select your site → set Context to <strong>Preview</strong> → copy the environment variables code block.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">.env.local</span>
+        <button class="code-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <pre><span class="cmt"># Required — from Sitecore AI Deploy app → Developer settings</span>
+<span class="var">SITECORE_EDGE_CONTEXT_ID</span><span class="op">=</span><span class="str">your-preview-context-id-here</span>
+<span class="var">NEXT_PUBLIC_DEFAULT_SITE_NAME</span><span class="op">=</span><span class="str">your-site-name</span>
+<span class="var">NEXT_PUBLIC_DEFAULT_LANGUAGE</span><span class="op">=</span><span class="str">en</span>
+
+<span class="cmt"># Required for editing / Page Builder preview</span>
+<span class="var">SITECORE_EDITING_SECRET</span><span class="op">=</span><span class="str">your-editing-secret</span>
+
+<span class="cmt"># Needed if form webhooks aren't resolving in Vercel</span>
+<span class="cmt"># Ensure SITECORE_EDGE_CONTEXT_ID is also set there</span>
+<span class="var">NEXT_PUBLIC_SITECORE_EDGE_CONTEXT_ID</span><span class="op">=</span><span class="str">your-preview-context-id-here</span></pre>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠</span>
+      <span><strong>Webhook tip from docs:</strong> If you experience issues with Forms webhooks, ensure <code>SITECORE_EDGE_CONTEXT_ID</code> is set as an environment variable in your frontend platform (e.g. Vercel). This is the most common cause of webhook failures.</span>
+    </div>
+
+    <div class="table-wrap" style="margin-top:20px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Purpose</th>
+            <th>Where to find it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="env-key">SITECORE_EDGE_CONTEXT_ID</span></td>
+            <td>Server-side context ID for Edge GraphQL</td>
+            <td>Deploy app → Developer settings → Context ID</td>
+          </tr>
+          <tr>
+            <td><span class="env-key">NEXT_PUBLIC_SITECORE_EDGE_CONTEXT_ID</span></td>
+            <td>Client-side context ID (exposes secret — use carefully)</td>
+            <td>Same value as above</td>
+          </tr>
+          <tr>
+            <td><span class="env-key">NEXT_PUBLIC_DEFAULT_SITE_NAME</span></td>
+            <td>Site name used for content resolution</td>
+            <td>Deploy app → Developer settings → Site dropdown</td>
+          </tr>
+          <tr>
+            <td><span class="env-key">SITECORE_EDITING_SECRET</span></td>
+            <td>Required for Page Builder editing mode</td>
+            <td>Deploy app → Developer settings</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── FORMS IN SITECORE AI ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div>
+        <div class="section-title">Author the Form in Sitecore AI</div>
+        <div class="section-subtitle">Design → Build → Webhook → Activate</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:#aaa8a2;margin-bottom:20px;">
+      Before any frontend code, the form must be created and activated in the Sitecore AI Forms Builder. Forms send data to third-party systems via webhooks — not directly to your Next.js app.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <div class="step-title">Create the form</div>
+          <div class="step-desc">In Sitecore AI, navigate to <strong>Design → Forms → Create form</strong>. Start from a blank form or choose a template from the library.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <div class="step-title">Design your fields</div>
+          <div class="step-desc">Drag fields from the left pane onto the canvas. Configure field keys, validation, and styling. Avoid spaces or special characters in field keys — these cause webhook mismatches.</div>
+          <div class="callout warning" style="margin-top:8px;">
+            <span class="callout-icon">⚠</span>
+            <span><strong>Field naming matters.</strong> Inconsistent field keys are the leading cause of negative webhook responses (<code>isSuccessful: false</code>). Use consistent <code>camelCase</code> or <code>snake_case</code> naming.</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <div class="step-title">Configure a webhook</div>
+          <div class="step-desc">Go to <strong>Settings → Choose webhook → Manage webhooks → Add</strong>. Webhooks define where form submission data is sent (your API, CRM, Connect, Zapier, etc.).</div>
+          <div class="table-wrap" style="margin-top:10px;">
+            <table>
+              <thead><tr><th>Auth Type</th><th>When to use</th></tr></thead>
+              <tbody>
+                <tr><td>OAuth 2</td><td>Production APIs with token-based auth</td></tr>
+                <tr><td>API Key</td><td>Simple third-party integrations</td></tr>
+                <tr><td>Basic</td><td>Internal endpoints behind basic auth</td></tr>
+                <tr><td>No authentication</td><td>Not recommended for production</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info" style="margin-top:10px;">
+            <span class="callout-icon">ℹ</span>
+            <span><strong>Test your webhook before activating.</strong> Click <strong>Test webhook</strong>, submit the form, and inspect the payload in the Test Form Submission dialog. Test submissions include <code>"test": true</code> so you can filter them from real data.</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="step-body">
+          <div class="step-title">Activate the form</div>
+          <div class="step-desc">Only activated forms are available in the Page Builder. Click <strong>Activate</strong> — the form now appears under the <strong>Components → Forms</strong> section in Pages.</div>
+          <div class="callout success">
+            <span class="callout-icon">✓</span>
+            <span>Once activated, authors can drag the form onto any page in the Page Builder without any additional developer work.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PLACEHOLDER CONFIG ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div>
+        <div class="section-title">Enable Forms in Page Builder</div>
+        <div class="section-subtitle">Configure placeholder access in Content Editor</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:#aaa8a2;margin-bottom:16px;">
+      For content authors to insert a form rendering into a page placeholder, the Form rendering must be explicitly allowed. This is a one-time configuration step.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <div class="step-title">Add to Available Renderings</div>
+          <div class="step-desc">In Content Editor, navigate to:</div>
+          <div class="code-block">
+            <pre><span class="str">/sitecore/content/&lt;site&gt;/Presentation/Available Renderings</span></pre>
+          </div>
+          <div class="step-desc">Add the Form rendering if not already present:</div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Rendering path</span></div>
+            <pre><span class="str">/sitecore/layout/Renderings/Feature/JSS Experience Accelerator/Forms/Form</span>
+
+<span class="cmt">Component ID: 62DD1639-9F28-4040-8738-C886480B2127</span></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <div class="step-title">Allow the Form in placeholder restrictions</div>
+          <div class="step-desc">If placeholder restrictions are configured, the Form rendering must be in the allowed list. Navigate to:</div>
+          <div class="code-block">
+            <pre><span class="str">/sitecore/content/&lt;site&gt;/Presentation/Placeholder Settings/headless-main</span></pre>
+          </div>
+          <div class="step-desc" style="margin-top:8px;">In the <strong>Allowed Controls</strong> field, add the same Form rendering path shown above.</div>
+          <div class="callout info" style="margin-top:10px;">
+            <span class="callout-icon">ℹ</span>
+            <span><strong>Note:</strong> If the <code>Allowed Controls</code> field is empty, the placeholder has no restrictions and all available renderings are permitted. You only need this step if restrictions are explicitly configured.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FRONTEND INTEGRATION ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <div>
+        <div class="section-title">Frontend Integration — Content SDK</div>
+        <div class="section-subtitle">Register the built-in Form component and wire up the providers</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:#aaa8a2;margin-bottom:20px;">
+      The Content SDK ships a built-in <code>Form</code> component. You only need to register it in your component map — no custom form rendering code required.
+    </p>
+
+    <!-- Architecture flow -->
+    <div class="flow-diagram">
+      <div class="flow-box"><div class="flow-box-title">Sitecore AI</div><div class="flow-box-sub">Forms Builder</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><div class="flow-box-title">Page Builder</div><div class="flow-box-sub">Drag &amp; drop</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box hi"><div class="flow-box-title">component-map.ts</div><div class="flow-box-sub">Form registered</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><div class="flow-box-title">SitecoreProvider</div><div class="flow-box-sub">Context + map</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><div class="flow-box-title">AppPlaceholder</div><div class="flow-box-sub">Renders Form</div></div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <div class="step-title">Register the Form component in your component map <span class="pill new">Key step</span></div>
+          <div class="step-desc">Open <code>.sitecore/component-map.ts</code> and add the built-in <code>Form</code> import alongside the other built-in components:</div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">.sitecore/component-map.ts</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+            <pre><span class="cmt">// Built-in components — keep these as-is</span>
+<span class="kw">import</span> { <span class="fn">BYOCWrapper</span>, <span class="fn">FEaaSWrapper</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>;
+<span class="kw">import</span> { <span class="fn">Form</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>; <span class="cmt">// ← built-in Form</span>
+
+<span class="cmt">// Your own components</span>
+<span class="kw">import</span> * <span class="kw">as</span> <span class="var">CdpPageView</span> <span class="kw">from</span> <span class="str">'src/components/CdpPageView'</span>;
+<span class="kw">import</span> * <span class="kw">as</span> <span class="var">Title</span> <span class="kw">from</span> <span class="str">'src/components/Title'</span>;
+<span class="cmt">// ...other components</span>
+
+<span class="kw">export const</span> <span class="var">componentMap</span> <span class="op">=</span> <span class="kw">new</span> <span class="fn">Map</span>&lt;<span class="ts">string</span>, <span class="ts">NextjsJssComponent</span>&gt;([
+  [<span class="str">'BYOCWrapper'</span>, <span class="var">BYOCWrapper</span>],
+  [<span class="str">'FEaaSWrapper'</span>, <span class="var">FEaaSWrapper</span>],
+  [<span class="str">'Form'</span>, <span class="var">Form</span>],        <span class="cmt">// ← register it here — name must match Sitecore rendering name</span>
+  [<span class="str">'CdpPageView'</span>, <span class="var">CdpPageView</span>],
+  [<span class="str">'Title'</span>, <span class="var">Title</span>],
+]);
+
+<span class="kw">export default</span> <span class="var">componentMap</span>;</pre>
+          </div>
+          <div class="callout success" style="margin-top:8px;">
+            <span class="callout-icon">✓</span>
+            <span>That's all the dev work needed for native Sitecore AI forms. The built-in <code>Form</code> component handles rendering, submission routing, and webhook delivery automatically.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <div class="step-title">Wire up SitecoreProvider with the component map</div>
+          <div class="step-desc">The <code>SitecoreProvider</code> must receive both <code>componentMap</code> and <code>page</code> props. For App Router (dual maps), use the client-safe map in providers:</div>
+
+          <!-- Tab switcher -->
+          <div class="phase-tabs">
+            <button class="phase-tab active" onclick="switchTab(this,'app-router')">App Router</button>
+            <button class="phase-tab" onclick="switchTab(this,'pages-router')">Pages Router</button>
+          </div>
+
+          <div id="app-router" class="phase-content active">
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">src/Providers.tsx — client component</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+              <pre><span class="str">'use client'</span>;
+<span class="kw">import</span> { <span class="fn">SitecoreProvider</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>;
+<span class="kw">import</span> <span class="var">components</span> <span class="kw">from</span> <span class="str">'.sitecore/component-map.client'</span>; <span class="cmt">// client-safe map</span>
+<span class="kw">import</span> <span class="var">scConfig</span> <span class="kw">from</span> <span class="str">'sitecore.config'</span>;
+
+<span class="kw">export default function</span> <span class="fn">Providers</span>({ children, page }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;SitecoreProvider</span>
+      <span class="att">api</span>=<span class="val">{scConfig.api}</span>
+      <span class="att">componentMap</span>=<span class="val">{components}</span>
+      <span class="att">page</span>=<span class="val">{page}</span>
+    <span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/SitecoreProvider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">src/Layout.tsx — server component</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+              <pre><span class="kw">import</span> { <span class="fn">AppPlaceholder</span>, <span class="ts">Page</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>;
+<span class="kw">import</span> <span class="var">componentMap</span> <span class="kw">from</span> <span class="str">'.sitecore/component-map'</span>; <span class="cmt">// full map (server)</span>
+
+<span class="kw">export default function</span> <span class="fn">Layout</span>({ page }: { page: <span class="ts">Page</span> }) {
+  <span class="kw">const</span> route = page.layout.sitecore.route;
+  <span class="kw">return</span> (
+    <span class="tag">&lt;main&gt;</span>
+      {route <span class="op">&amp;&amp;</span> (
+        <span class="tag">&lt;AppPlaceholder</span>
+          <span class="att">page</span>=<span class="val">{page}</span>
+          <span class="att">componentMap</span>=<span class="val">{componentMap}</span>
+          <span class="att">name</span>=<span class="val">"headless-main"</span>
+          <span class="att">rendering</span>=<span class="val">{route}</span>
+        <span class="tag">/&gt;</span>
+      )}
+    <span class="tag">&lt;/main&gt;</span>
+  );
+}</pre>
+            </div>
+          </div>
+
+          <div id="pages-router" class="phase-content">
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">src/pages/_app.tsx (Pages Router)</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+              <pre><span class="kw">import</span> { <span class="fn">SitecoreProvider</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>;
+<span class="kw">import</span> <span class="var">componentMap</span> <span class="kw">from</span> <span class="str">'.sitecore/component-map'</span>; <span class="cmt">// single map</span>
+<span class="kw">import</span> <span class="var">scConfig</span> <span class="kw">from</span> <span class="str">'sitecore.config'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>({ Component, pageProps }) {
+  <span class="kw">const</span> { page, componentProps } = pageProps;
+  <span class="kw">return</span> (
+    <span class="tag">&lt;SitecoreProvider</span>
+      <span class="att">api</span>=<span class="val">{scConfig.api}</span>
+      <span class="att">componentMap</span>=<span class="val">{componentMap}</span>
+      <span class="att">page</span>=<span class="val">{page}</span>
+    <span class="tag">&gt;</span>
+      <span class="tag">&lt;Component</span> <span class="att">{...pageProps}</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/SitecoreProvider&gt;</span>
+  );
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <div class="step-title">Regenerate the component map</div>
+          <div class="step-desc">After updating <code>component-map.ts</code>, regenerate it if using automatic map generation:</div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">terminal</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+            <pre><span class="cmt"># Regenerate once</span>
+npm run sitecore-tools:generate-map
+
+<span class="cmt"># Or watch for changes during dev</span>
+npm run sitecore-tools:generate-map:watch</pre>
+          </div>
+          <div class="callout info" style="margin-top:10px;">
+            <span class="callout-icon">ℹ</span>
+            <span>The Content SDK auto-generates the map on <code>npm run build</code> and <code>npm run dev</code> by default. Manual regeneration is only needed if you've changed the map file and want to pick up changes without restarting.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="step-body">
+          <div class="step-title">Verify the sitecore.config.ts</div>
+          <div class="step-desc">Ensure your configuration file is correctly pointing to the edge endpoint via the Context ID:</div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">sitecore.config.ts</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+            <pre><span class="kw">import</span> { <span class="fn">defineConfig</span> } <span class="kw">from</span> <span class="str">'@sitecore-content-sdk/nextjs'</span>;
+
+<span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  <span class="cmt">// These values are read from environment variables automatically</span>
+  <span class="cmt">// SITECORE_EDGE_CONTEXT_ID → api.edge.contextId</span>
+  <span class="cmt">// NEXT_PUBLIC_DEFAULT_SITE_NAME → defaultSite</span>
+  <span class="cmt">// NEXT_PUBLIC_DEFAULT_LANGUAGE → defaultLanguage</span>
+  <span class="cmt">// SITECORE_EDITING_SECRET → editingSecret</span>
+
+  defaultLanguage: <span class="str">'en'</span>,
+
+  <span class="cmt">// Optional: disable personalization in local dev</span>
+  personalize: {
+    enabled: <span class="kw">false</span>,
+  },
+});</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VERIFICATION ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <div>
+        <div class="section-title">Verify the Integration</div>
+        <div class="section-subtitle">End-to-end test checklist</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="step-body">
+          <div class="step-title">Start the app in connected mode</div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">terminal</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+            <pre>npm run dev</pre>
+          </div>
+          <div class="step-desc" style="margin-top:8px;">Open <code>http://localhost:3000</code>. Your site should connect to the Sitecore AI preview endpoint via the Context ID.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="step-body">
+          <div class="step-title">Add the form to a page in Page Builder</div>
+          <div class="step-desc">In Sitecore AI → Pages, open a page. In the left-hand pane → <strong>Components → Forms</strong>, drag your activated form onto the page. It should render immediately in preview.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="step-body">
+          <div class="step-title">Submit the form and verify the webhook</div>
+          <div class="step-desc">Fill in and submit the form on your local site. Then in Sitecore AI Forms → your form → <strong>Settings → Test webhook</strong>, confirm the payload was received. Look for <code>"test": false</code> in a real submission.</div>
+          <div class="callout danger" style="margin-top:10px;">
+            <span class="callout-icon">⚠</span>
+            <span><strong>Negative webhook response</strong> (<code>isSuccessful: false</code>) means XM Cloud sent the payload successfully but the endpoint rejected it — typically due to field key mismatches or validation errors on the receiving API. Compare field keys with what your webhook endpoint expects.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── XP LEGACY ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <div>
+        <div class="section-title">Sitecore XP + JSS 22.x — Legacy Path</div>
+        <div class="section-subtitle">For existing XP projects not yet on XM Cloud</div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-bottom:20px;">
+      <span class="callout-icon">ℹ</span>
+      <span>Skip this section if you are on XM Cloud / Sitecore AI. This path uses the older <code>sitecore-jss-react-forms</code> package.</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Requirement</th><th>Detail</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SSL or disabled secure cookies</td><td>Forms use session cookies — SSL must be enabled or secure cookies disabled in Sitecore</td></tr>
+          <tr><td>REST Layout Service</td><td>GraphQL Edge cannot be used with JSS forms — must use REST</td></tr>
+          <tr><td>SSR only</td><td>Every route showing a form must use <code>getServerSideProps</code> — SSG is not supported</td></tr>
+          <tr><td>Rendering Contents Resolver</td><td>Set to <strong>Sitecore Forms Resolver</strong> on the Form rendering item in Sitecore</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block" style="margin-top:16px;">
+      <div class="code-header"><span class="code-lang">Install packages</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+      <pre>npm install @sitecore-jss/sitecore-jss-forms @sitecore-jss/sitecore-jss-react-forms</pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">src/components/JssNextForm.tsx</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+      <pre><span class="kw">import</span> { <span class="fn">Form</span> } <span class="kw">from</span> <span class="str">'@sitecore-jss/sitecore-jss-react-forms'</span>;
+<span class="kw">import</span> <span class="var">React</span> <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { <span class="ts">NextRouter</span>, <span class="fn">withRouter</span> } <span class="kw">from</span> <span class="str">'next/router'</span>;
+<span class="kw">import</span> { <span class="var">sitecoreApiKey</span> } <span class="kw">from</span> <span class="str">'temp/config'</span>;
+
+<span class="kw">const</span> <span class="fn">JssNextForm</span> = ({ fields, router }: { fields: <span class="ts">any</span>; router: <span class="ts">NextRouter</span> }) => (
+  <span class="tag">&lt;Form</span>
+    <span class="att">language</span>=<span class="val">{router.locale}</span>
+    <span class="att">form</span>=<span class="val">{fields}</span>
+    <span class="att">sitecoreApiHost</span>=<span class="val">{''}</span>  <span class="cmt">{/* must be empty string — NOT the actual host */}</span>
+    <span class="att">sitecoreApiKey</span>=<span class="val">{sitecoreApiKey}</span>
+    <span class="att">onRedirect</span>=<span class="val">{(url) =&gt; router.push(url)}</span>
+  <span class="tag">/&gt;</span>
+);
+
+<span class="kw">export default</span> <span class="fn">withRouter</span>(<span class="fn">JssNextForm</span>);</pre>
+    </div>
+
+    <div class="callout danger">
+      <span class="callout-icon">!</span>
+      <span><strong>Critical:</strong> <code>sitecoreApiHost</code> must be set to an <strong>empty string</strong> <code>''</code>, not the actual Sitecore API host. Using the real host bypasses the Next.js proxy rewrite and causes CORS errors.</span>
+    </div>
+
+    <div class="code-block" style="margin-top:12px;">
+      <div class="code-header"><span class="code-lang">next.config.base.js — proxy rewrite</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+      <pre><span class="cmt">// Add to connected mode rewrites to prevent CORS and 404s</span>
+{
+  source: <span class="str">'/api/jss/:path*'</span>,
+  destination: <span class="str">`${jssConfig.sitecoreApiHost}/api/jss/:path*`</span>
+}</pre>
+    </div>
+  </section>
+
+  <!-- ── COMPARISON ── -->
+  <section>
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <div>
+        <div class="section-title">Comparison Reference</div>
+        <div class="section-subtitle">Content SDK vs JSS XP at a glance</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Content SDK + XM Cloud</th>
+            <th>JSS + Sitecore XP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Form component source</td>
+            <td><code>@sitecore-content-sdk/nextjs</code></td>
+            <td><code>@sitecore-jss/sitecore-jss-react-forms</code></td>
+          </tr>
+          <tr>
+            <td>Custom code required?</td>
+            <td>No — register built-in <code>Form</code></td>
+            <td>Yes — implement <code>JssNextForm.tsx</code></td>
+          </tr>
+          <tr>
+            <td>Data submission target</td>
+            <td>Webhook → external API / CRM</td>
+            <td>Sitecore Forms API (session-based)</td>
+          </tr>
+          <tr>
+            <td>Rendering mode</td>
+            <td>SSR or SSG</td>
+            <td>SSR only (<code>getServerSideProps</code>)</td>
+          </tr>
+          <tr>
+            <td>Session cookies required</td>
+            <td>No</td>
+            <td>Yes — needs SSL or disabled secure cookies</td>
+          </tr>
+          <tr>
+            <td>Visual editor</td>
+            <td>XM Cloud Pages (Page Builder)</td>
+            <td>Experience Editor</td>
+          </tr>
+          <tr>
+            <td>Key env variable</td>
+            <td><code>SITECORE_EDGE_CONTEXT_ID</code></td>
+            <td><code>sitecoreApiKey</code> + <code>sitecoreApiHost</code></td>
+          </tr>
+          <tr>
+            <td>Layout Service</td>
+            <td>GraphQL Edge</td>
+            <td>REST Layout Service only</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div>
+      <p>Source: <strong>Sitecore official documentation</strong> — doc.sitecore.com</p>
+      <p>Applies to: Content SDK 1.x · JSS 21.6+ · XM Cloud / Sitecore AI</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://doc.sitecore.com/sai/en/developers/content-sdk/sitecore-content-sdk-for-sitecoreai.html" target="_blank">Content SDK docs</a>
+      <a href="https://doc.sitecore.com/sai/en/users/sitecoreai/forms.html" target="_blank">Forms user guide</a>
+      <a href="https://doc.sitecore.com/xp/en/developers/hd/latest/sitecore-headless-development/implement-a-sitecore-form-in-a-jss-next-js-app.html" target="_blank">JSS XP forms</a>
+      <a href="https://github.com/Sitecore/content-sdk" target="_blank">content-sdk GitHub</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function switchTab(btn, id) {
+  const parent = btn.closest('div').parentElement;
+  parent.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  parent.querySelectorAll('.phase-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelector('#' + id).classList.add('active');
+}
+</script>
+</body>
+</html>
