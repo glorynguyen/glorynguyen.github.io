@@ -4,6 +4,7 @@
   var STYLE_ID = "vnb-chatbot-style-v1";
   var INSTANCE_COUNTER = { value: 0 };
   var INSTANCES = new Map();
+  var WASM_ABORT_SENTINEL = {};
 
   var DEFAULTS = {
     id: "",
@@ -80,6 +81,7 @@
       open: "Open chat",
       close: "Close chat",
       send: "Send",
+      stop: "Stop",
       loading: "Thinking...",
       clear: "Clear"
     },
@@ -208,6 +210,8 @@
       ".vnbcb-send{border:none;border-radius:10px;padding:0 14px;background:" + theme.accent + ";color:#fff;font-weight:700;cursor:pointer;}",
       ".vnbcb-send:hover{background:" + theme.accentHover + ";}",
       ".vnbcb-send[disabled]{opacity:.5;cursor:not-allowed;}",
+      ".vnbcb-stop{display:none;border:none;border-radius:10px;padding:0 14px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;}",
+      ".vnbcb-stop:hover{background:#b91c1c;}",
       "@media (max-width:640px){.vnbcb-pos-bottom-right,.vnbcb-pos-bottom-left{left:12px;right:12px;bottom:12px}.vnbcb-panel{width:auto;height:min(78vh,560px)}}"
     ].join("");
 
@@ -250,6 +254,8 @@
     appendStyles(this.config.theme, this.config.zIndex);
     this.mount();
     this.restoreHistory();
+
+    await this.probeWebGPUAdapter();
 
     var initialBackend = (this.getBackendOrder()[0]) || this.config.inference.mode;
     if (initialBackend === "local") {
@@ -324,9 +330,12 @@
     input.rows = 1;
     var send = createElement("button", "vnbcb-send", this.config.labels.send);
     send.type = "submit";
+    var stop = createElement("button", "vnbcb-stop", this.config.labels.stop);
+    stop.type = "button";
 
     footer.appendChild(input);
     footer.appendChild(send);
+    footer.appendChild(stop);
 
     panel.appendChild(header);
     panel.appendChild(body);
@@ -347,6 +356,7 @@
       footer: footer,
       input: input,
       send: send,
+      stop: stop,
       launcher: launcher,
       closeBtn: closeBtn,
       clearBtn: clearBtn,
@@ -373,6 +383,12 @@
 
     this.nodes.clearBtn.addEventListener("click", function () {
       self.clearConversation();
+    });
+
+    this.nodes.stop.addEventListener("click", function () {
+      if (self.abortController) {
+        self.abortController.abort();
+      }
     });
 
     this.nodes.footer.addEventListener("submit", function (event) {
@@ -469,6 +485,8 @@
   Chatbot.prototype.setSending = function (value) {
     this.state.sending = value;
     this.nodes.send.disabled = value;
+    this.nodes.send.style.display = value ? "none" : "";
+    this.nodes.stop.style.display = value ? "block" : "none";
     this.nodes.input.disabled = value;
   };
 
@@ -708,11 +726,10 @@
 
   Chatbot.prototype.supportsLocalInference = function () {
     var c = this.detectCapabilities();
-    if (!c.webgpu) return false;
-    // Llama 3.2 1B q4 needs ~1.2GB GPU memory. Skip on low-RAM mobile.
-    if (c.isMobile && c.deviceMemory && c.deviceMemory < 4) return false;
-    // iOS Safari: WebGPU is behind a flag and unreliable; let WASM path take over.
-    if (c.isIOS) return false;
+    if (!c.webgpuAdapter) return false;
+    // Llama 3.2 1B q4 needs ~1.2GB GPU memory. Skip on mobile with unknown or low RAM.
+    // iOS doesn't expose navigator.deviceMemory (returns 0), so treat unknown as insufficient.
+    if (c.isMobile && (!c.deviceMemory || c.deviceMemory < 4)) return false;
     return true;
   };
 
@@ -902,10 +919,11 @@
       var streamEl = this.replaceWithBotMessage(botEl, "");
       var completion = await engine.chat.completions.create(request);
       for await (var chunk of completion) {
+        if (this.abortController && this.abortController.signal.aborted) break;
         var delta = chunk && chunk.choices && chunk.choices[0] && chunk.choices[0].delta
           ? chunk.choices[0].delta.content
           : "";
-        if (delta) {
+        if (delta && streamEl.parentNode) {
           responseText += delta;
           streamEl.textContent = responseText;
           this.nodes.body.scrollTop = this.nodes.body.scrollHeight;
@@ -1001,14 +1019,21 @@
         skip_prompt: true,
         skip_special_tokens: true,
         callback_function: function (chunk) {
-          if (!chunk) return;
+          if (self.abortController && self.abortController.signal.aborted) {
+            throw WASM_ABORT_SENTINEL;
+          }
+          if (!chunk || !streamEl.parentNode) return;
           responseText += chunk;
           streamEl.textContent = responseText;
           self.nodes.body.scrollTop = self.nodes.body.scrollHeight;
         }
       });
       generateOpts.streamer = streamer;
-      await generator(messages, generateOpts);
+      try {
+        await generator(messages, generateOpts);
+      } catch (err) {
+        if (err !== WASM_ABORT_SENTINEL) throw err;
+      }
       return normalizeText(responseText);
     }
 
@@ -1290,16 +1315,7 @@
 
   Chatbot.prototype.reconfigure = function (overrides) {
     if (!overrides) return;
-    var keys = Object.keys(overrides);
-    for (var i = 0; i < keys.length; i += 1) {
-      var key = keys[i];
-      if (typeof overrides[key] === "object" && overrides[key] !== null && !Array.isArray(overrides[key])) {
-        this.config[key] = Object.assign({}, this.config[key] || {}, overrides[key]);
-      } else {
-        this.config[key] = overrides[key];
-      }
-    }
-    // Reset adapter if switching away from it
+    this.config = deepMerge(this.config, overrides);
     if (overrides.adapter === null) {
       this.config.adapter = null;
     }
