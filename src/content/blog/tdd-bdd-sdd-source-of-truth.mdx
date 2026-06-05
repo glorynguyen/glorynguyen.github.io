@@ -1,0 +1,181 @@
+---
+title: "From TDD to BDD to SDD: The Evolution of 'Source of Truth' in Software Development"
+titleVi: "Từ TDD, BDD đến SDD: Sự Tiến Hóa Của 'Nguồn Chân Lý' Trong Phát Triển Phần Mềm"
+description: "How the industry's approach to ensuring correct software has evolved through three paradigms — and why Spec-Driven Development is the inevitable future."
+descriptionVi: "Ngành công nghiệp đã tiến hóa qua ba giai đoạn để đảm bảo phần mềm hoạt động đúng — và tại sao SDD là tương lai tất yếu."
+pubDate: 2026-06-05
+author: "Vinh Nguyen (Vincent)"
+tags: ["SoftwareEngineering", "TDD", "Architecture", "AI", "Mindset"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+The software industry is undergoing its biggest architectural shift in a decade. The way we design, write, and test code no longer resembles how we worked just five years ago.
+
+For years, we have debated how to ensure code behaves as expected. The industry's answer has evolved through three distinct stages: **TDD (Test-Driven Development)**, **BDD (Behavior-Driven Development)**, and now **SDD (Spec-Driven Development)**.
+
+This evolution is not merely a change in tooling — it is a shift in the level of abstraction and in *who* (or *what*) reads the code. Let's walk through this journey to understand why SDD is the inevitable next step.
+
+---
+
+## 1. TDD (Test-Driven Development): The Developer's Perspective
+
+**Mantra: "Red → Green → Refactor"**
+
+Popularized by Kent Beck in the early 2000s, TDD requires you to write a failing test (Red) before writing any production code. You then write just enough code to make the test pass (Green), and finally clean things up (Refactor).
+
+<Callout type="info" title="Core Question">
+  "Did we build the code right?"
+</Callout>
+
+**Strengths:** TDD encourages loose coupling, makes code easier to maintain, and drastically reduces regression bugs.
+
+**Weakness:** It is purely the *language of developers*. A Business Analyst or Product Manager cannot open `user_service.spec.js` and verify that the business logic is correct. Tests are the Source of Truth, but they are locked inside the technical world.
+
+---
+
+## 2. BDD (Behavior-Driven Development): The Communication Bridge
+
+**Mantra: "Given → When → Then"**
+
+To close the communication gap left by TDD, Dan North developed BDD. It uses structured natural language — most commonly Gherkin — to describe system behavior *before* any code is written.
+
+```gherkin
+Given a user is a VIP member
+When they place an order over $50
+Then they receive a 20% discount
+```
+
+<Callout type="info" title="Core Question">
+  "Did we build the right thing?"
+</Callout>
+
+**Strengths:** BAs, QA engineers, and developers share a common language. Requirement documents become a suite of automatically executable test scenarios (via Cucumber or similar tools).
+
+**Weakness:** Even though the scenarios are written in plain English, a developer still has to manually write step definitions to wire those words into working software. Significant boilerplate remains.
+
+---
+
+## 3. SDD (Spec-Driven Development): The Age of AI and Automation
+
+**Mantra: "The Spec IS the Code"**
+
+The rise of Large Language Models and Autonomous AI Agents has pushed us up yet another rung of abstraction. In SDD, the specification document — typically written in Markdown, YAML, or OpenAPI — is not just guidance. It is an executable contract.
+
+Instead of the traditional flow (Write Spec → Dev writes code → QA writes tests), SDD works like this:
+
+1. Humans define the logic, constraints, and expected outputs in a single Spec.
+2. An AI or code generator reads that Spec and produces the Database Schema, Business Logic, API Docs, and Unit Tests automatically.
+3. When the system needs to change, humans update only the Spec — not the code.
+
+<Callout type="info" title="Core Question">
+  "Does the system perfectly match the contract?"
+</Callout>
+
+<Callout type="success" title="The Core Difference">
+  If TDD is developers verifying developers, and BDD is a team verifying a product, then SDD is humans supplying the logical intent so that AI and compilers build the system automatically.
+</Callout>
+
+---
+
+## Conclusion: The New Programming Language is "Systems Thinking"
+
+The journey from TDD → BDD → SDD is the journey of humans stepping further away from low-level code to focus on **intent** and **architecture**.
+
+In the near future, the value of a software engineer will not lie in how much React or Golang syntax they can recall. Their greatest capability will be **Computational Thinking**: the ability to decompose a complex business problem into a flawless Spec — one with no logical gaps — that autonomous agents can execute.
+
+Code is quietly becoming the new Assembly Language. It's time to stop grinding out keystrokes and start thinking like system designers.
+
+**Are you still writing code, or have you started writing systems?**
+
+If you found this useful, share it and drop a comment about which stage your team is currently navigating.
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Ngành công nghiệp phần mềm đang trải qua một sự chuyển dịch kiến trúc lớn nhất trong thập kỷ qua. Cách chúng ta thiết kế, viết và kiểm thử code không còn giống như cách đây 5 năm.
+
+Trong nhiều năm, chúng ta đã tranh luận về việc làm thế nào để đảm bảo code hoạt động đúng như mong đợi. Câu trả lời của ngành đã tiến hóa qua 3 giai đoạn: **TDD (Test-Driven Development)**, **BDD (Behavior-Driven Development)** và giờ đây là **SDD (Spec-Driven Development)**.
+
+Sự tiến hóa này không chỉ là sự thay đổi về công cụ — đó là sự dịch chuyển về mức độ trừu tượng và *ai* (hoặc *cái gì*) là người đọc code. Hãy cùng nhìn lại chặng đường này để hiểu tại sao SDD là tương lai tất yếu.
+
+---
+
+## 1. TDD (Test-Driven Development): Góc nhìn của Lập trình viên
+
+**Khẩu quyết: "Red → Green → Refactor"**
+
+Được phổ biến bởi Kent Beck vào đầu những năm 2000, TDD yêu cầu bạn viết một bài test thất bại (Red) trước khi viết bất kỳ dòng code thực tế nào. Sau đó viết đủ code để test pass (Green), và cuối cùng là tối ưu lại (Refactor).
+
+<Callout type="info" title="Câu hỏi trọng tâm">
+  "Chúng ta có đang viết code chuẩn không?" (Did we build the code right?)
+</Callout>
+
+**Điểm mạnh:** TDD giúp kiến trúc code rời rạc (loose coupling), dễ bảo trì và hạn chế tối đa bug hồi quy (regression bugs).
+
+**Điểm yếu:** Nó thuần túy là *ngôn ngữ của dev*. Business Analyst hay Product Manager không thể mở file `user_service.spec.js` ra để kiểm tra xem logic nghiệp vụ có đúng hay không. Test là nguồn chân lý (Source of Truth), nhưng nó bị "nhốt" trong thế giới kỹ thuật.
+
+---
+
+## 2. BDD (Behavior-Driven Development): Chiếc cầu nối giao tiếp
+
+**Khẩu quyết: "Given → When → Then"**
+
+Để giải quyết khoảng trống giao tiếp của TDD, Dan North đã phát triển BDD. BDD sử dụng ngôn ngữ tự nhiên được cấu trúc hóa (thường là Gherkin) để mô tả hành vi của hệ thống trước khi code.
+
+```gherkin
+Given một user là thành viên VIP
+When họ mua đơn hàng trên 1 triệu
+Then họ sẽ được giảm giá 20%
+```
+
+<Callout type="info" title="Câu hỏi trọng tâm">
+  "Chúng ta có đang xây dựng đúng tính năng user cần không?" (Did we build the right thing?)
+</Callout>
+
+**Điểm mạnh:** BA, QA và Dev cùng nói chung một ngôn ngữ. Tài liệu yêu cầu (Requirement) trở thành một tập các kịch bản test có thể chạy được tự động (thông qua Cucumber hoặc các tool tương tự).
+
+**Điểm yếu:** Dù mô tả bằng tiếng Anh, cuối cùng Dev vẫn phải tự tay viết các đoạn code kết nối (step definitions) để biến những câu chữ đó thành phần mềm hoạt động. Rất nhiều thao tác thủ công (boilerplate) vẫn tồn tại.
+
+---
+
+## 3. SDD (Spec-Driven Development): Kỷ nguyên của AI và Tự động hóa
+
+**Khẩu quyết: "Bản đặc tả (Spec) CHÍNH LÀ Code"**
+
+Sự trỗi dậy của LLM (Large Language Models) và Autonomous AI Agents đã đẩy chúng ta lên một nấc thang trừu tượng mới. Trong SDD, tài liệu đặc tả (Specification — thường được viết bằng Markdown, YAML hoặc OpenAPI) không chỉ là tài liệu hướng dẫn — nó là **hợp đồng thực thi**.
+
+Thay vì quy trình truyền thống (Viết Spec → Dev gõ code → QA viết test), SDD hoạt động theo luồng:
+
+1. Con người định nghĩa chính xác logic, ràng buộc (constraints) và đầu ra vào một bản Spec duy nhất.
+2. AI hoặc trình sinh mã tự động (Code Generator) đọc Spec đó và sinh ra toàn bộ Database Schema, Code Logic, API Docs và cả Unit Tests.
+3. Nếu hệ thống thay đổi, con người chỉ cập nhật Spec — không sửa code.
+
+<Callout type="info" title="Câu hỏi trọng tâm">
+  "Hệ thống có tuân thủ hoàn hảo theo bản hợp đồng này không?" (Does the system match the contract?)
+</Callout>
+
+<Callout type="success" title="Sự khác biệt cốt lõi">
+  Nếu TDD là Dev kiểm tra Dev, BDD là Team kiểm tra sản phẩm, thì SDD là con người cung cấp tư duy logic để AI/Compiler tự động xây dựng hệ thống.
+</Callout>
+
+---
+
+## Kết luận: Ngôn ngữ lập trình mới là "Tư duy hệ thống"
+
+Chuyển từ TDD → BDD → SDD là hành trình con người ngày càng lùi xa khỏi những dòng code cấp thấp để tập trung vào **ý định (intent)** và **kiến trúc (architecture)**.
+
+Sắp tới, giá trị của một kỹ sư phần mềm sẽ không nằm ở việc họ nhớ bao nhiêu syntax của React hay Golang. Khả năng lớn nhất của họ là **Tư duy tính toán (Computational Thinking)**: làm thế nào để bẻ nhỏ một bài toán kinh doanh phức tạp thành một Bản đặc tả (Spec) hoàn hảo, không có lỗ hổng logic, để các Agent tự động có thể thực thi.
+
+Code đang dần trở thành "hợp ngữ" (Assembly Language) thế hệ mới. Đã đến lúc chúng ta ngừng "cắm đầu vào gõ code" và bắt đầu tư duy như những nhà thiết kế hệ thống.
+
+**Bạn đang còn viết code, hay đã bắt đầu viết hệ thống?**
+
+Nếu bạn thấy bài viết này hữu ích, hãy chia sẻ và để lại bình luận về việc team của bạn đang ở giai đoạn nào trong quá trình chuyển đổi này nhé!
+
+</div>

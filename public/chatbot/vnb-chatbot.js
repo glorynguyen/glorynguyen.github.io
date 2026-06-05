@@ -736,7 +736,10 @@
   Chatbot.prototype.supportsWasmInference = function () {
     var c = this.detectCapabilities();
     if (!c.wasm) return false;
-    // Tiny model (~500MB). Need a baseline of memory headroom.
+    // The WASM model (~500MB weights + runtime buffers) peaks well above 1GB during
+    // inference, which exceeds mobile browser tab memory limits and causes a page crash.
+    if (c.isMobile) return false;
+    // On desktop, skip if the browser reports less than 2GB device memory.
     if (c.deviceMemory && c.deviceMemory < 2) return false;
     return true;
   };
