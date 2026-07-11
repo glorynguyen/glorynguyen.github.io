@@ -1,0 +1,150 @@
+---
+title: "Why AI-Era Web Projects Fail: Alignment, Not Architecture"
+titleVi: "Vì sao dự án web thời AI thất bại: Do thiếu đồng thuận, không phải do kiến trúc"
+description: "In the age of AI, Next.js and headless CMS projects rarely fail on technical grounds. They fail on stakeholder alignment — and that is exactly where a technical lead creates the most value."
+descriptionVi: "Trong thời đại AI, các dự án Next.js và headless CMS hiếm khi thất bại vì kỹ thuật. Chúng thất bại vì sự đồng thuận giữa các bên — và đó chính là nơi một technical lead tạo ra giá trị lớn nhất."
+pubDate: 2026-07-11
+author: "Vinh Nguyen (Vincent)"
+tags: ["Engineering Leadership", "AI", "Headless CMS", "Stakeholder Alignment"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import ShareButtons from '../../components/blog/ShareButtons.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+Picture a web project in 2026. The stack is modern — Next.js on the front, a headless CMS behind it. The team is sharp. The AI assistants are humming, turning tickets into pull requests faster than anyone can review them. Six months in, the project is on fire anyway.
+
+Nobody wrote bad code. That's the unsettling part.
+
+Here is what I've come to believe, and what the data increasingly backs up: **AI-era web projects don't die in the codebase. They die in the gap between people** — between what the business imagined, what the content team assumed, and what engineering quietly built. The bottleneck has moved from *typing* to *aligning*, and most teams are still staring at the wrong end of the pipeline.
+
+If that sounds like a soft "people problem" excuse, stay with me. The numbers say it's the hardest engineering problem we have left.
+
+## AI made code cheap — and exposed the real bottleneck
+
+For two years, the industry ran on a comfortable assumption: faster code means faster delivery. Then the results came in, and they were awkward. Teams were generating code five times faster — yet the time from "ticket opened" to "feature in production" had barely moved.
+
+Why? Because coding was never the constraint. It just *looked* like the constraint, because it was the most visible part of the work. What AI actually did was strip away that illusion and expose what was underneath all along: understanding, validation, coordination. The invisible work. The slow work.
+
+Gartner puts a number on the shift — by the end of 2026, roughly **75% of developers will orchestrate rather than write** most of their code. And when generation becomes a commodity, value flows to the one thing machines can't do for us: deciding *what* to build, and getting a room full of humans to actually agree on it.
+
+One line from the research stuck with me: *AI made the doing fast. The deciding is as slow as it ever was.*
+
+## Most failures are organizational, not technical
+
+Trace real project failures back to their root, and a pattern emerges with almost boring consistency:
+
+- Communication breakdown shows up in roughly **57% of failed projects** — and the number climbs higher for distributed and outsourced teams.
+- About **60% of organizations** run into trouble because they picked an ill-fitting technology — usually chosen in a meeting where the right stakeholders weren't in the room.
+- Gartner found that **~83% of data-migration projects** fail or blow past budget and timeline. The usual culprit? Change management and training. Not the database.
+
+Read that list again. Not one of those failures is "the code didn't work." Every single one is a decision made without alignment — surfacing months later, wearing a convincing disguise called *technical debt*.
+
+<Callout type="warning" title="A pattern, not a case study">
+  Here's one I've watched repeat itself: the content team and the engineering team never quite agree on what a "component" means. Small thing, right? Nobody schedules a meeting over a word. Then, halfway through the project, the entire content model has to be rebuilt — and everyone files it as an engineering failure. It wasn't. It was a conversation that needed twenty minutes, six months earlier.
+</Callout>
+
+Headless architecture is especially vulnerable here, because it *sounds* like a plug-and-play upgrade. It isn't. Behind the buzzword hides a content-model redesign, a pile of API integration work, and — the part nobody puts on the slide — a reorganization of how teams work together. Adopt headless without aligning content, engineering, and business on goals and workflows first, and you don't get the agility on the brochure. You get the same silos, now connected by APIs.
+
+## The technical lead as a translation layer
+
+So if the code writes itself, what's left for us?
+
+Everything that matters, it turns out. When coding is cheap, the highest-leverage thing a technical lead can do is **manufacture shared understanding before the first line of code exists.**
+
+In practice, this looks like wearing several hats at once — and wearing them on purpose. Enough product mindset to keep asking *why are we building this?* Enough design empathy to walk the user's path before it's paved. Enough project-management instinct to spot the dependency that will hurt in week nine. It means starting the awkward conversations early — chasing down the fuzzy requirement, pressure-testing whether the shiny technology actually fits *this* team and *this* business, not just this year's conference talks.
+
+And here's why a technical lead is uniquely positioned to do it: credibility travels in both directions. A pure PM can't validate an architecture. A pure engineer rarely wants to step into the business conversation. Someone who speaks enough of both languages can translate between them — and, more importantly, can ask the one uncomfortable question early enough to save the project three months later.
+
+## Where "wearing many hats" quietly breaks
+
+I'd be selling you something dishonest if I stopped there, because "be proactive and align everyone" is the kind of advice that sounds complete and isn't. This approach has failure modes. I know because I've hit them.
+
+**1. You become the new bottleneck.** If every decision has to pass through you, congratulations — you've just centralized the exact problem you were trying to solve. You are now the single point of failure. The stronger move is not to *be* the connective tissue but to *design* it: a lightweight Architecture Decision Record, a one-page brief anyone can read in five minutes. Connecting people is an act. Building a system that keeps them connected when you're not in the room — that's leadership.
+
+**2. Clarifying without deciding is a leak.** A brilliant conversation that nobody writes down will be re-litigated next week, and the week after that. Every clarification needs a landing place: the decision, and the name of the person who owns it. Otherwise you're not resolving the communication tax — you're just paying it on an installment plan.
+
+**3. Empathy is not substitution.** You wear the designer's hat to ask sharper questions, not to answer them on her behalf. The moment stakeholders feel replaced rather than respected, they stop telling you the truth. And truth is the raw material of alignment — lose it, and every hat you own is worthless.
+
+<Callout type="info" title="The Takeaway">
+  AI turned code into a commodity. What it cannot automate — and what has therefore become the real job of a technical lead — is creating shared understanding before the first line of code exists. I wear many hats not to do everyone's job, but so that no one on my team ever has to guess what the others meant.
+</Callout>
+
+<ShareButtons />
+
+<Callout type="warning" title="Disclaimer">
+  The views expressed here are my own and do not necessarily reflect the views of my current or former employers. Any examples are generalized patterns, not references to specific projects or clients.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Hãy hình dung một dự án web năm 2026. Stack thì hiện đại — Next.js phía trước, headless CMS phía sau. Đội ngũ giỏi. Trợ lý AI chạy hết công suất, biến ticket thành pull request nhanh đến mức review không kịp. Vậy mà sáu tháng sau, dự án vẫn bốc cháy.
+
+Không ai viết code tồi cả. Đó mới là điều đáng sợ.
+
+Đây là điều tôi ngày càng tin, và dữ liệu ngày càng ủng hộ: **dự án web thời AI không chết trong codebase. Nó chết trong khoảng trống giữa những con người** — giữa điều business hình dung, điều content team mặc định, và điều engineering lặng lẽ xây nên. Nút thắt đã dịch chuyển từ *gõ code* sang *tạo đồng thuận*, và phần lớn các đội vẫn đang nhìn nhầm đầu của đường ống.
+
+Nếu nghe qua thấy giống một lời bào chữa "vấn đề con người" mềm yếu — khoan đã. Những con số dưới đây nói rằng đây chính là bài toán kỹ thuật khó nhất còn sót lại.
+
+## AI khiến code trở nên rẻ — và phơi bày nút thắt thật
+
+Suốt hai năm, cả ngành vận hành trên một giả định dễ chịu: code nhanh hơn nghĩa là giao hàng nhanh hơn. Rồi kết quả đổ về, và chúng khá là khó xử. Các đội sinh code nhanh gấp năm lần — nhưng thời gian từ lúc "mở ticket" đến lúc "tính năng lên production" gần như không nhúc nhích.
+
+Vì sao? Vì coding chưa bao giờ là ràng buộc thật. Nó chỉ *trông giống* ràng buộc, bởi đó là phần dễ nhìn thấy nhất của công việc. Điều AI thực sự làm được là bóc lớp ảo giác đó đi, để lộ ra thứ vẫn luôn nằm bên dưới: sự thấu hiểu, sự kiểm chứng, sự phối hợp. Phần việc vô hình. Phần việc chậm chạp.
+
+Gartner gắn cho cuộc dịch chuyển này một con số — đến cuối 2026, khoảng **75% developer sẽ điều phối (orchestrate) thay vì tự viết** phần lớn code của mình. Và khi việc sinh code trở thành hàng hóa đại trà, giá trị chảy về nơi duy nhất máy móc chưa làm thay được: quyết định *xây cái gì*, và khiến cả một căn phòng đầy người thật sự gật đầu với nhau.
+
+Có một câu trong các nghiên cứu cứ bám lấy tôi mãi: *AI khiến việc làm trở nên nhanh. Còn việc quyết định vẫn chậm y như ngày nào.*
+
+## Phần lớn thất bại đến từ tổ chức, không phải kỹ thuật
+
+Lần ngược các dự án đổ vỡ về tận gốc rễ, bạn sẽ gặp một quy luật lặp lại đến mức nhàm chán:
+
+- Đổ vỡ giao tiếp xuất hiện trong khoảng **57% dự án thất bại** — và con số còn leo cao hơn với các đội phân tán và outsource.
+- Khoảng **60% tổ chức** gặp rắc rối vì chọn công nghệ không phù hợp — thường được chốt trong một cuộc họp thiếu vắng đúng những người cần có mặt.
+- Gartner chỉ ra **~83% dự án migration dữ liệu** thất bại hoặc vượt ngân sách và tiến độ. Thủ phạm quen mặt? Quản trị thay đổi và đào tạo. Không phải cơ sở dữ liệu.
+
+Hãy đọc lại danh sách đó một lần nữa. Không một thất bại nào là "code không chạy". Tất cả đều là những quyết định được đưa ra khi thiếu đồng thuận — rồi vài tháng sau trồi lên, khoác một lớp ngụy trang rất thuyết phục mang tên *nợ kỹ thuật*.
+
+<Callout type="warning" title="Một pattern, không phải case study">
+  Đây là một cảnh tôi đã xem đi xem lại nhiều lần: content team và engineering team chưa bao giờ thật sự thống nhất "component" nghĩa là gì. Chuyện nhỏ nhặt, đúng không? Chẳng ai đi đặt lịch họp chỉ vì một từ. Rồi đến giữa dự án, toàn bộ content model phải đập đi xây lại — và mọi người ghi nhận nó như một thất bại kỹ thuật. Không phải. Đó là một cuộc trò chuyện hai mươi phút, đáng lẽ phải diễn ra từ sáu tháng trước.
+</Callout>
+
+Kiến trúc headless đặc biệt dễ tổn thương ở điểm này, bởi nghe qua nó *có vẻ* như một bản nâng cấp cắm-là-chạy. Không hề. Đằng sau từ khóa thời thượng đó là cả một cuộc thiết kế lại content model, một núi công việc tích hợp API, và — phần chẳng ai đưa lên slide — một cuộc tái tổ chức cách các đội làm việc với nhau. Áp dụng headless mà chưa để content, engineering và business đồng thuận về mục tiêu và quy trình từ trước, bạn sẽ không nhận được sự linh hoạt in trên tờ rơi quảng cáo. Bạn nhận lại đúng những silo cũ — giờ được nối với nhau bằng API.
+
+## Technical lead như một lớp phiên dịch
+
+Vậy nếu code đã tự viết được, phần việc còn lại của chúng ta là gì?
+
+Hóa ra là tất cả những phần quan trọng nhất. Khi code trở nên rẻ, thứ có đòn bẩy cao nhất mà một technical lead làm được là **kiến tạo sự thấu hiểu chung trước khi dòng code đầu tiên ra đời.**
+
+Trong thực tế, việc này trông như thế nào? Là đội nhiều chiếc mũ cùng lúc — và đội một cách có chủ đích. Đủ product mindset để liên tục hỏi *tại sao chúng ta xây thứ này?* Đủ sự đồng cảm của designer để bước thử con đường của người dùng trước khi nó được trải nhựa. Đủ bản năng project management để nhìn ra cái dependency sẽ gây đau ở tuần thứ chín. Là chủ động khơi những cuộc trò chuyện khó từ sớm — truy đến cùng một yêu cầu còn mơ hồ, kiểm chứng xem thứ công nghệ hào nhoáng kia có thật sự hợp với *đội này* và *bài toán kinh doanh này* không, hay chỉ hợp với các bài talk hội thảo năm nay.
+
+Và đây là lý do technical lead ở vị trí độc nhất để làm việc đó: uy tín chạy được theo cả hai chiều. Một PM thuần không thể validate một kiến trúc. Một engineer thuần hiếm khi muốn bước vào cuộc trò chuyện kinh doanh. Người nói được kha khá cả hai thứ tiếng ấy có thể phiên dịch giữa hai thế giới — và quan trọng hơn, có thể đặt ra đúng một câu hỏi khó chịu, đủ sớm, để cứu dự án khỏi ba tháng lãng phí về sau.
+
+## Chỗ "đội nhiều mũ" âm thầm gãy
+
+Nếu dừng ở đó thì tôi đang bán cho bạn một thứ không trung thực, bởi "cứ chủ động và kết nối mọi người" là kiểu lời khuyên nghe rất trọn vẹn mà thực ra chưa trọn. Cách tiếp cận này có những điểm gãy của nó. Tôi biết, vì tôi đã va phải chúng.
+
+**1. Bạn trở thành nút thắt mới.** Nếu mọi quyết định đều phải đi qua bạn — xin chúc mừng, bạn vừa tập trung hóa chính cái vấn đề mình đang cố giải. Giờ bạn là single point of failure. Nước đi cao tay hơn không phải là *tự mình làm* mô liên kết, mà là *thiết kế ra* nó: một Architecture Decision Record gọn nhẹ, một bản brief một trang ai cũng đọc xong trong năm phút. Kết nối con người là một hành động. Xây một hệ thống giữ họ kết nối cả khi bạn vắng mặt — đó mới là leadership.
+
+**2. Làm rõ mà không chốt là một lỗ rò rỉ.** Một cuộc trò chuyện xuất sắc mà không ai ghi lại sẽ bị đem ra tranh luận lại vào tuần sau, rồi tuần sau nữa. Mỗi lần clarify cần một điểm hạ cánh: quyết định là gì, và tên người chịu trách nhiệm cho nó. Nếu không, bạn không hề xóa được thuế giao tiếp — bạn chỉ đang trả góp nó hàng tháng.
+
+**3. Đồng cảm không phải là thay thế.** Bạn đội chiếc mũ của designer để hỏi những câu sắc hơn, không phải để trả lời thay cô ấy. Khoảnh khắc stakeholder cảm thấy bị thay thế thay vì được tôn trọng, họ sẽ ngừng nói thật với bạn. Mà sự thật lại là nguyên liệu thô của mọi sự đồng thuận — mất nó rồi, bao nhiêu chiếc mũ bạn có cũng thành vô nghĩa.
+
+<Callout type="info" title="Bài học rút ra">
+  AI đã biến code thành hàng hóa đại trà. Thứ nó không thể tự động hóa — và vì thế đã trở thành công việc thật sự của một technical lead — là kiến tạo sự thấu hiểu chung trước khi dòng code đầu tiên tồn tại. Tôi đội nhiều chiếc mũ không phải để làm thay việc của mọi người, mà để không ai trong đội tôi phải ngồi đoán ý người khác.
+</Callout>
+
+<ShareButtons />
+
+<Callout type="warning" title="Lưu ý">
+  Những quan điểm trong bài viết này là của cá nhân tôi và không nhất thiết phản ánh quan điểm của các tổ chức tôi đang hoặc đã từng làm việc. Mọi ví dụ đều là các pattern được khái quát hóa, không ám chỉ bất kỳ dự án hay khách hàng cụ thể nào.
+</Callout>
+
+</div>
