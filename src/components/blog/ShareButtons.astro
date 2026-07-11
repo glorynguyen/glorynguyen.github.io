@@ -15,7 +15,8 @@ const {
   tags = [],
 } = Astro.props;
 
-const encodedUrl = encodeURIComponent(url);
+const URL_PLACEHOLDER = '__SHARE_URL__';
+const encodedUrl = url ? encodeURIComponent(url) : URL_PLACEHOLDER;
 const encodedTitle = encodeURIComponent(title);
 const encodedDescription = encodeURIComponent(description);
 
@@ -162,10 +163,8 @@ const shareUrls = {
     const links = shareButtons.querySelectorAll('a.share-btn');
     links.forEach(link => {
       const href = link.getAttribute('href');
-      if (href) {
-        link.setAttribute('href', href
-          .replace(encodeURIComponent(''), encodeURIComponent(currentUrl))
-        );
+      if (href && href.includes('__SHARE_URL__')) {
+        link.setAttribute('href', href.replace('__SHARE_URL__', encodeURIComponent(currentUrl)));
       }
     });
 
