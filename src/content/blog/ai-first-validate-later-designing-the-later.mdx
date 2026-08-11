@@ -1,0 +1,158 @@
+---
+title: "'AI First, Validate Later' — The Workflow Everyone Runs and Nobody Designs"
+titleVi: "'AI làm trước, người kiểm sau' — quy trình ai cũng đang chạy nhưng chưa ai thiết kế"
+description: "AI-first development is already here — 42% of new code is AI-assisted. But the data shows 'human validation later' is quietly becoming 'human validation never.' Here is how a technical lead designs the second half of that sentence."
+descriptionVi: "Phát triển phần mềm kiểu AI-first đã ở đây rồi — 42% code mới có AI tham gia. Nhưng dữ liệu cho thấy 'người kiểm chứng sau' đang âm thầm biến thành 'không ai kiểm chứng cả.' Đây là cách một technical lead thiết kế nửa sau của câu nói đó."
+pubDate: 2026-07-31
+author: "Vinh Nguyen (Vincent)"
+tags: ["AI", "Engineering Leadership", "Code Review", "Developer Productivity"]
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import ShareButtons from '../../components/blog/ShareButtons.astro';
+
+{/* English Version */}
+<div data-lang="en">
+
+Let's skip the debate about whether "AI first, human validation later" is a good idea. It doesn't matter anymore. Sonar's State of Code survey says **42% of code shipped today is AI-generated or AI-assisted**, and developers themselves expect that to cross half by next year. AI-first is not a proposal on a whiteboard. It's Tuesday.
+
+The interesting question — the one I keep coming back to as a technical lead — is about the second half of the sentence. Everyone invested in the "AI first" part. Almost nobody *designed* the "validation later" part. We just assumed it would happen, the way we assume someone will water the office plants.
+
+And the data on what happens to unplanned validation is brutal.
+
+## "Later" is quietly becoming "never"
+
+Here are two numbers from the same survey, and I'd like you to hold them side by side: **96% of developers say they don't fully trust AI-generated code. Only 48% consistently verify it before merging.**
+
+Read that again. Roughly half the industry is shipping code it *explicitly does not trust*, unreviewed. The researchers have started calling this **verification debt** — and unlike technical debt, it doesn't show up in any dashboard, because the paperwork looks fine. A human clicked approve. The process was followed. The validation just never actually occurred.
+
+You can see the compound interest accruing in the codebase itself. GitClear, analyzing hundreds of millions of changed lines, found duplicated code blocks up **eightfold** since AI assistants went mainstream. Code churn — the percentage of code rewritten within two weeks of being committed — has roughly **doubled** from the pre-AI baseline. And refactored lines collapsed from 24% of changes in 2020 to under 10%. For the first time on record, we copy-paste more than we refactor.
+
+DORA's 2025 report completes the picture with one elegant, uncomfortable finding: AI adoption increases delivery throughput *and* delivery instability, at the same time. More stuff goes out the door, and more of it wobbles. AI, DORA concludes, doesn't fix your engineering culture — it amplifies whatever culture you already have. Including the part of your culture that skims a 400-line diff and types "LGTM."
+
+## Why smart reviewers rubber-stamp
+
+It's tempting to file this under laziness. It isn't. Something more interesting is going wrong, and it's cognitive, not moral.
+
+When a colleague writes bad code, it usually *looks* bad — a weird name, a clumsy structure, a comment apologizing for itself. Human error is visible. AI error is different: the code arrives confident, idiomatic, well-formatted, and plausible. In the Sonar survey, **61% of developers agreed that AI produces code that looks correct but isn't reliable**. Stack Overflow's 2025 survey found the same thing from the other direction: the single biggest AI frustration, cited by 45% of developers, is solutions that are *"almost right, but not quite"* — and 66% say they now spend more time fixing that almost-right code than they used to spend writing it.
+
+Psychologists have a name for what happens next: **automation bias**. When an authoritative-looking system produces confident output, humans dial down their own scrutiny. Reviewing a colleague, you're hunting for mistakes. Reviewing an AI, you're looking for a reason to move on — and the code is engineered, statistically, to give you one.
+
+<Callout type="warning" title="You can't even trust your own speedometer">
+  My favorite study of the AI era is METR's randomized trial from 2025. Experienced open-source developers, working in codebases they knew deeply, were measured completing real tasks with and without AI tools. With AI, they were <strong>19% slower</strong>. Their own estimate afterward? That AI had made them <strong>20% faster</strong>. A 39-point gap between perception and reality. I don't cite this to argue AI slows everyone down — follow-up data suggests the picture is shifting. I cite it because it proves the thing that should actually scare us: <strong>in an AI-first workflow, your feeling of how well it's going is not evidence.</strong> Only verification is.
+</Callout>
+
+## Three lanes: deciding how much "later" each task deserves
+
+So validation can't be a vibe. It has to be a design decision, made per category of work, before the work starts. On my teams, the sorting question is always the same: **compare the cost of verifying the work against the cost of the work being wrong.** That gives you three lanes.
+
+**The green lane — AI-first, light validation.** Work that is reversible, testable by machine, and small in blast radius: unit tests, boilerplate, internal tooling, migrations with good coverage, refactors guarded by a solid suite. Here the economics of AI-first are undeniable — generation is nearly free and CI is the real reviewer. Let the human skim and move on. This is the lane where blocking on heavyweight review is pure waste.
+
+**The yellow lane — AI-first, heavy validation.** Production features, data handling, third-party integrations, anything a customer touches. AI drafts; a human *owns*. And owning means something specific: you ran it, you tried to break it, you can explain every branch of it, and you'd be comfortable debugging it alone at 2 a.m. The review posture here is not "does this look right?" — it's "what would make this wrong?" One is reading. The other is engineering.
+
+**The red lane — human-first, AI challenges.** Architecture decisions, security boundaries, auth flows, public API contracts. Here I flip the workflow entirely: the human drafts, and AI plays the skeptic — critique this design, find the edge case, argue against me. Two reasons. First, in these areas the *thinking* is the deliverable, and outsourcing it means nobody on the team holds the mental model when things break. Second, the security data is unforgiving: Veracode found that across a hundred-plus models, roughly **45% of AI-generated code contained an OWASP Top 10 vulnerability**. The red lane exists because some mistakes don't get caught later. They get exploited later.
+
+## Designing validation that survives a deadline
+
+A lane model is necessary but not sufficient, because every validation process degrades under pressure unless it's built not to. Three design rules I've landed on:
+
+**1. Make validation active, not visual.** "Read the diff carefully" is not a process; it's a hope. Active validation is running the code, feeding it hostile input, stepping through the unhappy path. If your team's definition of reviewing AI output doesn't involve *executing* anything, you've institutionalized the rubber stamp — you've just given it a checklist.
+
+**2. Put validation on the books.** Sonar found teams already spend about **a quarter of the work week** checking and fixing AI output. That cost exists whether or not you plan for it. If it's invisible, it gets squeezed first the moment a deadline appears — silently converting into verification debt. If it's an explicit line in the estimate, it survives. When someone celebrates that AI "did the feature in an hour," ask the follow-up out loud: *and how long to verify it?* That question is culture-setting.
+
+**3. Track what shipped unverified.** You don't need tooling for this — a label on the PR is enough. The point is honesty: when the pressure is on and something goes out on trust, *say so, in writing*. Verification debt you can see is a backlog. Verification debt you can't see is an incident with a delay timer.
+
+## The part nobody budgets for: who validates the validators?
+
+There's a slower failure mode underneath all of this, and as someone who has spent years mentoring engineers, it's the one that worries me most.
+
+Everything above assumes the human in "human validation" is capable of it — someone who could have built the thing themselves, who knows what wrong looks like in this domain. That judgment was built the old way: by writing systems, breaking them, and sitting with the consequences. Today's seniors validate well because they grew up *before* the validation era.
+
+Now picture the junior who spends their first three years in the yellow lane, approving AI output. They generate; they skim; they merge. Where, exactly, does their "what would make this wrong?" instinct come from? An AI-first pipeline consumes senior judgment at scale and, by default, produces none. That's not a workflow — that's an extraction.
+
+The fix has to be deliberate, so on my teams it is: juniors get regular red-lane work — build it by hand first, *then* compare with what AI produces, and defend the differences. It's slower. It's supposed to be. We're not paying for the feature; we're paying for the next decade's validators.
+
+<Callout type="info" title="The Takeaway">
+  "AI first, human validation later" fails as a slogan and works as a design problem. The half the industry got right is generation. The half that decides whether your codebase survives is validation — and validation must be engineered: sorted into lanes by cost-of-being-wrong, made active instead of visual, budgeted on the books, and staffed with people you are deliberately training to be capable of it. The real workflow was never "AI first, human later." It's <strong>AI generates, human decides</strong> — and the entire game is making sure the deciding actually happens.
+</Callout>
+
+<ShareButtons />
+
+<Callout type="warning" title="Disclaimer">
+  The views expressed here are my own and do not necessarily reflect the views of my current or former employers. Statistics are drawn from public research (Sonar, DORA, GitClear, METR, Stack Overflow, Veracode) as reported at the time of writing; any examples are generalized patterns, not references to specific projects or clients.
+</Callout>
+
+</div>
+
+{/* Vietnamese Version */}
+<div data-lang="vi">
+
+Hãy bỏ qua cuộc tranh luận xem "AI làm trước, người kiểm chứng sau" có phải một ý tưởng hay không. Nó không còn quan trọng nữa. Khảo sát State of Code của Sonar cho biết **42% code được ship hôm nay là do AI sinh ra hoặc có AI hỗ trợ**, và chính các developer dự đoán con số này sẽ vượt một nửa vào năm tới. AI-first không còn là một đề xuất trên bảng trắng. Nó là chuyện thường ngày.
+
+Câu hỏi thú vị — câu hỏi tôi cứ quay lại mãi với tư cách một technical lead — nằm ở nửa sau của câu nói. Ai cũng đầu tư vào phần "AI làm trước". Gần như không ai *thiết kế* phần "người kiểm chứng sau". Chúng ta chỉ mặc định nó sẽ tự xảy ra, kiểu như mặc định sẽ có ai đó tưới mấy chậu cây trong văn phòng.
+
+Và dữ liệu về số phận của những quy trình kiểm chứng không được thiết kế thì tàn nhẫn lắm.
+
+## "Sau" đang âm thầm biến thành "không bao giờ"
+
+Đây là hai con số từ cùng một cuộc khảo sát, và tôi muốn bạn đặt chúng cạnh nhau: **96% developer nói họ không hoàn toàn tin code do AI sinh ra. Chỉ 48% kiểm chứng nó một cách đều đặn trước khi merge.**
+
+Đọc lại lần nữa đi. Khoảng một nửa ngành công nghiệp đang ship thứ code mà chính họ *công khai không tin tưởng*, không qua kiểm chứng. Giới nghiên cứu bắt đầu gọi hiện tượng này là **verification debt** — nợ kiểm chứng — và khác với nợ kỹ thuật, nó không hiện lên bất kỳ dashboard nào, bởi giấy tờ trông vẫn ổn cả. Có một con người đã bấm approve. Quy trình đã được tuân thủ. Chỉ là việc kiểm chứng chưa bao giờ thực sự diễn ra.
+
+Bạn có thể thấy lãi kép của món nợ này tích tụ ngay trong codebase. GitClear, sau khi phân tích hàng trăm triệu dòng code thay đổi, phát hiện các khối code trùng lặp tăng **gấp tám lần** kể từ khi trợ lý AI trở nên phổ biến. Code churn — tỷ lệ code bị viết lại trong vòng hai tuần sau khi commit — đã **tăng gần gấp đôi** so với thời trước AI. Còn tỷ lệ dòng code được refactor thì sụp từ 24% năm 2020 xuống dưới 10%. Lần đầu tiên trong lịch sử đo đạc, chúng ta copy-paste nhiều hơn là refactor.
+
+Báo cáo DORA 2025 hoàn thiện bức tranh bằng một phát hiện thanh lịch mà khó chịu: áp dụng AI làm tăng thông lượng giao hàng *và* tăng luôn cả độ bất ổn của việc giao hàng, cùng một lúc. Nhiều thứ ra cửa hơn, và nhiều thứ trong số đó lung lay hơn. DORA kết luận: AI không sửa văn hóa kỹ thuật của bạn — nó khuếch đại thứ văn hóa bạn đang có. Bao gồm cả cái phần văn hóa lướt qua một cái diff 400 dòng rồi gõ "LGTM."
+
+## Vì sao những reviewer thông minh vẫn đóng dấu cho qua
+
+Thật dễ để quy chuyện này về sự lười biếng. Nhưng không phải. Có một thứ thú vị hơn đang trục trặc, và nó thuộc về nhận thức, không phải đạo đức.
+
+Khi một đồng nghiệp viết code tồi, nó thường *trông* tồi — một cái tên biến kỳ cục, một cấu trúc vụng về, một dòng comment tự xin lỗi cho chính nó. Lỗi của con người thì nhìn thấy được. Lỗi của AI thì khác: code đến tay bạn đầy tự tin, đúng idiom, format đẹp, và cực kỳ hợp lý. Trong khảo sát của Sonar, **61% developer đồng ý rằng AI sinh ra thứ code trông thì đúng nhưng không đáng tin**. Khảo sát Stack Overflow 2025 tìm thấy đúng điều đó từ hướng ngược lại: nỗi bực bội số một với AI, được 45% developer nhắc đến, là những lời giải *"gần đúng, nhưng chưa đúng"* — và 66% nói rằng giờ họ tốn nhiều thời gian sửa thứ code gần-đúng ấy hơn cả thời gian tự viết ngày xưa.
+
+Các nhà tâm lý học có sẵn một cái tên cho những gì xảy ra tiếp theo: **automation bias** — thiên kiến tự động hóa. Khi một hệ thống trông có vẻ uy tín tạo ra output đầy tự tin, con người tự động vặn nhỏ sự soi xét của chính mình. Review code của đồng nghiệp, bạn đi săn lỗi. Review code của AI, bạn đi tìm một lý do để cho qua — và thứ code ấy, về mặt thống kê, được sinh ra để đưa bạn đúng lý do đó.
+
+<Callout type="warning" title="Đến đồng hồ tốc độ của chính mình bạn cũng không tin được">
+  Nghiên cứu tôi thích nhất của thời đại AI là thử nghiệm ngẫu nhiên có đối chứng của METR năm 2025. Những developer mã nguồn mở dày dạn, làm việc trên chính codebase họ thuộc nằm lòng, được đo khi hoàn thành các task thật, có và không có công cụ AI. Với AI, họ <strong>chậm hơn 19%</strong>. Còn ước lượng của chính họ sau đó? Rằng AI đã giúp họ <strong>nhanh hơn 20%</strong>. Một khoảng lệch 39 điểm giữa cảm nhận và thực tế. Tôi trích dẫn nó không phải để nói AI làm mọi người chậm đi — dữ liệu sau này cho thấy bức tranh đang thay đổi. Tôi trích nó vì nó chứng minh điều đáng sợ thật sự: <strong>trong một quy trình AI-first, cảm giác "mọi thứ đang ổn" của bạn không phải là bằng chứng.</strong> Chỉ có kiểm chứng mới là bằng chứng.
+</Callout>
+
+## Ba làn đường: quyết định mỗi loại việc xứng đáng bao nhiêu phần "kiểm sau"
+
+Vậy nên kiểm chứng không thể là một cảm hứng. Nó phải là một quyết định thiết kế, đưa ra theo từng loại công việc, trước khi công việc bắt đầu. Ở các đội của tôi, câu hỏi phân loại luôn là một: **so sánh chi phí kiểm chứng công việc với chi phí khi công việc đó sai.** Câu hỏi ấy cho bạn ba làn đường.
+
+**Làn xanh — AI làm trước, kiểm nhẹ.** Những việc có thể đảo ngược, máy móc test được, và bán kính sát thương nhỏ: unit test, boilerplate, công cụ nội bộ, migration có coverage tốt, refactor được một bộ test vững canh gác. Ở đây lợi thế kinh tế của AI-first là không thể chối cãi — việc sinh code gần như miễn phí và CI mới là reviewer thật. Cứ để con người lướt qua rồi đi tiếp. Đây là làn đường mà việc chặn lại để review nặng nề là lãng phí thuần túy.
+
+**Làn vàng — AI làm trước, kiểm nặng.** Tính năng production, xử lý dữ liệu, tích hợp bên thứ ba, bất cứ thứ gì khách hàng chạm vào. AI phác thảo; con người *làm chủ*. Và làm chủ nghĩa là điều gì đó rất cụ thể: bạn đã chạy nó, đã thử phá nó, giải thích được từng nhánh của nó, và sẵn sàng một mình debug nó lúc 2 giờ sáng. Tư thế review ở đây không phải "trông có đúng không?" — mà là "điều gì sẽ khiến nó sai?" Cái thứ nhất là đọc. Cái thứ hai mới là kỹ thuật.
+
+**Làn đỏ — người làm trước, AI phản biện.** Quyết định kiến trúc, ranh giới bảo mật, luồng xác thực, hợp đồng API công khai. Ở đây tôi lật ngược hoàn toàn quy trình: con người phác thảo, còn AI đóng vai kẻ hoài nghi — hãy mổ xẻ thiết kế này, tìm edge case, phản bác tôi đi. Hai lý do. Thứ nhất, ở những vùng này, *tư duy* chính là sản phẩm bàn giao, và thuê ngoài tư duy nghĩa là không ai trong đội nắm mental model khi mọi thứ đổ vỡ. Thứ hai, dữ liệu bảo mật không khoan nhượng: Veracode phát hiện, trên hơn một trăm model được thử nghiệm, khoảng **45% code do AI sinh ra chứa một lỗ hổng trong OWASP Top 10**. Làn đỏ tồn tại vì có những sai lầm không bị phát hiện về sau. Chúng bị khai thác về sau.
+
+## Thiết kế một quy trình kiểm chứng sống sót qua deadline
+
+Mô hình ba làn là cần nhưng chưa đủ, bởi mọi quy trình kiểm chứng đều xuống cấp dưới áp lực, trừ khi nó được xây để không xuống cấp. Ba nguyên tắc thiết kế tôi đã đúc kết được:
+
+**1. Kiểm chứng phải chủ động, không phải bằng mắt.** "Đọc diff cẩn thận vào" không phải một quy trình; đó là một niềm hy vọng. Kiểm chứng chủ động là chạy code, ném vào nó những input ác ý, bước qua từng nhánh của con đường không-hạnh-phúc. Nếu định nghĩa "review output của AI" ở đội bạn không bao gồm việc *thực thi* bất cứ thứ gì, bạn vừa thể chế hóa con dấu cao su — chỉ là có kèm theo một cái checklist.
+
+**2. Đưa kiểm chứng vào sổ sách.** Sonar phát hiện các đội đã và đang dành khoảng **một phần tư tuần làm việc** để kiểm tra và sửa output của AI. Chi phí đó tồn tại dù bạn có lên kế hoạch cho nó hay không. Nếu nó vô hình, nó sẽ là thứ bị bóp đầu tiên khi deadline xuất hiện — âm thầm chuyển hóa thành nợ kiểm chứng. Nếu nó là một dòng tường minh trong bản estimate, nó sống sót. Khi ai đó hào hứng khoe AI "làm xong tính năng trong một tiếng", hãy hỏi to câu tiếp theo: *thế kiểm chứng nó mất bao lâu?* Câu hỏi đó chính là thứ định hình văn hóa.
+
+**3. Ghi lại những gì được ship mà chưa kiểm chứng.** Bạn không cần công cụ gì cho việc này — một cái label trên PR là đủ. Vấn đề nằm ở sự trung thực: khi áp lực ập đến và một thứ gì đó ra cửa dựa trên niềm tin, *hãy nói ra điều đó, bằng văn bản*. Nợ kiểm chứng nhìn thấy được là một backlog. Nợ kiểm chứng không nhìn thấy được là một sự cố đang đếm ngược.
+
+## Phần không ai dự trù ngân sách: ai sẽ kiểm chứng những người kiểm chứng?
+
+Bên dưới tất cả những điều trên còn một chế độ hỏng hóc chậm hơn, và với một người đã dành nhiều năm mentor các kỹ sư, đó là thứ khiến tôi lo nhất.
+
+Mọi thứ phía trên đều giả định rằng con người trong cụm từ "người kiểm chứng" đủ khả năng làm việc đó — một người có thể tự xây được thứ mình đang review, người biết "sai" trông như thế nào trong lĩnh vực này. Thứ phán đoán ấy được xây theo cách cũ: bằng việc tự viết hệ thống, tự phá chúng, và ngồi lại với hậu quả. Các senior hôm nay kiểm chứng giỏi vì họ lớn lên *trước* kỷ nguyên kiểm chứng.
+
+Giờ hãy hình dung một bạn junior dành ba năm đầu sự nghiệp trong làn vàng, chuyên approve output của AI. Bạn ấy generate; bạn ấy lướt; bạn ấy merge. Vậy chính xác thì bản năng "điều gì sẽ khiến nó sai?" của bạn ấy sẽ đến từ đâu? Một pipeline AI-first tiêu thụ phán đoán của senior ở quy mô công nghiệp và, theo mặc định, không sản xuất ra thêm chút phán đoán nào. Đó không phải một quy trình — đó là một cuộc khai thác cạn kiệt.
+
+Giải pháp phải là có chủ đích, nên ở đội của tôi, nó có chủ đích: các bạn junior thường xuyên nhận việc làn đỏ — tự tay xây trước, *rồi mới* so sánh với những gì AI tạo ra, và bảo vệ những điểm khác biệt. Cách này chậm hơn. Nó được thiết kế để chậm hơn. Chúng tôi không trả tiền cho cái tính năng; chúng tôi đang trả tiền cho những người kiểm chứng của thập kỷ tới.
+
+<Callout type="info" title="Bài học rút ra">
+  "AI làm trước, người kiểm sau" thất bại khi là một khẩu hiệu và thành công khi là một bài toán thiết kế. Nửa mà cả ngành đã làm đúng là phần sinh code. Nửa quyết định codebase của bạn có sống sót hay không là phần kiểm chứng — và kiểm chứng phải được thiết kế như một sản phẩm kỹ thuật: phân làn theo chi-phí-khi-sai, chủ động thay vì bằng mắt, có ngân sách trên sổ sách, và được vận hành bởi những con người mà bạn đang chủ đích đào tạo để đủ sức làm việc đó. Quy trình thật chưa bao giờ là "AI trước, người sau." Nó là <strong>AI đề xuất, con người quyết định</strong> — và toàn bộ cuộc chơi nằm ở chỗ đảm bảo việc quyết định thực sự diễn ra.
+</Callout>
+
+<ShareButtons />
+
+<Callout type="warning" title="Lưu ý">
+  Những quan điểm trong bài viết này là của cá nhân tôi và không nhất thiết phản ánh quan điểm của các tổ chức tôi đang hoặc đã từng làm việc. Số liệu được lấy từ các nghiên cứu công khai (Sonar, DORA, GitClear, METR, Stack Overflow, Veracode) tại thời điểm viết bài; mọi ví dụ đều là các pattern được khái quát hóa, không ám chỉ bất kỳ dự án hay khách hàng cụ thể nào.
+</Callout>
+
+</div>
